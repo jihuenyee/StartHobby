@@ -270,5 +270,36 @@ router.get("/leaderboard", (req, res) => {
   });
 });
 
+// PUT /api/users/:userId  → update username + email
+router.put("/:userId", (req, res) => {
+  const userId = req.params.userId;
+  const { username, email } = req.body;
+
+  if (!username || !email) {
+    return res.status(400).json({ message: "Missing username or email" });
+  }
+
+  const sql = "UPDATE users SET username = ?, email = ? WHERE user_id = ?";
+
+  db.query(sql, [username, email, userId], (err, result) => {
+    if (err) {
+      console.error("Error updating user:", err);
+      return res.status(500).json({ message: "Failed to update profile" });
+    }
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Return the updated user record (matches your table columns)
+    return res.json({
+      success: true,
+      user_id: Number(userId),
+      username,
+      email,
+    });
+  });
+});
+
 
 module.exports = router;

@@ -1,53 +1,77 @@
-import React, { useState } from "react";
+// src/components/Navbar.js
+import React, { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./Navbar.css";
-import { CgProfile } from 'react-icons/cg'; 
-import { FaShoppingCart, FaPowerOff } from "react-icons/fa";
+import { CgProfile } from "react-icons/cg";
+import { FaShoppingCart } from "react-icons/fa";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { IoClose } from "react-icons/io5";
-import { useAuth } from "../context/AuthContext"; // This will now get the Firebase user
+import { useAuth } from "../context/AuthContext";
 import ConfirmModal from "../components/ConfirmModal";
 
 function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { user, logout } = useAuth(); // 'user' is now the Firebase auth user object
-  const navigate = useNavigate();
+  const [profileOpen, setProfileOpen] = useState(false);
 
-  const toggleMenu = () => setMenuOpen(!menuOpen);
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+  const profileRef = useRef(null);
+
+  const toggleMenu = () => setMenuOpen((prev) => !prev);
+  const toggleProfileMenu = () => setProfileOpen((prev) => !prev);
 
   const confirmLogout = () => {
+    setProfileOpen(false);
     setIsModalOpen(true);
   };
 
   const handleLogout = async () => {
     try {
-      await logout(); // This now calls Firebase's signOut
+      await logout();
       setIsModalOpen(false);
-      navigate("/"); // Navigate after successful logout
+      navigate("/");
     } catch (error) {
       console.error("Failed to log out", error);
     }
   };
 
+  const displayName =
+    user?.username || user?.displayName || user?.email || "Profile";
+
+  // click-outside to close profile menu
+  useEffect(() => {
+    if (!profileOpen) return;
+
+    function handleClickOutside(e) {
+      if (profileRef.current && !profileRef.current.contains(e.target)) {
+        setProfileOpen(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [profileOpen]);
+
   return (
     <>
       <nav className="navbar">
-        {/* Left side: Logo */}
+        {/* Left: logo */}
         <div className="navbar-left">
           <Link to="/" className="logo-link">
             <img src="/Logos-01.png" alt="Logo" />
           </Link>
         </div>
 
-        {/* Hamburger icon for small screens */}
+        {/* Hamburger for mobile */}
         <div className="hamburger" onClick={toggleMenu}>
           {menuOpen ? <IoClose size={28} /> : <GiHamburgerMenu size={28} />}
         </div>
 
-      <ul className={`navbar-links ${menuOpen ? "open" : ""}`}>
-        <li><Link to="/">Home</Link></li>
-        <li><Link to="/twister">Twister</Link></li>
+        {/* Center links */}
+        <ul className={`navbar-links ${menuOpen ? "open" : ""}`}>
+          <li><Link to="/">Home</Link></li>
+          <li><Link to="/twister">Twister</Link></li>
           <li className="dropdown">
             <span className="dropbtn">Explore ▾</span>
             <div className="dropdown-content">
@@ -55,27 +79,52 @@ function Navbar() {
               <Link to="/daily-note">Daily Note</Link>
             </div>
           </li>
-        <li><Link to="/corporate">For Corporate</Link></li>
-        <li><Link to="/hobby-providers">Hobby Providers</Link></li>
-        <li><Link to="/shop">Shop</Link></li>
-      </ul>
+          <li><Link to="/corporate">For Corporate</Link></li>
+          <li><Link to="/hobby-providers">Hobby Providers</Link></li>
+          <li><Link to="/shop">Shop</Link></li>
+        </ul>
 
-        {/* Right side: Profile section */}
+        {/* Right: profile + cart */}
         <div className={`navbar-profile ${menuOpen ? "open" : ""}`}>
           {user ? (
-            // ---- USER IS LOGGED IN ----
             <>
-              <Link to="/profile" className="profile-link">
-                {/* ---  Use user.displayName for the name --- */}
-                <span>{user.displayName}</span>
-              </Link>
+              {/* PROFILE DROPDOWN (click to open) */}
+              <div className="profile-dropdown" ref={profileRef}>
+                <button
+                  type="button"
+                  className="profile-trigger"
+                  onClick={toggleProfileMenu}
+                >
+                  <CgProfile size={18} />
+                  <span>{displayName}</span>
+                </button>
+
+                {profileOpen && (
+                  <div className="profile-menu">
+                    <Link
+                      to="/profile"
+                      onClick={() => setProfileOpen(false)}
+                      className="profile-menu-item"
+                    >
+                      View profile
+                    </Link>
+                    <button
+                      type="button"
+                      className="profile-menu-item"
+                      onClick={confirmLogout}
+                    >
+                      Log out
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Cart icon */}
               <Link to="/cart" className="cart-link">
                 <FaShoppingCart size={20} />
               </Link>
-              <FaPowerOff onClick={confirmLogout} className="logout-button" />
             </>
           ) : (
-            // ---- USER IS LOGGED OUT ----
             <Link to="/signup" className="profile-link">
               <CgProfile size={20} />
               <span>Login</span>
@@ -84,7 +133,6 @@ function Navbar() {
         </div>
       </nav>
 
-      {/* Conditionally render the modal */}
       {isModalOpen && (
         <ConfirmModal
           title="Confirm Logout"

@@ -11,8 +11,8 @@
 }
 
 .navbar-left img {
-    width:100px;
-    height:100px;
+  width: 100px;
+  height: 100px;
 }
 
 .navbar-links {
@@ -57,7 +57,7 @@
 .profile-link {
   display: flex;
   align-items: center;
-  gap: 0.5rem; /* Adjust this value to control the space between the icon and text */
+  gap: 0.5rem; /* space between icon and text */
 }
 
 /* Hamburger icon (hidden on desktop) */
@@ -136,7 +136,6 @@
   position: absolute;
   top: 100%;
   left: 0;
-  min-width: 150px;
   min-width: 180px;
   background: #fff;
   box-shadow: 0 8px 18px rgba(0,0,0,0.12);
@@ -185,4 +184,65 @@
     width: 100%;
     text-align: center;
   }
+}
+/* --- Profile dropdown (same style as Explore dropdown) --- */
+
+.profile-dropdown {
+  position: relative;
+}
+
+/* Trigger looks like a normal nav item (with icon + text) */
+.profile-trigger {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: none;
+  border: 0;
+  font: inherit;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  color: black;
+  border-radius: 5px;
+}
+
+.profile-trigger:hover {
+  background-color: #ffe6c5; /* same hover as .navbar a / .dropbtn */
+}
+
+/* Menu box – basically the same as .dropdown-content */
+.profile-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  min-width: 180px;
+  background: #ffffff;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
+  border-radius: 8px;
+  z-index: 9999;
+  overflow: hidden; /* keep rounded corners clean */
+  padding: 0;
+}
+
+/* Menu items – same as .dropdown-content a */
+.profile-menu-item {
+  display: block;
+  width: 100%;
+  padding: 0.6rem 1rem;
+  box-sizing: border-box;
+  font-size: 0.95rem;
+  color: #333;
+  text-decoration: none;
+  background: #ffffff;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+}
+
+.profile-menu-item:hover {
+  background: #f4f4f4; /* same hover as dropdown links */
+}
+
+/* Optional separator between items */
+.profile-menu-item + .profile-menu-item {
+  border-top: 1px solid #e5e7eb;
 }

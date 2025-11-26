@@ -41,4 +41,21 @@ router.get("/:id", (req, res) => {
   });
 });
 
+// POST /api/posts
+router.post("/", (req, res) => {
+  const { title, body, user_id } = req.body;
+
+  const sql = `
+    INSERT INTO posts (title, body, user_id, status)
+    VALUES (?, ?, ?, 'published')
+  `;
+
+  db.query(sql, [title, body, user_id], (err, result) => {
+    if (err) return res.status(500).json({ error: "DB insert error" });
+
+    res.json({ success: true, post_id: result.insertId });
+  });
+});
+
+
 module.exports = router;

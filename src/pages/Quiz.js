@@ -55,3 +55,4 @@ const HobbyQuizUI = ({ question, progress, answer, onAnswerChange, onNextQuestio
 };
 
 export default HobbyQuizUI;
+

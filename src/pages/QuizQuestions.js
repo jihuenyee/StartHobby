@@ -1,43 +1,85 @@
-// Define the possible results first
-export const resultsData = {
-  Adventurer: {
-    title: "You are The Adventurer!",
-    description: "You are bold, love to explore, and are always ready for a new challenge. You thrive on excitement and new experiences."
-  },
-  Thinker: {
-    title: "You are The Thinker!",
-    description: "You are analytical, methodical, and enjoy solving complex problems. You value logic and reason in your decisions."
-  },
-  Creator: {
-    title: "You are The Creator!",
-    description: "You are imaginative, artistic, and have a passion for bringing new ideas to life. You see the world in a unique and colorful way."
-  }
+import React, { useState, useEffect } from 'react';
+import HobbyQuizUI from './HobbyQuizUI';
+
+// --- MOCK DATA to simulate the quiz flow ---
+// Later, you will replace this with API calls.
+const MOCK_QUESTIONS = [
+    { id: 1, text: "Do you prefer hobbies that engage more mentally or physically?" },
+    { id: 2, text: "Are you looking for a solo activity or something to do with friends?" },
+    { id: 3, text: "What's your budget for a new hobby? (Low, Medium, High)" },
+    { id: 4, text: "How much time can you dedicate to a hobby each week?" },
+    { id: 5, text: "Great! We're analyzing your results now..." }
+];
+
+const HobbyQuizContainer = () => {
+    const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+    const [userAnswers, setUserAnswers] = useState({});
+    const [progress, setProgress] = useState(0);
+    const [isLoading, setIsLoading] = useState(false);
+
+    // Update progress whenever the question index changes
+    useEffect(() => {
+        const newProgress = Math.round(((currentQuestionIndex) / (MOCK_QUESTIONS.length -1)) * 100);
+        setProgress(newProgress);
+    }, [currentQuestionIndex]);
+
+    const handleAnswerChange = (e) => {
+        const currentQuestionId = MOCK_QUESTIONS[currentQuestionIndex].id;
+        setUserAnswers({
+            ...userAnswers,
+            [currentQuestionId]: e.target.value
+        });
+    };
+
+    const handleNextQuestion = () => {
+        if (currentQuestionIndex >= MOCK_QUESTIONS.length - 1) {
+            console.log("Quiz Finished! Final Answers:", userAnswers);
+            // Here you would navigate to a results page or show a final message
+            return;
+        }
+
+        setIsLoading(true);
+
+        // =================================================================
+        // V V V V V V V   AI INTEGRATION POINT   V V V V V V V
+        // =================================================================
+        //
+        // 1. Get the current question ID and the user's answer.
+        //    const questionId = MOCK_QUESTIONS[currentQuestionIndex].id;
+        //    const answer = userAnswers[questionId] || "";
+        //
+        // 2. Make your API call to the AI here with the question and answer.
+        //    const nextQuestion = await fetchNextAIQuestion(questionId, answer);
+        //
+        // 3. For now, we simulate this with a delay.
+        
+        console.log("Submitting answer:", userAnswers[MOCK_QUESTIONS[currentQuestionIndex].id] || "");
+
+        setTimeout(() => {
+            // 4. Once you get the next question from the AI, update the state.
+            //    (Here we just move to the next item in our mock array)
+            setCurrentQuestionIndex(prevIndex => prevIndex + 1);
+            setIsLoading(false);
+        }, 1000); // Simulate 1 second network delay
+        
+        // =================================================================
+        // ^ ^ ^ ^ ^ ^ ^   END OF AI INTEGRATION POINT   ^ ^ ^ ^ ^ ^ ^
+        // =================================================================
+    };
+
+    const currentQuestion = MOCK_QUESTIONS[currentQuestionIndex];
+    const currentAnswer = userAnswers[currentQuestion.id] || '';
+
+    return (
+        <HobbyQuizUI 
+            question={currentQuestion.text}
+            progress={progress}
+            answer={currentAnswer}
+            onAnswerChange={handleAnswerChange}
+            onNextQuestion={handleNextQuestion}
+            isLoading={isLoading}
+        />
+    );
 };
 
-// Now, structure the questions
-export const questions = [
-  {
-    questionText: 'Which activity sounds most appealing on a weekend?',
-    answerOptions: [
-      { answerText: 'Hiking a new mountain trail', pointsFor: 'Adventurer' },
-      { answerText: 'Solving a complex puzzle or reading a book', pointsFor: 'Thinker' },
-      { answerText: 'Painting, writing, or visiting a museum', pointsFor: 'Creator' },
-    ],
-  },
-  {
-    questionText: 'When facing a problem, you tend to:',
-    answerOptions: [
-      { answerText: 'Jump in and figure it out as you go', pointsFor: 'Adventurer' },
-      { answerText: 'Create a step-by-step plan before acting', pointsFor: 'Thinker' },
-      { answerText: 'Brainstorm creative, unconventional solutions', pointsFor: 'Creator' },
-    ],
-  },
-  {
-    questionText: 'You are most inspired by:',
-    answerOptions: [
-      { answerText: 'Breathtaking landscapes and nature', pointsFor: 'Adventurer' },
-      { answerText: 'Fascinating theories and knowledge', pointsFor: 'Thinker' },
-      { answerText: 'Art, music, and innovative designs', pointsFor: 'Creator' },
-    ],
-  },
-];
+export default HobbyQuizContainer;

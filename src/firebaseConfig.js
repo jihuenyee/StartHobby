@@ -3,7 +3,7 @@ import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyC3m3zRfVSJW3KnabES-JLAZsHF-L53Fj4",
+  apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
   authDomain: "start-hobby.firebaseapp.com",
   projectId: "start-hobby",
   storageBucket: "start-hobby.firebasestorage.app",

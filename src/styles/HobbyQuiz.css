@@ -1,0 +1,186 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
+
+:root {
+    --bg-color: #F8F9FD;
+    --main-container-bg: #F5F1EB;
+    --navbar-bg: #FCF8F1;
+    --active-nav-bg: #FFDDA9;
+    --text-color: #555;
+    --blue-bubble-bg: #E1EFFE;
+    --progress-bar-fill: #9F6B4F;
+    --progress-bar-track: #E0E0E0;
+    --border-color: #EBEBEB;
+    --main-blue: #007BFF;
+}
+
+/* The main page container */
+.hobby-quiz-page {
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--bg-color);
+    padding: 20px;
+    color: var(--text-color);
+    min-height: calc(100vh - 40px);
+    box-sizing: border-box;
+}
+
+/* Main Quiz Container */
+.main-content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-top: 50px;
+}
+
+.quiz-container {
+    background-color: var(--main-container-bg);
+    border-radius: 30px;
+    padding: 40px;
+    width: 100%;
+    max-width: 800px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+}
+
+/* Top Section: Bubble & Squirrel */
+.top-section {
+    display: flex;
+    justify-content:center;
+    align-items: flex-start;
+    gap: 30px;
+    margin-bottom: 30px;
+}
+
+.squirrel-image {
+    width: 150px;
+    flex-shrink: 0;
+    margin-top: 10px;
+}
+
+.chat-bubble {
+    background-color: var(--blue-bubble-bg);
+    padding: 25px; /* <-- CHANGE: Restored more balanced padding */
+    border-radius: 20px;
+    position: relative;
+    font-size: 18px;
+    line-height: 1.5;
+    flex-grow: 1; /* <-- This is okay now with max-width */
+    max-width: 60%; /* <-- CHANGE: Prevents the bubble from getting too wide */
+    min-height: 50px; /* <-- CHANGE: Ensures bubble has a minimum height */
+}
+
+.chat-bubble::after {
+    content: '';
+    position: absolute;
+    top: 80px; 
+    right: 0px;
+    width: 0;
+    height: 0;
+    border-top: 15px solid transparent;
+    border-bottom: 15px solid transparent;
+    border-right: 15px solid var(--blue-bubble-bg);
+    transform: rotate(-45deg); /* <-- CHANGE: Adjusted rotation for better point */
+}
+
+/* Progress Bar */
+.progress-section {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 0 20px;
+    margin-bottom: 30px;
+}
+
+.progress-bar-container {
+    width: 100%;
+    height: 12px;
+    background-color: var(--progress-bar-track);
+    border-radius: 6px;
+    position: relative;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    background-color: var(--progress-bar-fill);
+    border-radius: 6px;
+    position: relative;
+    transition: width 0.4s ease-in-out;
+}
+
+.progress-bar-fill::after {
+    content: '';
+    position: absolute;
+    right: -15px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 30px;
+    height: 30px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.progress-percentage {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.acorn-image {
+    width: 50px;
+}
+
+/* Bottom Section: Response Area */
+.response-area {
+    background-color: var(--blue-bubble-bg);
+    border-radius: 20px;
+    min-height: 200px;
+    padding: 20px;
+    display: flex;
+    align-items: flex-end;
+}
+
+.response-input {
+    width: 100%;
+    padding: 15px 25px;
+    border: 1px solid #B9D4F1;
+    border-radius: 30px;
+    background-color: white;
+    font-size: 16px;
+    font-family: 'Poppins', sans-serif;
+    box-sizing: border-box;
+}
+        
+.response-input::placeholder {
+    color: #AAA;
+}
+
+.response-input:focus {
+    outline: none;
+    border-color: var(--main-blue);
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
+}
+
+/* --- Squirrel Button Styles --- */
+.squirrel-button {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    border-radius: 50%;
+    width: 100px;
+}
+
+.squirrel-button .squirrel-image {
+    transition: transform 0.2s ease-in-out;
+}
+
+.squirrel-button:hover .squirrel-image {
+    transform: scale(1.1);
+}
+
+.squirrel-button:disabled {
+    cursor: wait;
+    opacity: 0.7;
+}
+
+.squirrel-button:disabled .squirrel-image {
+    transform: none;
+}

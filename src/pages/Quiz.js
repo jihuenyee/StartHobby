@@ -1,8 +1,7 @@
-// src/pages/Quiz.js
-import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import "../styles/Quiz.css";
+import React from 'react';
+import '../styles/HobbyQuiz.css'; // We'll reuse the same CSS file
 
+<<<<<<< HEAD
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
 function Quiz() {
@@ -103,63 +102,60 @@ const submitForEvaluation = async (answersArray) => {
 
   // If AI result already returned:
   if (result) {
+=======
+const HobbyQuizUI = ({ question, progress, answer, onAnswerChange, onNextQuestion, isLoading }) => {
+>>>>>>> ad88a4e3f11a54886598a1d97239008728c589d5
     return (
-      <div className="quiz-container score-section">
-        <h2>Your hobby personality</h2>
-        {result.personality_summary && (
-          <p>{result.personality_summary}</p>
-        )}
+        <div className="hobby-quiz-page">
+            <main className="main-content">
+                <div className="quiz-container">
+                    <section className="top-section">
+                        <div className="chat-bubble">
+                            {/* The question is now a prop */}
+                            {question}
+                        </div>
+                        {/* The squirrel is now a clickable button */}
+                        <button 
+                            className="squirrel-button" 
+                            onClick={onNextQuestion}
+                            disabled={isLoading} // Disable button while loading next question
+                        >
+                            <img 
+                                src="/squirrel.png" 
+                                alt="Next Question" 
+                                className="squirrel-image" 
+                            />
+                        </button>
+                    </section>
 
-        {Array.isArray(result.recommended_hobbies) && (
-          <ul>
-            {result.recommended_hobbies.map((h, i) => (
-              <li key={i}>
-                <strong>{h.hobby}</strong> – {h.reason}
-              </li>
-            ))}
-          </ul>
-        )}
+                    <section className="progress-section">
+                        <div className="progress-bar-container">
+                          <img 
+                                src="/acorn.png" 
+                                alt="Next Question" 
+                                className="acorn-image" 
+                            />
+                            {/* Progress is now a prop */}
+                            <div className="progress-bar-fill" style={{ width: `${progress}%` }}></div>
+                        </div>
+                        <div className="progress-percentage">{progress}%</div>
+                    </section>
 
-        <Link to="/signup" className="quizbtn">
-          Sign up to save your result
-        </Link>
-      </div>
+                    <section className="response-area">
+                        <input 
+                            type="text" 
+                            className="response-input" 
+                            placeholder="Type your answer here..."
+                            value={answer} // Answer value is a prop
+                            onChange={onAnswerChange} // The change handler is a prop
+                            disabled={isLoading} // Disable input while loading
+                        />
+                    </section>
+                </div>
+            </main>
+        </div>
     );
-  }
+};
 
-  const question = quiz.questions[currentIndex];
+export default HobbyQuizUI;
 
-  return (
-    <div className="quiz-container">
-      {evaluating ? (
-        <div>Evaluating your answers...</div>
-      ) : (
-        <>
-          <div className="question-section">
-            <div className="question-count">
-              <span>Question {currentIndex + 1}</span>/{quiz.questions.length}
-            </div>
-            <div className="question-text">
-              {question.question_text}
-            </div>
-          </div>
-
-          <div className="answer-section">
-            {question.options.map((opt) => (
-              <button
-                key={opt.option_id}
-                onClick={() =>
-                  handleAnswerClick(question.question_id, opt.option_id)
-                }
-              >
-                {opt.option_text}
-              </button>
-            ))}
-          </div>
-        </>
-      )}
-    </div>
-  );
-}
-
-export default Quiz;

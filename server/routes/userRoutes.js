@@ -3,6 +3,33 @@ const express = require("express");
 const db = require("../db");
 const router = express.Router();
 
+// GET /api/users  → Get all users
+router.get("/", (req, res) => {
+  const sql = `
+    SELECT 
+      u.user_id, 
+      u.username, 
+      u.email, 
+      u.type_id,
+      up.points, 
+      up.xp, 
+      up.current_streak_days, 
+      up.last_login_date,
+      m.color_name AS membership
+    FROM users u
+    LEFT JOIN user_progress up ON u.user_id = up.user_id
+    LEFT JOIN membership m ON up.membership_id = m.membership_id
+  `;
+
+  db.query(sql, (err, rows) => {
+    if (err) {
+      console.error("DB error:", err);
+      return res.status(500).json({ error: "Database error" });
+    }
+    res.json(rows);
+  });
+});
+
 // GET /api/users  → return all users
 router.get("/", (req, res) => {
   const sql = `

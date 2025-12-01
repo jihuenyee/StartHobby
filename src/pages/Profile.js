@@ -2,7 +2,8 @@
 import React, { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { CgProfile } from "react-icons/cg";
-import ConfirmModal from "../components/ConfirmModal";  // <-- added
+import ConfirmModal from "../components/ConfirmModal";
+import MembershipSummary from "../components/MembershipSummary";
 import "../styles/Profile.css";
 
 function Profile() {
@@ -13,13 +14,13 @@ function Profile() {
   const [email, setEmail] = useState(user?.email || "");
   const [saving, setSaving] = useState(false);
   const [status, setStatus] = useState("");
-  const [isModalOpen, setIsModalOpen] = useState(false);   // <-- added
+  const [isModalOpen, setIsModalOpen] = useState(false); 
 
   if (!user) {
     return (
       <div className="profile-page">
         <h1 className="title">My Profile</h1>
-        <div className="profile-details">
+        <div className="profile-empty-container">
           <p className="profile-empty-text">Please log in to view your profile.</p>
         </div>
       </div>
@@ -70,89 +71,83 @@ function Profile() {
     }
   };
 
-  return (
+   return (
     <div className="profile-page">
       <h1 className="title">My Profile</h1>
 
-      <form className="profile-details" onSubmit={handleSave}>
-        <div className="profile-main">
+      {/* The Unified Card */}
+      <div className="profile-details">
+        
+        {/* LEFT SECTION: User Info */}
+        <div className="profile-left-section">
           <CgProfile className="profile-picture" />
 
-          <div className="user-info">
-            <span className="detail-label">Name:</span>
-            {editMode ? (
-              <input
-                className="profile-input"
-                type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                required
-              />
-            ) : (
-              <span>{user.username || "Not provided"}</span>
-            )}
+          <form className="user-info" onSubmit={handleSave}>
+            <div className="detail-group">
+              <span className="detail-label">Name</span>
+              {editMode ? (
+                <input
+                  className="profile-input"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  required
+                />
+              ) : (
+                <span className="detail-value">{user.username}</span>
+              )}
+            </div>
 
-            <span className="detail-label">Email:</span>
-            {editMode ? (
-              <input
-                className="profile-input"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            ) : (
-              <span>{user.email || "Not provided"}</span>
-            )}
-          </div>
+            <div className="detail-group">
+              <span className="detail-label">Email</span>
+              {editMode ? (
+                <input
+                  className="profile-input"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
+              ) : (
+                <span className="detail-value">{user.email}</span>
+              )}
+            </div>
+
+            <div className="profile-actions">
+              <div className="profile-actions-buttons">
+                {!editMode ? (
+                  <>
+                    <button type="button" className="logout-btn" onClick={confirmLogout}>
+                      Log out
+                    </button>
+                    <button type="button" className="edit-btn" onClick={() => setEditMode(true)}>
+                      Edit profile
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <button type="button" className="cancel-btn" onClick={() => setEditMode(false)}>
+                      Cancel
+                    </button>
+                    <button type="submit" className="save-btn" disabled={saving}>
+                      Save
+                    </button>
+                  </>
+                )}
+              </div>
+            </div>
+          </form>
         </div>
 
-        <div className="profile-actions">
-          {status && <p className="profile-status">{status}</p>}
-
-          <div className="profile-actions-buttons">
-            <button
-              type="button"
-              className="logout-btn"
-              onClick={confirmLogout}   // <-- now opens modal
-            >
-              Log out
-            </button>
-
-            {!editMode && (
-              <button
-                type="button"
-                className="edit-btn"
-                onClick={handleEdit}
-              >
-                Edit profile
-              </button>
-            )}
-
-            {editMode && (
-              <>
-                <button
-                  type="button"
-                  className="cancel-btn"
-                  onClick={handleCancel}
-                  disabled={saving}
-                >
-                  Cancel
-                </button>
-                <button type="submit" className="save-btn" disabled={saving}>
-                  {saving ? "Saving..." : "Save changes"}
-                </button>
-              </>
-            )}
-          </div>
+        {/* RIGHT SECTION: Membership */}
+        <div className="profile-right-section">
+          <MembershipSummary />
         </div>
-      </form>
 
-      {/* Logout confirmation modal */}
+      </div>
+
       {isModalOpen && (
         <ConfirmModal
           title="Confirm Logout"
-          onConfirm={handleLogout}
+          onConfirm={async () => { await logout(); setIsModalOpen(false); }}
           onCancel={() => setIsModalOpen(false)}
         >
           <p>Are you sure you want to log out?</p>

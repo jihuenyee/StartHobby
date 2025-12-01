@@ -7,7 +7,7 @@ import { FaShoppingCart } from "react-icons/fa";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { IoClose } from "react-icons/io5";
 import { useAuth } from "../context/AuthContext";
-import ConfirmModal from "../components/ConfirmModal";
+import ConfirmModal from "./ConfirmModal";
 
 function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);

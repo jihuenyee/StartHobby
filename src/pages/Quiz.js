@@ -22,7 +22,7 @@ function Quiz() {
   useEffect(() => {
     async function fetchQuiz() {
       try {
-        const res = await fetch(`${API_BASE_URL}/quizzes/1`);
+        const res = await fetch(`${API_BASE_URL}/api/quizzes/1`);
         if (!res.ok) throw new Error("Failed to load quiz");
         const data = await res.json();
         setQuiz(data);
@@ -52,7 +52,7 @@ function Quiz() {
     setError("");
 
     try {
-      const res = await fetch(`${API_BASE_URL}/quizzes/1/evaluate`, {
+      const res = await fetch(`${API_BASE_URL}/api/quizzes/1/evaluate`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ user_id: 1, answers: answersArray }),
@@ -78,7 +78,7 @@ function Quiz() {
   };
 
   const saveResultToDB = async () => {
-    await fetch(`${API_BASE_URL}/quizzes/save-result`, {
+    await fetch(`${API_BASE_URL}/api/quizzes/save-result`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

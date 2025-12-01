@@ -14,6 +14,7 @@ const notificationRoutes = require("./routes/notificationRoutes");
 const followRoutes = require("./routes/followRoutes");
 const authRoutes = require("./routes/authRoutes");
 const app = express();
+const cors = require("cors");
 
 app.use(cors());
 app.use(express.json());

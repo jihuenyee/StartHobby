@@ -81,59 +81,58 @@ router.post("/:quizId/evaluate", async (req, res) => {
   }
 
   try {
-    const questionIds = [...new Set(answers.map(a => a.question_id))];
-    const optionIds = answers.map(a => a.selected_option_id);
-
-    const qPlaceholders = questionIds.map(() => "?").join(",");
-    const oPlaceholders = optionIds.map(() => "?").join(",");
-
-    const sql = `
-      SELECT qq.question_id, qq.question_text, qo.option_id, qo.option_text
-      FROM quizquestions qq
-      JOIN questionoption qo ON qq.question_id = qo.question_id
-      WHERE qq.quiz_id = ?
-      AND qq.question_id IN (${qPlaceholders})
-      AND qo.option_id IN (${oPlaceholders})
-    `;
-
-    const params = [quizId, ...questionIds, ...optionIds];
-    const rows = await query(sql, params);
-
+    // Get all the question-answer pairs
     const qaPairs = [];
-    answers.forEach(ans => {
-      const row = rows.find(r =>
-        r.question_id === ans.question_id &&
-        r.option_id === ans.selected_option_id
-      );
-      if (row) {
+    
+    for (const ans of answers) {
+      const sql = `
+        SELECT qq.question_text, qo.option_text
+        FROM quizquestions qq
+        JOIN questionoption qo ON qq.question_id = qo.question_id
+        WHERE qq.quiz_id = ?
+        AND qq.question_id = ?
+        AND qo.option_id = ?
+      `;
+      
+      const rows = await query(sql, [quizId, ans.question_id, ans.selected_option_id]);
+      
+      if (rows.length > 0) {
         qaPairs.push({
-          question: row.question_text,
-          answer: row.option_text
+          question: rows[0].question_text,
+          answer: rows[0].option_text
         });
       }
-    });
+    }
+
+    if (qaPairs.length === 0) {
+      return res.status(400).json({ error: "No valid answers found" });
+    }
 
     const prompt = `
-Analyze this quiz result:
+Analyze this quiz result and provide hobby recommendations:
 
 ${JSON.stringify(qaPairs, null, 2)}
 
-Return ONLY clean JSON:
+Return ONLY valid JSON (no markdown, no extra text):
 
 {
-  "personality_type": "string",
-  "personality_summary": "string",
-  "strengths": ["s1", "s2", "s3"],
+  "personality_type": "A personality type name",
+  "personality_summary": "A 2-3 sentence summary of the personality",
+  "strengths": ["strength1", "strength2", "strength3"],
   "suggested_hobbies": [
-    { "hobby": "string", "reason": "string" }
+    {"hobby": "hobby name", "reason": "why this hobby fits them"}
   ],
-  "generated_at": "ISO timestamp"
+  "generated_at": "$(new Date().toISOString())"
 }
 `;
 
     const response = await geminiModel.generateContent(prompt);
     let text = response.response.text().trim();
-    if (text.startsWith("```")) text = text.replace(/```json|```/g, "").trim();
+    
+    // Remove markdown code blocks if present
+    if (text.startsWith("```")) {
+      text = text.replace(/```json|```/g, "").trim();
+    }
 
     const aiJson = JSON.parse(text);
 

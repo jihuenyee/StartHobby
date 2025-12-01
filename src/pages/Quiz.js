@@ -58,12 +58,19 @@ function Quiz() {
         body: JSON.stringify({ user_id: 1, answers: answersArray }),
       });
 
+      if (!res.ok) {
+        const errorText = await res.text();
+        console.error("API Error Response:", errorText);
+        throw new Error(`API error: ${res.status}`);
+      }
+
       const data = await res.json();
       if (!res.ok) throw new Error(data?.error || "AI evaluation failed");
 
       setResult(data.ai_result);
 
     } catch (err) {
+      console.error("Evaluation Error:", err);
       setError(err.message || "Evaluation error");
     } finally {
       setEvaluating(false);

@@ -3,6 +3,18 @@ const express = require("express");
 const db = require("../db");
 const router = express.Router();
 
+// GET /api/users  → return all users
+router.get("/", (req, res) => {
+  const sql = "SELECT * FROM users";
+
+  db.query(sql, (err, rows) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ error: "DB error" });
+    }
+    res.json(rows);
+  });
+});
 
 // GET /api/users/:userId/profile
 router.get("/:userId/profile", (req, res) => {

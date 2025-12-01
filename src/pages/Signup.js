@@ -18,14 +18,11 @@ export default function Signup() {
   const handleGoogle = async () => {
     const provider = new GoogleAuthProvider();
     try {
-      // The sign-in was successful
-      await signInWithPopup(auth, provider); 
-      
-      // Navigate to the home page ('/') after successful login
-      navigate("/profile"); 
+      await signInWithPopup(auth, provider);
+      navigate("/profile");
     } catch (error) {
-      // Handle Errors here.
-      console.error("Error during Google sign-in:", error);
+      console.error("Google sign-in error:", error);
+      alert("Google Sign-In failed: " + error.message);
     }
   };
 
@@ -33,13 +30,13 @@ export default function Signup() {
     const provider = new FacebookAuthProvider();
     try {
       await signInWithPopup(auth, provider);
-      // Also navigate to home on successful Facebook login
       navigate("/profile");
     } catch (error) {
-      // Handle Errors here.
-      console.error("Error during Facebook sign-in:", error);
+      console.error("Facebook sign-in error:", error);
+      alert("Facebook Sign-In failed: " + error.message);
     }
   };
+
 
   return (
     <div className="signuppage">

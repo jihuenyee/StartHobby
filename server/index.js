@@ -43,7 +43,4 @@ app.get("/", (req, res) => {
   res.send("StartHobby API is running 🚀");
 });
 
-const PORT = 5000;  
-app.listen(PORT, () => {
-  console.log(`API running on http://localhost:${PORT}`);
-});
+module.exports = app;

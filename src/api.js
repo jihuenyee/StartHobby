@@ -1,5 +1,5 @@
 // src/api.js
-const API_BASE_URL = "https://backend-ftis.vercel.app/api";
+const API_BASE_URL = "https://backend-c8sn.vercel.app";
 
 export async function apiRequest(path, options = {}) {
   const token = localStorage.getItem("token");

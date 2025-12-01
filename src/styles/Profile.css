@@ -1,3 +1,5 @@
+/* src/styles/Profile.css */
+
 .profile-page {
   display: flex;
   flex-direction: column;
@@ -5,178 +7,178 @@
   justify-content: flex-start;
   width: 100%;
   min-height: 100vh;
-  max-width: 900px;
-  margin: 2rem auto;
+  margin-top: 2rem;
   padding: 0 20px;
   box-sizing: border-box;
-  text-align: center;
 }
 
 /* Page title */
 .title {
-  font-size: 60px;
+  font-size: 48px; /* Slightly smaller to fit better */
   font-weight: 700;
   color: #3b2a1a;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+/* --- THE UNIFIED CARD WRAPPER --- */
+.profile-details {
+  display: flex;
+  flex-direction: row;       /* Side-by-side layout */
+  width: 100%;
+  max-width: 950px;          /* Wider to fit both sections */
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 24px;       /* Larger rounding for modern look */
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  overflow: hidden;          /* Keeps content inside rounded corners */
+}
+
+.profile-empty-container {
+  width: 100%;
+  max-width: 950px;
+  min-height: 100px; /* Gives the box height so vertical centering works */
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 24px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  display: flex;
+  justify-content: center; /* Horizontal center */
+  align-items: center;     /* Vertical center */
+  text-align: center;
+}
+
+.profile-empty-text {
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+/* --- LEFT SIDE: USER INFO --- */
+.profile-left-section {
+  flex: 1;                   /* Takes up 1 part of space */
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-right: 1px solid #f0f0f0; /* Divider line */
+  min-width: 300px;
 }
 
 /* Avatar */
 .profile-picture {
-  width: 100px;
+  font-size: 6rem;           /* If using Icon */
+  width: 100px;              /* If using Image */
   height: 100px;
   border-radius: 50%;
   object-fit: cover;
   border: 4px solid #f0f0f0;
+  color: #3b2a1a;
+  margin-bottom: 20px;
 }
 
-/* Card wrapper */
-.profile-details {
-  display: flex;
-  flex-direction: column;    /* Vertical layout */
-  align-items: center;       /* Center everything horizontally */
-  text-align: center;        /* Center text inside */
-  width: 100%;
-  padding: 30px;
-  border: 1px solid #e0e0e0;
-  border-radius: 12px;
-  background-color: #ffffff;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  box-sizing: border-box;
-  gap: 20px;                 /* spacing between items */
-}
-
-.profile-details span {
-  text-align: left;
-}
-
-/* Text inside card (non-edit case) */
-.profile-details p {
-  font-size: 1.1rem;
-  color: #333;
-  margin: 0.5rem 0;
-}
-
-/* Grid for labels + values/inputs */
+/* User Info Text Area */
 .user-info {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 12px 15px;
-  align-items: center;
-  font-size: 1.1rem;
   width: 100%;
-  padding-top: 1.5rem;
+  display: flex;
+  flex-direction: column;    /* Stack labels and inputs vertically */
+  gap: 15px;
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.detail-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 .detail-label {
-  font-weight: bold;
-  margin-right: 6px;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  color: #888;
+  font-weight: 700;
+  letter-spacing: 0.5px;
 }
 
-/* Empty state text */
-.profile-empty-text {
-  width: 100%;
-  text-align: center;
-  margin: 0;
+.detail-value {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #333;
 }
 
-/* Editable input fields */
+/* Input styling */
 .profile-input {
   width: 100%;
-  padding: 8px 10px;
+  padding: 10px 12px;
   border-radius: 8px;
   border: 1px solid #d4d4d4;
   font-size: 1rem;
-  text-align: left;
   box-sizing: border-box;
 }
-
 .profile-input:focus {
   outline: none;
   border-color: #f4a259;
-  box-shadow: 0 0 0 2px rgba(244, 162, 89, 0.25);
+  box-shadow: 0 0 0 3px rgba(244, 162, 89, 0.2);
 }
 
-/* Actions under the card */
+/* Buttons Container */
 .profile-actions {
-  margin-top: 1.5rem;
+  margin-top: auto;          /* Pushes buttons to bottom */
   width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;       /* center status + buttons */
-  gap: 8px;
 }
 
-/* Status message (success / error) */
-.profile-status {
-  margin: 0;
-  font-size: 0.9rem;
-  color: #2563eb;            /* blue info text */
-}
-
-/* Buttons row */
 .profile-actions-buttons {
   display: flex;
-  gap: 10px;
+  gap: 12px;
   justify-content: center;
+  width: 100%;
 }
 
-/* Shared button style */
+/* Pill Shaped Buttons (From Sketch) */
 .logout-btn,
 .edit-btn,
 .cancel-btn,
 .save-btn {
-  padding: 10px 25px;
-  border-radius: 12px;
+  padding: 10px 24px;
+  border-radius: 50px;       /* Pill shape */
   border: none;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.15s ease, transform 0.1s ease,
-    box-shadow 0.1s ease;
+  transition: all 0.2s ease;
 }
 
-/* Specific button colors */
-.logout-btn {
-  background-color: #ffb432;
-  color: white;
+/* Your original colors */
+.logout-btn { background-color: #ffb432; color: white; }
+.logout-btn:hover { background-color: #f08a11; transform: translateY(-2px); }
+
+.edit-btn { background-color: #d9e1eb; color: #000; }
+.edit-btn:hover { background-color: #c7d2e2; transform: translateY(-2px); }
+
+.cancel-btn { background-color: #e5e7eb; color: #374151; }
+.save-btn { background-color: #4caf50; color: white; }
+
+/* --- RIGHT SIDE: MEMBERSHIP --- */
+.profile-right-section {
+  flex: 1.4;                 /* Takes up slightly more space than left */
+  padding: 40px;
+  background-color: #fff;    /* Or a very light gray #fafafa if preferred */
+  display: flex;
+  align-items: center;       /* Centers the card vertically */
+  justify-content: center;
 }
 
-.logout-btn:hover {
-  background-color: #f08a11;
-  transform: translateY(-1px);
+/* --- MOBILE RESPONSIVENESS --- */
+@media (max-width: 800px) {
+  .profile-details {
+    flex-direction: column; /* Stack vertically on phones */
+  }
+  .profile-left-section {
+    border-right: none;
+    border-bottom: 1px solid #f0f0f0;
+    padding: 30px 20px;
+  }
+  .profile-right-section {
+    padding: 30px 20px;
+  }
 }
-
-.edit-btn {
-  background-color: #d9e1eb;
-  color: #000;
-}
-
-.edit-btn:hover {
-  background-color: #c7d2e2;
-  transform: translateY(-1px);
-}
-
-.cancel-btn {
-  background-color: #cccccc;
-  color: #000;
-}
-
-.cancel-btn:hover {
-  background-color: #bfbfbf;
-  transform: translateY(-1px);
-}
-
-.save-btn {
-  background-color: #4caf50;
-  color: white;
-}
-
-.save-btn:hover:not(:disabled) {
-  background-color: #43a047;
-  transform: translateY(-1px);
-}
-
-.save-btn:disabled {
-  opacity: 0.7;
-  cursor: default;
-}
-

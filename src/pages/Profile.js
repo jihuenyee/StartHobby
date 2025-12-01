@@ -79,7 +79,7 @@ function Profile() {
           <CgProfile className="profile-picture" />
 
           <div className="user-info">
-            <span className="detail-label">Username:</span>
+            <span className="detail-label">Name:</span>
             {editMode ? (
               <input
                 className="profile-input"

@@ -1,11 +1,12 @@
-// src/context/AuthContext.js
 import React, { createContext, useContext, useEffect, useState } from "react";
+
+import { auth } from "../firebaseConfig";
+import { onAuthStateChanged } from "firebase/auth";
 
 const AuthContext = createContext();
 
 const API_BASE_URL = "https://backend-ftis.vercel.app/api";
 
-// Generic helper for calling your backend
 async function apiRequest(path, options = {}) {
   const token = localStorage.getItem("token");
 
@@ -45,23 +46,38 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // restore user on page refresh
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      try {
-        setUser(JSON.parse(storedUser));
-      } catch {
-        localStorage.removeItem("user");
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      // Check for backend user first
+      const storedUser = localStorage.getItem("user");
+
+      if (storedUser) {
+        // Option A: User logged in via Email/Password (Backend)
+        try {
+          setUser(JSON.parse(storedUser));
+        } catch {
+          localStorage.removeItem("user");
+        }
+      } else if (firebaseUser) {
+        // Option B: User logged in via Google (Firebase) 
+        setUser({
+          user_id: firebaseUser.uid,
+          username: firebaseUser.displayName,
+          email: firebaseUser.email,
+          isGoogle: true
+        });
+      } else {
+        // Option C: Not logged in
+        setUser(null);
       }
-    }
-    setLoading(false);
+
+      setLoading(false); 
+    });
+
+    return () => unsubscribe();
   }, []);
 
-  // LOGIN
   const login = async (email, password) => {
-    // Your backend login is /auth/Login and returns:
-    // { success: true, user_id, username, email }
     const data = await apiRequest("/auth/Login", {
       method: "POST",
       body: { email, password },
@@ -79,9 +95,7 @@ export function AuthProvider({ children }) {
     setUser(userData);
   };
 
-  // SIGNUP
   const signup = async (username, email, password) => {
-    // match backend route: POST /api/auth/signup
     const data = await apiRequest("/auth/signup", {
       method: "POST",
       body: { username, email, password },
@@ -99,10 +113,9 @@ export function AuthProvider({ children }) {
     setUser(userData);
   };
 
-  // UPDATE PROFILE (username + email)
   const updateProfile = async ({ username, email }) => {
-    const stored = localStorage.getItem("user");
-    const currentUser = stored ? JSON.parse(stored) : null;
+    // We use the state 'user' here to support both Google and Backend users
+    const currentUser = user; 
 
     if (!currentUser) {
       throw new Error("No logged in user");
@@ -117,7 +130,6 @@ export function AuthProvider({ children }) {
 
     console.log("[Auth] Update profile response:", data);
 
-    // merge updated values
     const newUser = {
       ...currentUser,
       username: data.username ?? username,
@@ -130,8 +142,8 @@ export function AuthProvider({ children }) {
     return data;
   };
 
-
   const logout = () => {
+    auth.signOut(); 
     localStorage.removeItem("user");
     localStorage.removeItem("token");
     setUser(null);
@@ -141,10 +153,11 @@ export function AuthProvider({ children }) {
     <AuthContext.Provider
       value={{
         user,
+        loading,
         login,
         signup,
         logout,
-        updateProfile,         // 👈 NOW it exists in the context
+        updateProfile,
         isAuthenticated: !!user,
       }}
     >

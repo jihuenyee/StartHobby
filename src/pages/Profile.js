@@ -16,12 +16,22 @@ function Profile() {
   const [status, setStatus] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // 🔐 Password change states
+  // password fields + toggle
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [pwStatus, setPwStatus] = useState("");
-  const [pwLoading, setPwLoading] = useState(false);
+  const [pwError, setPwError] = useState("");
+  const [changingPassword, setChangingPassword] = useState(false);
+
+  // password strength
+  const [passwordStrength, setPasswordStrength] = useState("");
+  const [rules, setRules] = useState({
+    length: false,
+    uppercase: false,
+    lowercase: false,
+    number: false,
+    symbol: false,
+  });
 
   if (!user) {
     return (
@@ -35,7 +45,7 @@ function Profile() {
   }
 
   const confirmLogout = () => {
-    setIsModalOpen(true); // open modal instead of direct logout
+    setIsModalOpen(true);
   };
 
   const handleLogout = async () => {
@@ -47,10 +57,27 @@ function Profile() {
     }
   };
 
+  const resetPasswordFields = () => {
+    setCurrentPassword("");
+    setNewPassword("");
+    setConfirmPassword("");
+    setPwError("");
+    setChangingPassword(false);
+    setPasswordStrength("");
+    setRules({
+      length: false,
+      uppercase: false,
+      lowercase: false,
+      number: false,
+      symbol: false,
+    });
+  };
+
   const handleEdit = () => {
     setUsername(user.username || "");
     setEmail(user.email || "");
     setStatus("");
+    resetPasswordFields();
     setEditMode(true);
   };
 
@@ -58,59 +85,83 @@ function Profile() {
     setUsername(user.username || "");
     setEmail(user.email || "");
     setStatus("");
+    resetPasswordFields();
     setEditMode(false);
   };
 
-  const handleSave = async (e) => {
-    e.preventDefault();
-    setSaving(true);
-    setStatus("");
+  const checkPasswordStrength = (value) => {
+    const rulesCheck = {
+      length: value.length >= 8,
+      uppercase: /[A-Z]/.test(value),
+      lowercase: /[a-z]/.test(value),
+      number: /[0-9]/.test(value),
+      symbol: /[^A-Za-z0-9]/.test(value),
+    };
 
-    try {
-      await updateProfile({ username, email });
-      setStatus("Profile updated successfully.");
-      setEditMode(false);
-    } catch (err) {
-      console.error(err);
-      setStatus(err.message || "Failed to update profile.");
-    } finally {
-      setSaving(false);
+    setRules(rulesCheck);
+
+    const passed = Object.values(rulesCheck).filter(Boolean).length;
+
+    if (!value) {
+      setPasswordStrength("");
+    } else if (passed <= 2) {
+      setPasswordStrength("Weak");
+    } else if (passed === 3 || passed === 4) {
+      setPasswordStrength("Medium");
+    } else if (passed === 5) {
+      setPasswordStrength("Strong");
     }
   };
 
-  const handleChangePassword = async (e) => {
-    e.preventDefault();
-    setPwStatus("");
+  const handleSave = async () => {
+    setSaving(true);
+    setStatus("");
+    setPwError("");
 
-    if (!currentPassword || !newPassword || !confirmPassword) {
-      setPwStatus("Please fill in all password fields.");
-      return;
-    }
+    const wantsPasswordChange = changingPassword;
 
-    if (newPassword !== confirmPassword) {
-      setPwStatus("New password and confirmation do not match.");
-      return;
-    }
+    if (wantsPasswordChange) {
+      if (!currentPassword || !newPassword || !confirmPassword) {
+        setPwError("Please fill in all password fields.");
+        setSaving(false);
+        return;
+      }
 
-    if (newPassword.length < 6) {
-      setPwStatus("New password should be at least 6 characters.");
-      return;
+      if (newPassword !== confirmPassword) {
+        setPwError("New password and confirmation do not match.");
+        setSaving(false);
+        return;
+      }
+
+      if (!rules.length || !rules.uppercase || !rules.lowercase || !rules.number) {
+        setPwError("Please meet all password requirements.");
+        setSaving(false);
+        return;
+      }
     }
 
     try {
-      setPwLoading(true);
-      await changePassword(currentPassword, newPassword);
-      setPwStatus("Password updated successfully.");
+      await updateProfile({ username, email });
 
-      // Clear fields
-      setCurrentPassword("");
-      setNewPassword("");
-      setConfirmPassword("");
+      if (wantsPasswordChange) {
+        await changePassword(currentPassword, newPassword);
+        setStatus("Profile & password updated successfully.");
+      } else {
+        setStatus("Profile updated successfully.");
+      }
+
+      resetPasswordFields();
+      setEditMode(false);
     } catch (err) {
       console.error(err);
-      setPwStatus(err.message || "Failed to update password.");
+      const message = err.message || "Failed to update profile or password.";
+      if (wantsPasswordChange) {
+        setPwError(message);
+      } else {
+        setStatus(message);
+      }
     } finally {
-      setPwLoading(false);
+      setSaving(false);
     }
   };
 
@@ -118,14 +169,12 @@ function Profile() {
     <div className="profile-page">
       <h1 className="title">My Profile</h1>
 
-      {/* The Unified Card */}
       <div className="profile-details">
-        {/* LEFT SECTION: User Info + Password */}
+        {/* LEFT SECTION: User Info + Change Password */}
         <div className="profile-left-section">
           <CgProfile className="profile-picture" />
 
-          {/* PROFILE INFO FORM */}
-          <form className="user-info" onSubmit={handleSave}>
+          <div className="user-info">
             <div className="detail-group">
               <span className="detail-label">Name</span>
               {editMode ? (
@@ -154,7 +203,107 @@ function Profile() {
               )}
             </div>
 
-            {status && <p className="profile-status">{status}</p>}
+            {/* CHANGE PASSWORD TOGGLE + FIELDS */}
+            {editMode && (
+              <div className="change-password-block">
+                {!changingPassword ? (
+                  <button
+                    type="button"
+                    className="link-btn"
+                    onClick={() => setChangingPassword(true)}
+                  >
+                    Change password
+                  </button>
+                ) : (
+                  <>
+                    <div className="detail-group">
+                      <span className="detail-label">Current Password</span>
+                      <input
+                        className="profile-input"
+                        type="password"
+                        value={currentPassword}
+                        onChange={(e) => setCurrentPassword(e.target.value)}
+                        placeholder="Enter current password"
+                      />
+                    </div>
+
+                    <div className="detail-group">
+                      <span className="detail-label">New Password</span>
+                      <input
+                        className="profile-input"
+                        type="password"
+                        value={newPassword}
+                        onChange={(e) => {
+                          setNewPassword(e.target.value);
+                          checkPasswordStrength(e.target.value);
+                        }}
+                        placeholder="Enter new password"
+                      />
+                    </div>
+
+                    {/* strength meter */}
+                    {newPassword && (
+                      <div className="password-strength-container">
+                        <div
+                          className={`strength-bar ${
+                            passwordStrength ? passwordStrength.toLowerCase() : ""
+                          }`}
+                        ></div>
+                        <span className="strength-label">
+                          {passwordStrength || " "}
+                        </span>
+                      </div>
+                    )}
+
+                    <div className="detail-group">
+                      <span className="detail-label">Confirm New Password</span>
+                      <input
+                        className="profile-input"
+                        type="password"
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        placeholder="Re-enter new password"
+                      />
+                    </div>
+
+                    {/* rules list */}
+                    <ul className="password-rules">
+                      <li className={rules.length ? "valid" : "invalid"}>
+                        {rules.length ? "✔" : "✖"} At least 8 characters
+                      </li>
+                      <li className={rules.uppercase ? "valid" : "invalid"}>
+                        {rules.uppercase ? "✔" : "✖"} Contains uppercase letter
+                      </li>
+                      <li className={rules.lowercase ? "valid" : "invalid"}>
+                        {rules.lowercase ? "✔" : "✖"} Contains lowercase letter
+                      </li>
+                      <li className={rules.number ? "valid" : "invalid"}>
+                        {rules.number ? "✔" : "✖"} Contains a number
+                      </li>
+                      <li className={rules.symbol ? "valid" : "invalid"}>
+                        {rules.symbol ? "✔" : "✖"} Contains a symbol
+                      </li>
+                    </ul>
+
+                    <div className="change-password-actions">
+                      <button
+                        type="button"
+                        className="small-cancel-btn"
+                        onClick={resetPasswordFields}
+                      >
+                        Cancel password change
+                      </button>
+                    </div>
+
+                    {pwError && <p className="password-status">{pwError}</p>}
+                  </>
+                )}
+              </div>
+            )}
+
+            {status && !editMode && (
+              <p className="profile-status">{status}</p>
+            )}
 
             <div className="profile-actions">
               <div className="profile-actions-buttons">
@@ -184,67 +333,18 @@ function Profile() {
                     >
                       Cancel
                     </button>
-                    <button type="submit" className="save-btn" disabled={saving}>
-                      Save
+                    <button
+                      type="button"
+                      className="save-btn"
+                      disabled={saving}
+                      onClick={handleSave}
+                    >
+                      {saving ? "Saving..." : "Save"}
                     </button>
                   </>
                 )}
               </div>
             </div>
-          </form>
-
-          {/* CHANGE PASSWORD SECTION */}
-          <div className="password-section">
-            <h2 className="password-title">Change Password</h2>
-
-            <form className="password-form" onSubmit={handleChangePassword}>
-              <div className="detail-group">
-                <span className="detail-label">Current Password</span>
-                <input
-                  className="profile-input"
-                  type="password"
-                  value={currentPassword}
-                  onChange={(e) => setCurrentPassword(e.target.value)}
-                  placeholder="Enter current password"
-                />
-              </div>
-
-              <div className="detail-group">
-                <span className="detail-label">New Password</span>
-                <input
-                  className="profile-input"
-                  type="password"
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  placeholder="Enter new password"
-                />
-              </div>
-
-              <div className="detail-group">
-                <span className="detail-label">Confirm New Password</span>
-                <input
-                  className="profile-input"
-                  type="password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  placeholder="Re-enter new password"
-                />
-              </div>
-
-              {pwStatus && (
-                <p className="password-status">
-                  {pwStatus}
-                </p>
-              )}
-
-              <button
-                type="submit"
-                className="save-btn"
-                disabled={pwLoading}
-              >
-                {pwLoading ? "Updating..." : "Update Password"}
-              </button>
-            </form>
           </div>
         </div>
 

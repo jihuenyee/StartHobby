@@ -4,7 +4,12 @@ import { onAuthStateChanged } from "firebase/auth";
 
 const AuthContext = createContext();
 
+
 const API_BASE_URL = "https://start-hobby-master.vercel.app/api";
+
+// use this for local development
+//const API_BASE_URL = "http://localhost:5000/api";
+
 
 async function apiRequest(path, options = {}) {
   const token = localStorage.getItem("token");
@@ -34,7 +39,8 @@ async function apiRequest(path, options = {}) {
   console.log("[API] Response:", res.status, data);
 
   if (!res.ok) {
-    const message = data?.error || data?.message || `Request failed with status ${res.status}`;
+    const message =
+      data?.error || data?.message || `Request failed with status ${res.status}`;
     throw new Error(message);
   }
 
@@ -47,18 +53,17 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
-      // Check for backend user first
       const storedUser = localStorage.getItem("user");
 
       if (storedUser) {
-        // Option A: User logged in via Email/Password (Backend)
+        // Backend email/password user
         try {
           setUser(JSON.parse(storedUser));
         } catch {
           localStorage.removeItem("user");
         }
       } else if (firebaseUser) {
-        // Option B: User logged in via Google (Firebase) 
+        // Google user (Firebase)
         setUser({
           user_id: firebaseUser.uid,
           username: firebaseUser.displayName,
@@ -66,7 +71,6 @@ export function AuthProvider({ children }) {
           isGoogle: true,
         });
       } else {
-        // Option C: Not logged in
         setUser(null);
       }
 
@@ -86,8 +90,9 @@ export function AuthProvider({ children }) {
 
     const userData = {
       user_id: data.user_id,
-      username: data.username,
-      email: data.email,
+      // just in case backend doesn't send username for some reason
+      username: data.username ?? data.email ?? email,
+      email: data.email ?? email,
     };
 
     localStorage.setItem("user", JSON.stringify(userData));
@@ -104,8 +109,9 @@ export function AuthProvider({ children }) {
 
     const userData = {
       user_id: data.user_id,
-      username: data.username,
-      email: data.email,
+      // ✅ use the values we already have, fallback to backend if it sends them
+      username: data.username ?? username,
+      email: data.email ?? email,
     };
 
     localStorage.setItem("user", JSON.stringify(userData));
@@ -113,7 +119,6 @@ export function AuthProvider({ children }) {
   };
 
   const updateProfile = async ({ username, email }) => {
-    // We use the state 'user' here to support both Google and Backend users
     const currentUser = user;
 
     if (!currentUser) {
@@ -147,9 +152,10 @@ export function AuthProvider({ children }) {
       throw new Error("No logged in user.");
     }
 
-    // If this is a Google login user, we don't handle password here
     if (user.isGoogle) {
-      throw new Error("You signed in with Google. Please manage your password via your Google Account.");
+      throw new Error(
+        "You signed in with Google. Please manage your password via your Google Account."
+      );
     }
 
     const data = await apiRequest("/auth/change-password", {
@@ -181,7 +187,7 @@ export function AuthProvider({ children }) {
         signup,
         logout,
         updateProfile,
-        changePassword,        // 👈 expose here
+        changePassword,
         isAuthenticated: !!user,
       }}
     >

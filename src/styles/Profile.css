@@ -182,3 +182,30 @@
     padding: 30px 20px;
   }
 }
+
+.password-section {
+  margin-top: 2rem;
+  border-top: 1px solid #eee;
+  padding-top: 1.5rem;
+}
+
+.password-title {
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+.password-form .detail-group {
+  margin-bottom: 0.9rem;
+}
+
+.password-status {
+  margin: 0.5rem 0;
+  font-size: 0.9rem;
+  color: #c0392b; /* or green if you want success style later */
+}
+
+.profile-status {
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+}

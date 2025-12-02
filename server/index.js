@@ -14,6 +14,10 @@ const notificationRoutes = require("./routes/notificationRoutes");
 const followRoutes = require("./routes/followRoutes");
 const authRoutes = require("./routes/authRoutes");
 const app = express();
+<<<<<<< HEAD
+const cors = require("cors");
+=======
+>>>>>>> 4c005d743bab26eb59270e5ddb58b3218c9610ae
 
 app.use(cors({
   origin: "*",

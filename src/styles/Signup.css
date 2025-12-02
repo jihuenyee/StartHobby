@@ -226,3 +226,23 @@
   padding: 0;
 }
 
+.signup-sub a {
+  text-decoration: none;
+  color: #4a64a8;
+  position: relative;
+}
+
+
+.signup-sub a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 0%;
+  height: 2px;
+  background-color: #4a64a8;
+}
+
+.signup-sub a:hover::after {
+  width: 100%;
+}

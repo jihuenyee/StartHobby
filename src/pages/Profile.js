@@ -7,14 +7,21 @@ import MembershipSummary from "../components/MembershipSummary";
 import "../styles/Profile.css";
 
 function Profile() {
-  const { user, logout, updateProfile } = useAuth();
+  const { user, logout, updateProfile, changePassword } = useAuth();
 
   const [editMode, setEditMode] = useState(false);
   const [username, setUsername] = useState(user?.username || "");
   const [email, setEmail] = useState(user?.email || "");
   const [saving, setSaving] = useState(false);
   const [status, setStatus] = useState("");
-  const [isModalOpen, setIsModalOpen] = useState(false); 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // 🔐 Password change states
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [pwStatus, setPwStatus] = useState("");
+  const [pwLoading, setPwLoading] = useState(false);
 
   if (!user) {
     return (
@@ -71,17 +78,53 @@ function Profile() {
     }
   };
 
-   return (
+  const handleChangePassword = async (e) => {
+    e.preventDefault();
+    setPwStatus("");
+
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      setPwStatus("Please fill in all password fields.");
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      setPwStatus("New password and confirmation do not match.");
+      return;
+    }
+
+    if (newPassword.length < 6) {
+      setPwStatus("New password should be at least 6 characters.");
+      return;
+    }
+
+    try {
+      setPwLoading(true);
+      await changePassword(currentPassword, newPassword);
+      setPwStatus("Password updated successfully.");
+
+      // Clear fields
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+    } catch (err) {
+      console.error(err);
+      setPwStatus(err.message || "Failed to update password.");
+    } finally {
+      setPwLoading(false);
+    }
+  };
+
+  return (
     <div className="profile-page">
       <h1 className="title">My Profile</h1>
 
       {/* The Unified Card */}
       <div className="profile-details">
-        
-        {/* LEFT SECTION: User Info */}
+        {/* LEFT SECTION: User Info + Password */}
         <div className="profile-left-section">
           <CgProfile className="profile-picture" />
 
+          {/* PROFILE INFO FORM */}
           <form className="user-info" onSubmit={handleSave}>
             <div className="detail-group">
               <span className="detail-label">Name</span>
@@ -111,20 +154,34 @@ function Profile() {
               )}
             </div>
 
+            {status && <p className="profile-status">{status}</p>}
+
             <div className="profile-actions">
               <div className="profile-actions-buttons">
                 {!editMode ? (
                   <>
-                    <button type="button" className="logout-btn" onClick={confirmLogout}>
+                    <button
+                      type="button"
+                      className="logout-btn"
+                      onClick={confirmLogout}
+                    >
                       Log out
                     </button>
-                    <button type="button" className="edit-btn" onClick={() => setEditMode(true)}>
+                    <button
+                      type="button"
+                      className="edit-btn"
+                      onClick={handleEdit}
+                    >
                       Edit profile
                     </button>
                   </>
                 ) : (
                   <>
-                    <button type="button" className="cancel-btn" onClick={() => setEditMode(false)}>
+                    <button
+                      type="button"
+                      className="cancel-btn"
+                      onClick={handleCancel}
+                    >
                       Cancel
                     </button>
                     <button type="submit" className="save-btn" disabled={saving}>
@@ -135,19 +192,72 @@ function Profile() {
               </div>
             </div>
           </form>
+
+          {/* CHANGE PASSWORD SECTION */}
+          <div className="password-section">
+            <h2 className="password-title">Change Password</h2>
+
+            <form className="password-form" onSubmit={handleChangePassword}>
+              <div className="detail-group">
+                <span className="detail-label">Current Password</span>
+                <input
+                  className="profile-input"
+                  type="password"
+                  value={currentPassword}
+                  onChange={(e) => setCurrentPassword(e.target.value)}
+                  placeholder="Enter current password"
+                />
+              </div>
+
+              <div className="detail-group">
+                <span className="detail-label">New Password</span>
+                <input
+                  className="profile-input"
+                  type="password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  placeholder="Enter new password"
+                />
+              </div>
+
+              <div className="detail-group">
+                <span className="detail-label">Confirm New Password</span>
+                <input
+                  className="profile-input"
+                  type="password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  placeholder="Re-enter new password"
+                />
+              </div>
+
+              {pwStatus && (
+                <p className="password-status">
+                  {pwStatus}
+                </p>
+              )}
+
+              <button
+                type="submit"
+                className="save-btn"
+                disabled={pwLoading}
+              >
+                {pwLoading ? "Updating..." : "Update Password"}
+              </button>
+            </form>
+          </div>
         </div>
 
         {/* RIGHT SECTION: Membership */}
         <div className="profile-right-section">
           <MembershipSummary />
         </div>
-
       </div>
 
       {isModalOpen && (
         <ConfirmModal
           title="Confirm Logout"
-          onConfirm={async () => { await logout(); setIsModalOpen(false); }}
+          onConfirm={handleLogout}
           onCancel={() => setIsModalOpen(false)}
         >
           <p>Are you sure you want to log out?</p>

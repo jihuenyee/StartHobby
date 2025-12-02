@@ -1,5 +1,4 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-
 import { auth } from "../firebaseConfig";
 import { onAuthStateChanged } from "firebase/auth";
 
@@ -35,7 +34,7 @@ async function apiRequest(path, options = {}) {
   console.log("[API] Response:", res.status, data);
 
   if (!res.ok) {
-    const message = data?.message || `Request failed with status ${res.status}`;
+    const message = data?.error || data?.message || `Request failed with status ${res.status}`;
     throw new Error(message);
   }
 
@@ -64,14 +63,14 @@ export function AuthProvider({ children }) {
           user_id: firebaseUser.uid,
           username: firebaseUser.displayName,
           email: firebaseUser.email,
-          isGoogle: true
+          isGoogle: true,
         });
       } else {
         // Option C: Not logged in
         setUser(null);
       }
 
-      setLoading(false); 
+      setLoading(false);
     });
 
     return () => unsubscribe();
@@ -115,7 +114,7 @@ export function AuthProvider({ children }) {
 
   const updateProfile = async ({ username, email }) => {
     // We use the state 'user' here to support both Google and Backend users
-    const currentUser = user; 
+    const currentUser = user;
 
     if (!currentUser) {
       throw new Error("No logged in user");
@@ -142,8 +141,32 @@ export function AuthProvider({ children }) {
     return data;
   };
 
+  // 🔐 CHANGE PASSWORD (backend email/password users only)
+  const changePassword = async (currentPassword, newPassword) => {
+    if (!user) {
+      throw new Error("No logged in user.");
+    }
+
+    // If this is a Google login user, we don't handle password here
+    if (user.isGoogle) {
+      throw new Error("You signed in with Google. Please manage your password via your Google Account.");
+    }
+
+    const data = await apiRequest("/auth/change-password", {
+      method: "POST",
+      body: {
+        email: user.email,
+        currentPassword,
+        newPassword,
+      },
+    });
+
+    console.log("[Auth] Change password response:", data);
+    return data;
+  };
+
   const logout = () => {
-    auth.signOut(); 
+    auth.signOut();
     localStorage.removeItem("user");
     localStorage.removeItem("token");
     setUser(null);
@@ -158,6 +181,7 @@ export function AuthProvider({ children }) {
         signup,
         logout,
         updateProfile,
+        changePassword,        // 👈 expose here
         isAuthenticated: !!user,
       }}
     >

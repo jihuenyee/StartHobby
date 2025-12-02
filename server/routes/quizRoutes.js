@@ -2,15 +2,13 @@
 const express = require("express");
 const db = require("../db");
 const router = express.Router();
-const {
-  GoogleGenerativeAI,
-} = require("@google-generative-ai/client");
+const { GoogleGenerativeAI } = require("@google-generative-ai/client");
 
-const client = new GoogleGenerativeAI({
-  apiKey: process.env.GEMINI_API_KEY,
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY, {
+  apiVersion: "v1",
 });
 
-const geminiModel = client.getGenerativeModel({
+const geminiModel = genAI.getGenerativeModel({
   model: "gemini-1.5-flash",
 });
 

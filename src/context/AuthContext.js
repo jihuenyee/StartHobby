@@ -4,7 +4,7 @@ import { onAuthStateChanged } from "firebase/auth";
 
 const AuthContext = createContext();
 
-const API_BASE_URL = "https://backend-ftis.vercel.app/api";
+const API_BASE_URL = "https://start-hobby-master.vercel.app/api";
 
 async function apiRequest(path, options = {}) {
   const token = localStorage.getItem("token");

@@ -2,10 +2,15 @@
 const express = require("express");
 const db = require("../db");
 const router = express.Router();
-const { GoogleGenerativeAI } = require("@google/generative-ai");
+const { GoogleGenerativeAI } = require("@google-generative-ai/client");
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-const geminiModel = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY, {
+  apiVersion: "v1",
+});
+
+const geminiModel = genAI.getGenerativeModel({
+  model: "gemini-1.5-flash-latest",
+});
 
 function query(sql, params = []) {
   return new Promise((resolve, reject) => {

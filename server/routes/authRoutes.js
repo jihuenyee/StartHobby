@@ -59,4 +59,48 @@ router.post("/login", (req, res) => {
   });
 });
 
+// ➤ CHANGE PASSWORD (no hashing)
+router.post("/change-password", (req, res) => {
+  const { email, currentPassword, newPassword } = req.body;
+
+  if (!email || !currentPassword || !newPassword) {
+    return res.status(400).json({ error: "Missing fields" });
+  }
+
+  // 1. Check current password
+  const checkSql = `
+    SELECT user_id FROM users
+    WHERE email = ? AND password = ?
+  `;
+
+  db.query(checkSql, [email, currentPassword], (err, rows) => {
+    if (err) {
+      console.error("Change password check error:", err);
+      return res.status(500).json({ error: "DB error" });
+    }
+
+    if (rows.length === 0) {
+      return res.status(400).json({ error: "Current password is incorrect." });
+    }
+
+    const userId = rows[0].user_id;
+
+    // 2. Update password
+    const updateSql = `
+      UPDATE users
+      SET password = ?
+      WHERE user_id = ?
+    `;
+
+    db.query(updateSql, [newPassword, userId], (err2) => {
+      if (err2) {
+        console.error("Change password update error:", err2);
+        return res.status(500).json({ error: "Failed to update password." });
+      }
+
+      res.json({ success: true, message: "Password updated successfully." });
+    });
+  });
+});
+
 module.exports = router;

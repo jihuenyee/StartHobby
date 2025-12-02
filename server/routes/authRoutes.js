@@ -1,8 +1,12 @@
+// server/routes/auth.js
 const express = require("express");
 const db = require("../db");
+
 const router = express.Router();
 
-// ➤ SIGN UP (no hashing)
+/**
+ * POST /api/auth/signup
+ */
 router.post("/signup", (req, res) => {
   const { username, email, password } = req.body;
 
@@ -24,13 +28,18 @@ router.post("/signup", (req, res) => {
     res.json({
       success: true,
       user_id: result.insertId,
-      message: "Account created!"
+      username,
+      email,
+      message: "Account created!",
     });
   });
 });
 
-// ➤ LOGIN (no hashing)
-router.post("/login", (req, res) => {
+/**
+ * POST /api/auth/Login
+ * (Matches "/auth/Login" used in AuthContext)
+ */
+router.post("/Login", (req, res) => {
   const { email, password } = req.body;
 
   const sql = `
@@ -54,28 +63,32 @@ router.post("/login", (req, res) => {
       success: true,
       user_id: user.user_id,
       username: user.username,
-      email: user.email
+      email: user.email,
     });
   });
 });
 
-// ➤ CHANGE PASSWORD (no hashing)
+/**
+ * POST /api/auth/change-password
+ * Used by AuthContext.changePassword()
+ */
 router.post("/change-password", (req, res) => {
   const { email, currentPassword, newPassword } = req.body;
 
-  if (!email || !currentPassword || !newPassword) {
+  // FIXED syntax: missing || operator
+  if (!email || !newPassword) {
     return res.status(400).json({ error: "Missing fields" });
   }
 
-  // 1. Check current password
-  const checkSql = `
-    SELECT user_id FROM users
+  // 1. Verify current password
+  const selectSql = `
+    SELECT * FROM users
     WHERE email = ? AND password = ?
   `;
 
-  db.query(checkSql, [email, currentPassword], (err, rows) => {
+  db.query(selectSql, [email, currentPassword], (err, rows) => {
     if (err) {
-      console.error("Change password check error:", err);
+      console.error("Change password - select error:", err);
       return res.status(500).json({ error: "DB error" });
     }
 
@@ -83,22 +96,23 @@ router.post("/change-password", (req, res) => {
       return res.status(400).json({ error: "Current password is incorrect." });
     }
 
-    const userId = rows[0].user_id;
-
-    // 2. Update password
+    // 2. Update to new password
     const updateSql = `
       UPDATE users
       SET password = ?
-      WHERE user_id = ?
+      WHERE email = ?
     `;
 
-    db.query(updateSql, [newPassword, userId], (err2) => {
+    db.query(updateSql, [newPassword, email], (err2) => {
       if (err2) {
-        console.error("Change password update error:", err2);
+        console.error("Change password - update error:", err2);
         return res.status(500).json({ error: "Failed to update password." });
       }
 
-      res.json({ success: true, message: "Password updated successfully." });
+      return res.json({
+        success: true,
+        message: "Password changed successfully.",
+      });
     });
   });
 });

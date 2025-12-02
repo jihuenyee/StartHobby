@@ -2,11 +2,7 @@
 const express = require("express");
 const db = require("../db");
 const router = express.Router();
-<<<<<<< HEAD
 const { GoogleGenerativeAI } = require("@google-generative-ai/client");
-=======
-const { GoogleGenerativeAI } = require("@google/generative-ai");
->>>>>>> 4c005d743bab26eb59270e5ddb58b3218c9610ae
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY, {
   apiVersion: "v1",

@@ -1,211 +1,274 @@
-/* src/styles/Profile.css */
-
+/* Profile container layout */
 .profile-page {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  width: 100%;
-  min-height: 100vh;
-  margin-top: 2rem;
+  max-width: 1000px;
+  margin: 80px auto;
   padding: 0 20px;
-  box-sizing: border-box;
 }
 
-/* Page title */
 .title {
-  font-size: 48px; /* Slightly smaller to fit better */
-  font-weight: 700;
-  color: #3b2a1a;
-  margin-bottom: 2rem;
   text-align: center;
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 30px;
 }
 
-/* --- THE UNIFIED CARD WRAPPER --- */
+/* Card Layout */
 .profile-details {
   display: flex;
-  flex-direction: row;       /* Side-by-side layout */
-  width: 100%;
-  max-width: 950px;          /* Wider to fit both sections */
-  background-color: #ffffff;
-  border: 1px solid #e0e0e0;
-  border-radius: 24px;       /* Larger rounding for modern look */
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-  overflow: hidden;          /* Keeps content inside rounded corners */
+  gap: 30px;
+  background: #fff;
+  padding: 32px;
+  border-radius: 16px;
+  box-shadow: rgba(0, 0, 0, 0.05) 0px 10px 20px;
 }
 
-.profile-empty-container {
-  width: 100%;
-  max-width: 950px;
-  min-height: 100px; /* Gives the box height so vertical centering works */
-  background-color: #ffffff;
-  border: 1px solid #e0e0e0;
-  border-radius: 24px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-  display: flex;
-  justify-content: center; /* Horizontal center */
-  align-items: center;     /* Vertical center */
-  text-align: center;
-}
-
-.profile-empty-text {
-  font-size: 1rem;
-  font-weight: 500;
-}
-
-/* --- LEFT SIDE: USER INFO --- */
 .profile-left-section {
-  flex: 1;                   /* Takes up 1 part of space */
-  padding: 40px;
+  width: 60%;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  border-right: 1px solid #f0f0f0; /* Divider line */
-  min-width: 300px;
 }
 
-/* Avatar */
+.profile-right-section {
+  width: 40%;
+}
+
+/* Profile Icon */
 .profile-picture {
-  font-size: 6rem;           /* If using Icon */
-  width: 100px;              /* If using Image */
-  height: 100px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 4px solid #f0f0f0;
-  color: #3b2a1a;
+  font-size: 80px;
+  align-self: center;
   margin-bottom: 20px;
+  color: #666;
 }
 
-/* User Info Text Area */
-.user-info {
-  width: 100%;
-  display: flex;
-  flex-direction: column;    /* Stack labels and inputs vertically */
-  gap: 15px;
-  margin-bottom: 30px;
-  text-align: center;
-}
-
+/* Input & Display fields */
 .detail-group {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  margin-bottom: 18px;
 }
 
 .detail-label {
-  font-size: 0.85rem;
-  text-transform: uppercase;
-  color: #888;
-  font-weight: 700;
-  letter-spacing: 0.5px;
+  font-size: 14px;
+  color: #777;
+  margin-bottom: 6px;
 }
 
 .detail-value {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: #333;
+  font-size: 18px;
+  font-weight: 500;
+  color: #222;
 }
 
-/* Input styling */
 .profile-input {
-  width: 100%;
-  padding: 10px 12px;
-  border-radius: 8px;
-  border: 1px solid #d4d4d4;
-  font-size: 1rem;
-  box-sizing: border-box;
+  padding: 10px 14px;
+  font-size: 16px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  transition: 0.2s;
 }
+
 .profile-input:focus {
+  border-color: #6c63ff;
   outline: none;
-  border-color: #f4a259;
-  box-shadow: 0 0 0 3px rgba(244, 162, 89, 0.2);
+  box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.2);
 }
 
-/* Buttons Container */
-.profile-actions {
-  margin-top: auto;          /* Pushes buttons to bottom */
-  width: 100%;
-}
-
+/* Buttons Row */
 .profile-actions-buttons {
   display: flex;
-  gap: 12px;
-  justify-content: center;
-  width: 100%;
+  justify-content: space-between;
+  margin-top: 20px;
 }
 
-/* Pill Shaped Buttons (From Sketch) */
 .logout-btn,
 .edit-btn,
 .cancel-btn,
-.save-btn {
-  padding: 10px 24px;
-  border-radius: 50px;       /* Pill shape */
-  border: none;
+.save-btn,
+.small-cancel-btn {
+  padding: 10px 20px;
+  border-radius: 10px;
   font-size: 15px;
-  font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: 0.2s;
+  font-weight: 500;
 }
 
-/* Your original colors */
-.logout-btn { background-color: #ffb432; color: white; }
-.logout-btn:hover { background-color: #f08a11; transform: translateY(-2px); }
-
-.edit-btn { background-color: #d9e1eb; color: #000; }
-.edit-btn:hover { background-color: #c7d2e2; transform: translateY(-2px); }
-
-.cancel-btn { background-color: #e5e7eb; color: #374151; }
-.save-btn { background-color: #4caf50; color: white; }
-
-/* --- RIGHT SIDE: MEMBERSHIP --- */
-.profile-right-section {
-  flex: 1.4;                 /* Takes up slightly more space than left */
-  padding: 40px;
-  background-color: #fff;    /* Or a very light gray #fafafa if preferred */
-  display: flex;
-  align-items: center;       /* Centers the card vertically */
-  justify-content: center;
+/* Button styles */
+.logout-btn {
+  background: #f44336;
+  color: white;
+  border: none;
 }
 
-/* --- MOBILE RESPONSIVENESS --- */
-@media (max-width: 800px) {
-  .profile-details {
-    flex-direction: column; /* Stack vertically on phones */
-  }
-  .profile-left-section {
-    border-right: none;
-    border-bottom: 1px solid #f0f0f0;
-    padding: 30px 20px;
-  }
-  .profile-right-section {
-    padding: 30px 20px;
-  }
+.logout-btn:hover {
+  background: #d32f2f;
 }
 
-.password-section {
-  margin-top: 2rem;
-  border-top: 1px solid #eee;
-  padding-top: 1.5rem;
+.edit-btn {
+  background: #6c63ff;
+  border: none;
+  color: white;
 }
 
-.password-title {
-  font-size: 1.1rem;
-  margin-bottom: 1rem;
-  font-weight: 600;
+.edit-btn:hover {
+  background: #5a54e6;
 }
 
-.password-form .detail-group {
-  margin-bottom: 0.9rem;
+.cancel-btn {
+  background: transparent;
+  color: #333;
+  border: 1px solid #ccc;
+}
+
+.cancel-btn:hover {
+  background: #eee;
+}
+
+.save-btn {
+  background: #28a745;
+  color: white;
+  border: none;
+}
+
+.save-btn:hover {
+  background: #218838;
+}
+
+.save-btn:disabled {
+  background: #aab8c2;
+  cursor: not-allowed;
+}
+
+/* Change password link appearance */
+.link-btn {
+  background: none;
+  border: none;
+  color: #6c63ff;
+  cursor: pointer;
+  padding: 0;
+  margin-top: 10px;
+  font-size: 15px;
+  text-decoration: underline;
+}
+
+.link-btn:hover {
+  opacity: 0.7;
+}
+
+/* Password section styling */
+.change-password-block {
+  margin-top: 18px;
+  background: #fafafa;
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px solid #e4e4e4;
+}
+
+.change-password-actions {
+  margin-top: 10px;
+}
+
+.small-cancel-btn {
+  background: transparent;
+  border: none;
+  color: #999;
+  font-size: 14px;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.small-cancel-btn:hover {
+  color: #666;
+}
+
+/* Message styles */
+.profile-status {
+  margin-top: 12px;
+  color: #28a745;
+  font-size: 15px;
+  text-align: center;
 }
 
 .password-status {
-  margin: 0.5rem 0;
-  font-size: 0.9rem;
-  color: #c0392b; /* or green if you want success style later */
+  margin-top: 12px;
+  color: #e80000;
+  font-size: 14px;
+  font-weight: 500;
 }
 
-.profile-status {
-  margin-top: 0.5rem;
-  font-size: 0.9rem;
+.password-hint {
+  font-size: 14px;
+  color: #888;
+  margin-top: 6px;
+  font-style: italic;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 850px) {
+  .profile-details {
+    flex-direction: column;
+  }
+
+  .profile-left-section,
+  .profile-right-section {
+    width: 100%;
+  }
+}
+
+.password-rules {
+  margin-top: 10px;
+  font-size: 14px;
+  padding-left: 20px;
+}
+
+.password-rules li {
+  margin-bottom: 4px;
+  list-style: none;
+}
+
+.valid {
+  color: #28a745;
+  font-weight: 600;
+}
+
+.invalid {
+  color: #d32f2f;
+  font-weight: 500;
+}
+
+/* Strength meter */
+.password-strength-container {
+  display: flex;
+  align-items: center;
+  margin-top: 6px;
+  gap: 10px;
+}
+
+.strength-bar {
+  width: 110px;
+  height: 8px;
+  border-radius: 6px;
+  background: #ccc;
+  transition: all 0.3s ease;
+}
+
+.strength-bar.weak {
+  background: #d32f2f;
+  width: 40px;
+}
+
+.strength-bar.medium {
+  background: #f6c034;
+  width: 75px;
+}
+
+.strength-bar.strong {
+  background: #28a745;
+  width: 110px;
+}
+
+.strength-label {
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: capitalize;
 }

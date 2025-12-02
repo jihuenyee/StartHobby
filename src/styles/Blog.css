@@ -14,8 +14,8 @@
 
 .blog-hero {
   width: 100%;
-  background: linear-gradient(135deg, #8ed1dc 0%, #85C4D3 100%);
-  padding: 4rem 2rem;
+  background: #fafaf9;
+  padding: 4rem 2rem 2rem 2rem;
   text-align: center;
   display: flex;
   flex-direction: column;
@@ -23,17 +23,16 @@
   justify-content: center;
 }
 
-.blog-hero-title {
-  font-size: 3.5rem;
+.title {
+  text-align: center;
+  font-size: 60px;
   font-weight: 700;
-  color: white;
-  margin: 0 0 0.5rem 0;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 30px;
 }
 
 .blog-hero-subtitle {
   font-size: 1.3rem;
-  color: rgba(255, 255, 255, 0.95);
+  color: #4a3928;
   margin: 0;
   max-width: 500px;
 }
@@ -43,7 +42,7 @@
 .blog-categories {
   width: 100%;
   padding: 2rem;
-  background-color: white;
+  background-color: #F7ECE4;
   border-bottom: 1px solid #e5e7eb;
   display: flex;
   justify-content: center;
@@ -255,7 +254,7 @@
 .featured-section {
   width: 100%;
   max-width: 1200px;
-  padding: 4rem 2rem;
+  padding: 0rem 2rem 4rem 2rem;
   margin: 0 auto;
   text-align: center;
 }
@@ -343,7 +342,7 @@
 
 .newsletter-section {
   width: 100%;
-  background: linear-gradient(135deg, #F7ECE4 0%, #f5e6d3 100%);
+  background: #F7ECE4;
   padding: 3rem 2rem;
   text-align: center;
   margin-top: 2rem;

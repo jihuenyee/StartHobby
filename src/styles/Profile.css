@@ -1,7 +1,7 @@
 /* Profile container layout */
 .profile-page {
   max-width: 1000px;
-  margin: 80px auto;
+  margin: 40px auto;
   padding: 0 20px;
 }
 
@@ -20,16 +20,31 @@
   padding: 32px;
   border-radius: 16px;
   box-shadow: rgba(0, 0, 0, 0.05) 0px 10px 20px;
+  overflow: hidden; 
+  align-items: flex-start; 
 }
 
 .profile-left-section {
-  width: 60%;
+  flex: 1; 
   display: flex;
   flex-direction: column;
+  align-items: center;
+  min-width: 280px; 
 }
 
 .profile-right-section {
-  width: 40%;
+  flex: 1.2; 
+  min-width: 0; 
+}
+
+.roadmap-section {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid #e2e8f0;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+  /* Ensure margin doesn't push it out of parent */
+  margin-bottom: 0; 
 }
 
 /* Profile Icon */
@@ -45,6 +60,16 @@
   display: flex;
   flex-direction: column;
   margin-bottom: 18px;
+  max-width: fit-content;
+}
+
+.user-info{
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  justify-content: center;
+  align-items: center;
+  max-width: fit-content;
 }
 
 .detail-label {
@@ -76,7 +101,8 @@
 /* Buttons Row */
 .profile-actions-buttons {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
+  gap: 15px;
   margin-top: 20px;
 }
 

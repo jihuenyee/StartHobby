@@ -1,11 +1,10 @@
 // src/api.js
-const API_BASE_URL = "https://backend-c8sn.vercel.app";
+const API_BASE_URL = "https://start-hobby-master.vercel.app/api";
 
 export async function apiRequest(path, options = {}) {
   const token = localStorage.getItem("token");
 
   const res = await fetch(`${API_BASE_URL}${path}`, {
-    // default method = GET if not provided
     method: options.method || "GET",
     headers: {
       "Content-Type": "application/json",
@@ -15,7 +14,6 @@ export async function apiRequest(path, options = {}) {
     body: options.body ? JSON.stringify(options.body) : undefined,
   });
 
-  // handle non-200 errors
   if (!res.ok) {
     let message = "Request failed";
     try {
@@ -25,7 +23,6 @@ export async function apiRequest(path, options = {}) {
     throw new Error(message);
   }
 
-  // if there is no JSON (e.g. 204), just return null
   try {
     return await res.json();
   } catch {

@@ -125,7 +125,7 @@ function Navbar() {
               </Link>
             </>
           ) : (
-            <Link to="/signup" className="profile-link">
+            <Link to="/login" className="profile-link">
               <CgProfile size={20} />
               <span>Login</span>
             </Link>

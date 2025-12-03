@@ -36,7 +36,7 @@ export default function MembershipSummary() {
   const handleSimulate = (delta) => setAnnualPoints((p) => Math.max(0, p + delta));
 
   return (
-    <div className="roadmap-section" style={{ width: '100%' }}>
+    <div className="roadmap-section" style={{ width: '100%', maxWidth: '100%', boxSizing: 'border-box', margin: 0 }}>
       {/* Header of the Card */}
       <div className="roadmap-header">
         <div className="current-tier-display">

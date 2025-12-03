@@ -7,80 +7,70 @@ function Blog() {
   const blogPosts = [
     {
       id: 1,
-      category: "fitness",
-      title: "5 Beginner-Friendly Workouts to Start Your Fitness Journey",
-      excerpt: "Discover easy exercises you can do at home to kickstart your fitness goals...",
-      image: "/hiking.jpg",
-      date: "Dec 1, 2024",
-      readTime: "5 min read",
-      author: "Sarah Chen",
-      content: "Whether you're new to fitness or getting back into it after a break, starting with the right exercises makes all the difference..."
+      category: "corporate",
+      title: "Driven by Inventive Ideas: A Story of Colin Lam...",
+      excerpt: "Wholeheartedly embracing creativity and actively putting it into practice can unlock pathwa...",
+      image: "/article1.png",
+      date: "Oct 27, 2023",
+      readTime: "4 min read",
+      author: "Phoebe Yen",
     },
     {
       id: 2,
-      category: "music",
-      title: "How to Choose the Right Musical Instrument for You",
-      excerpt: "A comprehensive guide to finding the perfect instrument that matches your style...",
-      image: "/guitar.jpg",
-      date: "Nov 28, 2024",
-      readTime: "7 min read",
-      author: "Marcus Lee",
-      content: "With so many instruments available, it can be overwhelming to choose one. Let's break it down..."
+      category: "growth",
+      title: "How Hobbies Can Boost Your Personal Value and Why...",
+      excerpt: "In the journey of self-discovery and professional advancement, the concept of \"identity capita...",
+      image: "/article2.png",
+      date: "Sep 13, 2023",
+      readTime: "2 min read",
+      author: "Phoebe Yen",
     },
     {
       id: 3,
-      category: "outdoor",
-      title: "Best Hiking Trails for Nature Lovers in Your Area",
-      excerpt: "Explore stunning trails suitable for all skill levels with breathtaking views...",
-      image: "/beachvolleyball.jpg",
-      date: "Nov 25, 2024",
-      readTime: "6 min read",
-      author: "Emily Park",
-      content: "Nature has a way of rejuvenating our spirits. Here are the best local hiking trails..."
+      category: "growth",
+      title: "Embarking on A Remarkable Journey of Self-Discovery With...",
+      excerpt: "Whether it's the thrill of mastering a new skill, the excitement of exploring uncharted territor...",
+      image: "/article3.png",
+      date: "Aug 6, 2023",
+      readTime: "3 min read",
+      author: "Phoebe Yen",
     },
     {
       id: 4,
-      category: "art",
-      title: "Digital Art Basics: Creating Your First Digital Masterpiece",
-      excerpt: "Learn the fundamentals of digital art and what tools you need to get started...",
-      image: "/table-tennis.jpg",
-      date: "Nov 22, 2024",
-      readTime: "8 min read",
-      author: "Jessica Wong",
-      content: "Digital art is more accessible than ever. Here's how to start your creative journey..."
+      category: "corporate",
+      title: "The Silent Challenge of Quiet-Quitting and the Power of...",
+      excerpt: "In the bustling world of corporate environments, there's a hidden issue that often goes...",
+      image: "/article4.png",
+      date: "Jul 25, 2023",
+      readTime: "2 min read",
+      author: "Phoebe Yen",
     },
     {
       id: 5,
-      category: "sports",
-      title: "Mastering Table Tennis: Tips from Professional Players",
-      excerpt: "Improve your game with expert techniques and training strategies...",
-      image: "/bouldering.jpg",
-      date: "Nov 20, 2024",
-      readTime: "6 min read",
-      author: "David Tan",
-      content: "Table tennis isn't just about hitting the ball. Here are professional techniques..."
+      category: "growth",
+      title: "Beyond Work and Home: The Significance of Third...",
+      excerpt: "Rediscover the magic of 'third places' for stronger communities. Explore how hobbies...",
+      image: "/article5.png",
+      date: "Jul 18, 2023",
+      readTime: "2 min read",
+      author: "Phoebe Yen",
     },
     {
       id: 6,
-      category: "adventure",
-      title: "Indoor Rock Climbing: A Thrilling Way to Build Strength",
-      excerpt: "Discover the benefits of bouldering and how to safely climb indoors...",
-      image: "/Hike.jpg",
+      category: "growth",
+      title: "From Crags to Confidence: How Indoor Climbing Shapes...",
+      excerpt: "Indoor bouldering blends physical training, mental focus, and social connection...",
+      image: "/bouldering.jpg",
       date: "Nov 18, 2024",
       readTime: "7 min read",
       author: "Alex Rodriguez",
-      content: "Bouldering combines strength, problem-solving, and adventure in one amazing activity..."
     }
   ];
 
   const categories = [
     { id: "all", label: "All Articles", icon: "📚" },
-    { id: "fitness", label: "Fitness", icon: "💪" },
-    { id: "music", label: "Music", icon: "🎵" },
-    { id: "outdoor", label: "Outdoor", icon: "🏕️" },
-    { id: "art", label: "Art", icon: "🎨" },
-    { id: "sports", label: "Sports", icon: "⚽" },
-    { id: "adventure", label: "Adventure", icon: "🧗" }
+    { id: "growth", label: "Growth", icon: "🌱" },
+    { id: "corporate", label: "Corporate", icon: "💼" },
   ];
 
   const filteredPosts = selectedCategory === "all" 
@@ -91,7 +81,7 @@ function Blog() {
     <div className="blog-page">
       {/* Hero Section */}
       <div className="blog-hero">
-        <h1 className="blog-hero-title">Hobby Insights & Stories</h1>
+        <h1 className="title">Hobby Insights & Stories</h1>
         <p className="blog-hero-subtitle">Discover tips, tricks, and inspiring stories from our community</p>
       </div>
 

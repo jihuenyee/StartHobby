@@ -6,7 +6,7 @@
   align-items: center;
   width: 100%;
   min-height: 100vh;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  background: #fafaf9;
   padding-top: 0;
 }
 
@@ -14,7 +14,7 @@
 
 .daily-note-hero {
   width: 100%;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #F7ECE4;
   padding: 3.5rem 2rem;
   text-align: center;
   display: flex;
@@ -23,18 +23,16 @@
   justify-content: center;
 }
 
-.daily-note-title {
+.title {
   text-align: center;
-  font-size: 3rem;
-  font-weight: 800;
-  color: white;
-  margin-bottom: 0.8rem;
-  letter-spacing: -0.5px;
+  font-size: 60px;
+  font-weight: 700;
+  margin-bottom: 30px;
 }
 
 .daily-note-subtitle {
   font-size: 1.1rem;
-  color: rgba(255, 255, 255, 0.9);
+  color: #4a3928;
   margin: 0 0 1.5rem 0;
   max-width: 600px;
   font-weight: 500;

@@ -27,7 +27,7 @@
 }
 
 .membership-wallet {
-  background: rgba(255, 255, 255, 0.7);
+  background: #8ed1dc;
   backdrop-filter: blur(4px);
   padding: 0.75rem 1rem;
   border-radius: 1rem;

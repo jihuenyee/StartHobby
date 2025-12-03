@@ -124,7 +124,7 @@ function DailyNote() {
     <div className="daily-note-page">
       {/* ====== HERO SECTION ====== */}
       <div className="daily-note-hero">
-        <h1 className="daily-note-title">My Notes</h1>
+        <h1 className="title">My Notes</h1>
         <p className="daily-note-subtitle">
           Write, reflect, and keep track of your daily thoughts
         </p>

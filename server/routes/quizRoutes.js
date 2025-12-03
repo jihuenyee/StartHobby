@@ -27,28 +27,90 @@ function query(sql, params = []) {
   });
 }
 
-// ========== ANSWER-SAVE HELPER ==========
-const MAX_QUESTIONS_COLS = 10; // how many QnN / Ans_QnN columns exist in quiz_user_answers
+/* ==================================================
+   DYNAMIC ANSWER-SAVE HELPERS (quiz_user_answers)
+   ================================================== */
 
+/**
+ * Find the largest question number that already exists
+ * based on QnX columns in quiz_user_answers.
+ * e.g. if you have Qn1, Qn2, Qn3 => returns 3
+ */
+async function getExistingQuestionColumnCount() {
+  const sql = `
+    SELECT COLUMN_NAME
+    FROM INFORMATION_SCHEMA.COLUMNS
+    WHERE TABLE_SCHEMA = DATABASE()
+      AND TABLE_NAME = 'quiz_user_answers'
+      AND COLUMN_NAME LIKE 'Qn%'
+  `;
+  const rows = await query(sql);
+
+  let maxQn = 0;
+  rows.forEach((r) => {
+    const name = r.COLUMN_NAME;
+    const match = name.match(/^Qn(\d+)$/);
+    if (match) {
+      const num = parseInt(match[1], 10);
+      if (!isNaN(num)) maxQn = Math.max(maxQn, num);
+    }
+  });
+
+  return maxQn;
+}
+
+/**
+ * Ensure the table has QnX / Ans_QnX columns
+ * for up to requiredCount questions.
+ */
+async function ensureQuestionColumns(requiredCount) {
+  const currentMax = await getExistingQuestionColumnCount();
+
+  if (requiredCount <= currentMax) return;
+
+  console.log(
+    `[quiz_user_answers] Adding columns for questions ${currentMax + 1} to ${requiredCount}`
+  );
+
+  for (let i = currentMax + 1; i <= requiredCount; i++) {
+    const sql = `
+      ALTER TABLE quiz_user_answers
+      ADD COLUMN Qn${i} TEXT NULL,
+      ADD COLUMN Ans_Qn${i} TEXT NULL
+    `;
+    console.log(`[quiz_user_answers] ALTER TABLE add Qn${i}, Ans_Qn${i}`);
+    await query(sql);
+  }
+}
+
+/**
+ * Save one row into quiz_user_answers, with
+ * Qn1/Ans_Qn1, Qn2/Ans_Qn2, ... based on qaPairs length.
+ */
 async function saveAnswersRow(quizId, userId, qaPairs) {
-  // only save if we know which user (you can relax this if you want)
-  if (!userId) return;
+  if (!userId) return; // only save if we know the user
+  if (!Array.isArray(qaPairs) || qaPairs.length === 0) return;
 
+  const requiredQuestions = qaPairs.length;
+
+  // 1) Make sure the table schema has enough columns
+  await ensureQuestionColumns(requiredQuestions);
+
+  // 2) Build INSERT dynamically
   const cols = ["user_id", "quiz_id"];
   const placeholders = ["?", "?"];
   const values = [userId, quizId];
 
-  const count = Math.min(qaPairs.length, MAX_QUESTIONS_COLS);
-
-  for (let i = 0; i < count; i++) {
-    const qCol = `Qn${i + 1}`;
-    const aCol = `Ans_Qn${i + 1}`;
+  qaPairs.forEach((pair, index) => {
+    const qNum = index + 1;
+    const qCol = `Qn${qNum}`;
+    const aCol = `Ans_Qn${qNum}`;
 
     cols.push(qCol, aCol);
     placeholders.push("?", "?");
 
-    values.push(qaPairs[i].question, qaPairs[i].answer);
-  }
+    values.push(pair.question, pair.answer);
+  });
 
   const sql = `
     INSERT INTO quiz_user_answers (${cols.join(", ")})
@@ -58,10 +120,10 @@ async function saveAnswersRow(quizId, userId, qaPairs) {
   await query(sql, values);
 }
 
-// ==================================================
-//   ADMIN: LIST ALL QUIZZES
-//   GET /api/quizzes
-// ==================================================
+/* ==================================================
+   ADMIN: LIST ALL QUIZZES
+   GET /api/quizzes
+   ================================================== */
 router.get("/", async (req, res) => {
   const sql = `
     SELECT quiz_id, title, description
@@ -78,10 +140,10 @@ router.get("/", async (req, res) => {
   }
 });
 
-// ==================================================
-//   GET QUIZ + QUESTIONS + OPTIONS
-//   GET /api/quizzes/:quizId
-// ==================================================
+/* ==================================================
+   GET QUIZ + QUESTIONS + OPTIONS
+   GET /api/quizzes/:quizId
+   ================================================== */
 router.get("/:quizId", async (req, res) => {
   const quizId = req.params.quizId;
 
@@ -132,11 +194,11 @@ router.get("/:quizId", async (req, res) => {
   }
 });
 
-// ==================================================
-//   ADMIN: UPDATE QUESTION TEXT
-//   PUT /api/quizzes/questions/:questionId
-//   body: { question_text }
-// ==================================================
+/* ==================================================
+   ADMIN: UPDATE QUESTION TEXT
+   PUT /api/quizzes/questions/:questionId
+   body: { question_text }
+   ================================================== */
 router.put("/questions/:questionId", async (req, res) => {
   const { questionId } = req.params;
   const { question_text } = req.body;
@@ -163,11 +225,11 @@ router.put("/questions/:questionId", async (req, res) => {
   }
 });
 
-// ==================================================
-//   ADMIN: UPDATE OPTION TEXT
-//   PUT /api/quizzes/options/:optionId
-//   body: { option_text }
-// ==================================================
+/* ==================================================
+   ADMIN: UPDATE OPTION TEXT
+   PUT /api/quizzes/options/:optionId
+   body: { option_text }
+   ================================================== */
 router.put("/options/:optionId", async (req, res) => {
   const { optionId } = req.params;
   const { option_text } = req.body;
@@ -194,10 +256,10 @@ router.put("/options/:optionId", async (req, res) => {
   }
 });
 
-// ==================================================
-//   ADMIN: DELETE QUESTION (+ options)
-//   DELETE /api/quizzes/questions/:questionId
-// ==================================================
+/* ==================================================
+   ADMIN: DELETE QUESTION (+ options)
+   DELETE /api/quizzes/questions/:questionId
+   ================================================== */
 router.delete("/questions/:questionId", async (req, res) => {
   const { questionId } = req.params;
 
@@ -219,11 +281,11 @@ router.delete("/questions/:questionId", async (req, res) => {
   }
 });
 
-// ==================================================
-//   ADMIN: ADD NEW QUESTION + OPTIONS
-//   POST /api/quizzes/:quizId/questions
-//   body: { question_text, options: [ "opt1", "opt2", ... ] }
-// ==================================================
+/* ==================================================
+   ADMIN: ADD NEW QUESTION + OPTIONS
+   POST /api/quizzes/:quizId/questions
+   body: { question_text, options: [ "opt1", "opt2", ... ] }
+   ================================================== */
 router.post("/:quizId/questions", async (req, res) => {
   const { quizId } = req.params;
   const { question_text, options } = req.body;
@@ -270,9 +332,9 @@ router.post("/:quizId/questions", async (req, res) => {
   }
 });
 
-// ==================================================
-//   HELPER: CALL GEMINI (HTTP v1) WITH FALLBACK MODELS
-// ==================================================
+/* ==================================================
+   HELPER: CALL GEMINI (HTTP v1) WITH FALLBACK MODELS
+   ================================================== */
 async function callGeminiForQuiz(qaPairs) {
   const modelCandidates = [
     GEMINI_MODEL,
@@ -401,10 +463,10 @@ Return ONLY valid JSON (no markdown, no extra comments) exactly in this format:
   throw lastError || new Error("All Gemini models failed");
 }
 
-// ==================================================
-//   AI EVALUATION ROUTE
-//   POST /api/quizzes/:quizId/evaluate
-// ==================================================
+/* ==================================================
+   AI EVALUATION ROUTE
+   POST /api/quizzes/:quizId/evaluate
+   ================================================== */
 router.post("/:quizId/evaluate", async (req, res) => {
   const quizId = req.params.quizId;
   const { user_id, answers } = req.body;
@@ -467,10 +529,10 @@ router.post("/:quizId/evaluate", async (req, res) => {
   }
 });
 
-// ==================================================
-//   SAVE AI RESULT TO DB
-//   POST /api/quizzes/save-result
-// ==================================================
+/* ==================================================
+   SAVE AI RESULT TO DB
+   POST /api/quizzes/save-result
+   ================================================== */
 router.post("/save-result", async (req, res) => {
   const {
     user_id,

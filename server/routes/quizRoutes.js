@@ -2,18 +2,22 @@
 const express = require("express");
 const db = require("../db");
 const router = express.Router();
-const { GoogleGenerativeAI } = require("@google/generative-ai");
 
-// ---- Gemini setup ----
-const client = new GoogleGenerativeAI({
-  apiKey: process.env.GEMINI_API_KEY,
-});
+// ========== GEMINI CONFIG (HTTP, NO SDK) ==========
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY;
 
-const geminiModel = client.getGenerativeModel({
-  model: "gemini-1.5-flash",
-});
+// Optional: override in .env if you know the exact ID from AI Studio
+// e.g. GEMINI_MODEL=gemini-2.5-pro
+const GEMINI_MODEL = process.env.GEMINI_MODEL || "gemini-2.5-pro";
 
-// ---- Helper: promise-based query ----
+if (!GEMINI_API_KEY) {
+  console.error("[Gemini] Missing GEMINI_API_KEY / GOOGLE_API_KEY env var!");
+}
+
+// Node 18+ has global fetch. If you're on Node 16, install node-fetch and uncomment:
+// const fetch = (...args) => import("node-fetch").then(({ default: fetch }) => fetch(...args));
+
+// ========== DB HELPER ==========
 function query(sql, params = []) {
   return new Promise((resolve, reject) => {
     db.query(sql, params, (err, rows) => {
@@ -23,10 +27,41 @@ function query(sql, params = []) {
   });
 }
 
-/* =========================================
-   ADMIN: LIST ALL QUIZZES
-   GET /api/quizzes
-   ========================================= */
+// ========== ANSWER-SAVE HELPER ==========
+const MAX_QUESTIONS_COLS = 10; // how many QnN / Ans_QnN columns exist in quiz_user_answers
+
+async function saveAnswersRow(quizId, userId, qaPairs) {
+  // only save if we know which user (you can relax this if you want)
+  if (!userId) return;
+
+  const cols = ["user_id", "quiz_id"];
+  const placeholders = ["?", "?"];
+  const values = [userId, quizId];
+
+  const count = Math.min(qaPairs.length, MAX_QUESTIONS_COLS);
+
+  for (let i = 0; i < count; i++) {
+    const qCol = `Qn${i + 1}`;
+    const aCol = `Ans_Qn${i + 1}`;
+
+    cols.push(qCol, aCol);
+    placeholders.push("?", "?");
+
+    values.push(qaPairs[i].question, qaPairs[i].answer);
+  }
+
+  const sql = `
+    INSERT INTO quiz_user_answers (${cols.join(", ")})
+    VALUES (${placeholders.join(", ")})
+  `;
+
+  await query(sql, values);
+}
+
+// ==================================================
+//   ADMIN: LIST ALL QUIZZES
+//   GET /api/quizzes
+// ==================================================
 router.get("/", async (req, res) => {
   const sql = `
     SELECT quiz_id, title, description
@@ -43,10 +78,10 @@ router.get("/", async (req, res) => {
   }
 });
 
-/* =========================================
-   GET QUIZ + QUESTIONS + OPTIONS
-   GET /api/quizzes/:quizId
-   ========================================= */
+// ==================================================
+//   GET QUIZ + QUESTIONS + OPTIONS
+//   GET /api/quizzes/:quizId
+// ==================================================
 router.get("/:quizId", async (req, res) => {
   const quizId = req.params.quizId;
 
@@ -92,16 +127,16 @@ router.get("/:quizId", async (req, res) => {
 
     res.json(quiz);
   } catch (err) {
-    console.error(err);
+    console.error("Get quiz error:", err);
     res.status(500).json({ error: "DB error" });
   }
 });
 
-/* =========================================
-   ADMIN: UPDATE QUESTION TEXT
-   PUT /api/quizzes/questions/:questionId
-   body: { question_text }
-   ========================================= */
+// ==================================================
+//   ADMIN: UPDATE QUESTION TEXT
+//   PUT /api/quizzes/questions/:questionId
+//   body: { question_text }
+// ==================================================
 router.put("/questions/:questionId", async (req, res) => {
   const { questionId } = req.params;
   const { question_text } = req.body;
@@ -128,11 +163,11 @@ router.put("/questions/:questionId", async (req, res) => {
   }
 });
 
-/* =========================================
-   ADMIN: UPDATE OPTION TEXT
-   PUT /api/quizzes/options/:optionId
-   body: { option_text }
-   ========================================= */
+// ==================================================
+//   ADMIN: UPDATE OPTION TEXT
+//   PUT /api/quizzes/options/:optionId
+//   body: { option_text }
+// ==================================================
 router.put("/options/:optionId", async (req, res) => {
   const { optionId } = req.params;
   const { option_text } = req.body;
@@ -159,10 +194,10 @@ router.put("/options/:optionId", async (req, res) => {
   }
 });
 
-/* =========================================
-   ADMIN: DELETE QUESTION (+ options)
-   DELETE /api/quizzes/questions/:questionId
-   ========================================= */
+// ==================================================
+//   ADMIN: DELETE QUESTION (+ options)
+//   DELETE /api/quizzes/questions/:questionId
+// ==================================================
 router.delete("/questions/:questionId", async (req, res) => {
   const { questionId } = req.params;
 
@@ -184,11 +219,11 @@ router.delete("/questions/:questionId", async (req, res) => {
   }
 });
 
-/* =========================================
-   ADMIN: ADD NEW QUESTION + OPTIONS
-   POST /api/quizzes/:quizId/questions
-   body: { question_text, options: [ "opt1", "opt2", ... ] }
-   ========================================= */
+// ==================================================
+//   ADMIN: ADD NEW QUESTION + OPTIONS
+//   POST /api/quizzes/:quizId/questions
+//   body: { question_text, options: [ "opt1", "opt2", ... ] }
+// ==================================================
 router.post("/:quizId/questions", async (req, res) => {
   const { quizId } = req.params;
   const { question_text, options } = req.body;
@@ -203,7 +238,6 @@ router.post("/:quizId/questions", async (req, res) => {
   }
 
   try {
-    // 1) insert question
     const insertQuestionSql = `
       INSERT INTO quizquestions (quiz_id, question_text)
       VALUES (?, ?)
@@ -211,7 +245,6 @@ router.post("/:quizId/questions", async (req, res) => {
     const qResult = await query(insertQuestionSql, [quizId, question_text]);
     const newQuestionId = qResult.insertId;
 
-    // 2) insert options
     const insertedOptions = [];
     const insertOptionSql = `
       INSERT INTO questionoption (question_id, option_text)
@@ -226,7 +259,6 @@ router.post("/:quizId/questions", async (req, res) => {
       });
     }
 
-    // Return new question in same shape as GET /:quizId
     res.json({
       question_id: newQuestionId,
       question_text,
@@ -238,16 +270,151 @@ router.post("/:quizId/questions", async (req, res) => {
   }
 });
 
-/* =========================================
-   AI Evaluation Route
-   POST /api/quizzes/:quizId/evaluate
-   ========================================= */
+// ==================================================
+//   HELPER: CALL GEMINI (HTTP v1) WITH FALLBACK MODELS
+// ==================================================
+async function callGeminiForQuiz(qaPairs) {
+  const modelCandidates = [
+    GEMINI_MODEL,
+    "gemini-2.5-pro",
+    "gemini-2.0-flash",
+    "gemini-1.5-flash",
+    "gemini-1.0-pro",
+  ].filter((m, i, arr) => m && arr.indexOf(m) === i); // dedupe / remove falsy
+
+  const prompt = `
+You are a helpful personality and hobby-matching assistant.
+
+Based on the following question/answer pairs, infer:
+- a short personality type name,
+- a 2–3 sentence summary,
+- 3–6 key strengths,
+- and several hobby suggestions with reasons.
+
+Question and answer pairs:
+
+${JSON.stringify(qaPairs, null, 2)}
+
+Return ONLY valid JSON (no markdown, no extra comments) exactly in this format:
+
+{
+  "personality_type": "A short personality type name",
+  "personality_summary": "A 2-3 sentence summary of the personality.",
+  "strengths": ["strength1", "strength2", "strength3"],
+  "suggested_hobbies": [
+    { "hobby": "hobby name", "reason": "why this hobby fits them" }
+  ]
+}
+`;
+
+  let lastError;
+
+  for (const model of modelCandidates) {
+    try {
+      const url = `https://generativelanguage.googleapis.com/v1/models/${model}:generateContent?key=${GEMINI_API_KEY}`;
+
+      const body = {
+        contents: [
+          {
+            role: "user",
+            parts: [{ text: prompt }],
+          },
+        ],
+      };
+
+      const resp = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+
+      const data = await resp.json();
+
+      if (!resp.ok) {
+        const msg = data.error?.message || JSON.stringify(data);
+        console.error(`Gemini HTTP error for model ${model}:`, resp.status, msg);
+
+        if (resp.status === 404) {
+          lastError = new Error(`Model ${model} not available: ${msg}`);
+          continue;
+        }
+
+        throw new Error(`Gemini error ${resp.status}: ${msg}`);
+      }
+
+      const rawText =
+        data.candidates?.[0]?.content?.parts
+          ?.map((p) => p.text || "")
+          .join("")
+          .trim() || "";
+
+      if (!rawText) {
+        console.error("Gemini empty response for model", model, data);
+        throw new Error("Empty response from Gemini");
+      }
+
+      let cleaned = rawText;
+      if (cleaned.startsWith("```")) {
+        cleaned = cleaned.replace(/```json|```/g, "").trim();
+      }
+
+      let aiJson;
+      try {
+        aiJson = JSON.parse(cleaned);
+      } catch (err) {
+        console.error(
+          "JSON parse error from Gemini for model",
+          model,
+          "raw:",
+          cleaned
+        );
+        throw new Error("Failed to parse Gemini JSON output");
+      }
+
+      aiJson.personality_type =
+        aiJson.personality_type || "Unique Explorer";
+      aiJson.personality_summary =
+        aiJson.personality_summary ||
+        "You have a unique mix of curiosity, creativity, and practicality.";
+      aiJson.strengths = Array.isArray(aiJson.strengths)
+        ? aiJson.strengths
+        : ["Curiosity", "Creativity", "Adaptability"];
+      aiJson.suggested_hobbies = Array.isArray(aiJson.suggested_hobbies)
+        ? aiJson.suggested_hobbies
+        : [
+            {
+              hobby: "Reading",
+              reason: "It matches your curiosity and desire to learn.",
+            },
+          ];
+
+      aiJson.generated_at = new Date().toISOString();
+
+      console.log("[Gemini] Using model:", model);
+      return aiJson;
+    } catch (err) {
+      console.error(`Gemini call failed for model ${model}:`, err.message);
+      lastError = err;
+    }
+  }
+
+  throw lastError || new Error("All Gemini models failed");
+}
+
+// ==================================================
+//   AI EVALUATION ROUTE
+//   POST /api/quizzes/:quizId/evaluate
+// ==================================================
 router.post("/:quizId/evaluate", async (req, res) => {
   const quizId = req.params.quizId;
   const { user_id, answers } = req.body;
 
-  if (!answers || !Array.isArray(answers)) {
+  if (!Array.isArray(answers) || answers.length === 0) {
     return res.status(400).json({ error: "Invalid answers" });
+  }
+
+  if (!GEMINI_API_KEY) {
+    return res.status(500).json({ error: "Gemini API key not configured" });
   }
 
   try {
@@ -281,33 +448,10 @@ router.post("/:quizId/evaluate", async (req, res) => {
       return res.status(400).json({ error: "No valid answers found" });
     }
 
-    const prompt = `
-Analyze this quiz result and provide hobby recommendations:
+    // 💾 Save raw question + answer mapping into quiz_user_answers
+    await saveAnswersRow(quizId, user_id, qaPairs);
 
-${JSON.stringify(qaPairs, null, 2)}
-
-Return ONLY valid JSON (no markdown, no extra text):
-
-{
-  "personality_type": "A personality type name",
-  "personality_summary": "A 2-3 sentence summary of the personality",
-  "strengths": ["strength1", "strength2", "strength3"],
-  "suggested_hobbies": [
-    {"hobby": "hobby name", "reason": "why this hobby fits them"}
-  ],
-  "generated_at": "$(new Date().toISOString())"
-}
-`;
-
-    const response = await geminiModel.generateContent(prompt);
-    let text = response.response.text().trim();
-
-    // Remove ```json fences if Gemini returns markdown
-    if (text.startsWith("```")) {
-      text = text.replace(/```json|```/g, "").trim();
-    }
-
-    const aiJson = JSON.parse(text);
+    const aiJson = await callGeminiForQuiz(qaPairs);
 
     res.json({
       success: true,
@@ -315,15 +459,18 @@ Return ONLY valid JSON (no markdown, no extra text):
       source: "gemini",
     });
   } catch (err) {
-    console.error("AI ERROR:", err);
-    res.status(500).json({ error: "AI failed", details: err.message });
+    console.error("AI ERROR (evaluate):", err);
+    res.status(500).json({
+      error: "AI failed",
+      details: err.message || String(err),
+    });
   }
 });
 
-/* =========================================
-   Save AI Result to DB
-   POST /api/quizzes/save-result
-   ========================================= */
+// ==================================================
+//   SAVE AI RESULT TO DB
+//   POST /api/quizzes/save-result
+// ==================================================
 router.post("/save-result", async (req, res) => {
   const {
     user_id,
@@ -347,9 +494,9 @@ router.post("/save-result", async (req, res) => {
       user_id,
       personality_type,
       personality_summary,
-      JSON.stringify(strengths),
-      JSON.stringify(suggested_hobbies),
-      JSON.stringify(reasons),
+      JSON.stringify(strengths || []),
+      JSON.stringify(suggested_hobbies || []),
+      JSON.stringify(reasons || []),
     ]);
     res.json({ success: true });
   } catch (err) {

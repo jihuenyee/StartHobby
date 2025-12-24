@@ -70,7 +70,6 @@ function Navbar() {
             <span className="dropbtn">Explore ▾</span>
             <div className="dropdown-content">
               <Link to="/blog">Blog</Link>
-              <Link to="/daily-note">Daily Note</Link>
             </div>
           </li>
           <li><Link to="/corporate">For Corporate</Link></li>

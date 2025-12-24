@@ -13,6 +13,7 @@ const bookmarkRoutes = require("./routes/bookmarkRoutes");
 const notificationRoutes = require("./routes/notificationRoutes");
 const followRoutes = require("./routes/followRoutes");
 const authRoutes = require("./routes/authRoutes");
+const hobbyGameRoutes = require("./routes/hobbyGameRoutes");
 const app = express();
 
 app.use(cors({
@@ -24,6 +25,7 @@ app.use(express.json());
 
 app.use("/api/quizzes", quizRoutes);
 app.use("/api/posts", postRoutes);
+app.use("/api/hobby-game", hobbyGameRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/comments", commentRoutes);
 app.use("/api/likes", likeRoutes);

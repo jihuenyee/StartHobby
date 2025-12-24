@@ -127,6 +127,7 @@
 
 /* ---------------- BUTTONS ---------------- */
 .quiz-retake-button,
+.quiz-next-activity-button,
 .quiz-save-button,
 .quiz-share-button {
   margin-top: 15px;
@@ -150,6 +151,16 @@
 .quiz-retake-button:hover {
   transform: translateY(-3px);
   box-shadow: 0 8px 18px rgba(255, 64, 96, .3);
+}
+
+.quiz-next-activity-button {
+  background: linear-gradient(135deg, #43e97b, #38f9d7);
+  color: white;
+}
+
+.quiz-next-activity-button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 18px rgba(67, 233, 123, .3);
 }
 
 .quiz-save-button {

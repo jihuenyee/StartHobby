@@ -1,0 +1,653 @@
+/* ============================================
+   HobbyGame - Dreamy Floating Bubble Theme
+   ============================================ */
+
+.hobby-game-page {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0;
+  background: linear-gradient(
+    135deg,
+    #0d001a 0%,
+    #1a0033 15%,
+    #2d0a4e 30%,
+    #5a1e7a 50%,
+    #4a3a7a 60%,
+    #1a4d6d 75%,
+    #0a3a52 100%
+  );
+  background-size: 400% 400%;
+  background-attachment: fixed;
+  animation: dreamy-gradient 25s ease infinite;
+  overflow: hidden;
+  box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.5);
+}
+
+@keyframes glow-pulse {
+  0% { filter: drop-shadow(0 0 20px rgba(255, 107, 157, 0.5)); }
+  50% { filter: drop-shadow(0 0 40px rgba(192, 108, 132, 0.8)); }
+  100% { filter: drop-shadow(0 0 20px rgba(255, 107, 157, 0.5)); }
+}
+
+@keyframes dreamy-gradient {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* ============================================
+   Floating Dreamy Background
+   ============================================ */
+
+.floating-bg {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.float-circle {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.06;
+  filter: blur(40px);
+  animation: float infinite ease-in-out;
+}
+
+.float-circle.c1 {
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, #ff6b9d 0%, #ff85b3 30%, transparent 70%);
+  left: -100px;
+  top: -100px;
+  animation-duration: 18s;
+  filter: blur(50px) drop-shadow(0 0 30px rgba(255, 107, 157, 0.4));
+}
+
+.float-circle.c2 {
+  width: 350px;
+  height: 350px;
+  background: radial-gradient(circle, #c06c84 0%, #d48ba0 30%, transparent 70%);
+  right: -80px;
+  top: 10%;
+  animation-duration: 22s;
+  filter: blur(50px) drop-shadow(0 0 25px rgba(192, 108, 132, 0.3));
+}
+
+.float-circle.c3 {
+  width: 450px;
+  height: 450px;
+  background: radial-gradient(circle, #6c5b7b 0%, #8b7a98 30%, transparent 70%);
+  left: 5%;
+  bottom: -120px;
+  animation-duration: 24s;
+  filter: blur(50px) drop-shadow(0 0 35px rgba(107, 91, 123, 0.3));
+}
+
+.float-circle.c4 {
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, #355c7d 0%, #5a7fa0 30%, transparent 70%);
+  right: 10%;
+  bottom: 15%;
+  animation-duration: 20s;
+  filter: blur(50px) drop-shadow(0 0 28px rgba(53, 92, 125, 0.25));
+}
+
+.float-circle.c5 {
+  width: 320px;
+  height: 320px;
+  background: radial-gradient(circle, #a98ba8 0%, #c4a9c4 30%, transparent 70%);
+  right: 30%;
+  top: 20%;
+  animation-duration: 26s;
+  filter: blur(50px) drop-shadow(0 0 32px rgba(169, 139, 168, 0.3));
+}
+
+@keyframes float {
+  0% { transform: translateY(0) translateX(0) scale(1); }
+  25% { transform: translateY(-50px) translateX(40px) scale(1.08); }
+  50% { transform: translateY(-20px) translateX(-30px) scale(1.02); }
+  75% { transform: translateY(30px) translateX(20px) scale(0.98); }
+  100% { transform: translateY(0) translateX(0) scale(1); }
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.8; }
+}
+
+.floating-bg::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: radial-gradient(2px 2px at 20px 30px, #eee, rgba(0,0,0,0)),
+                    radial-gradient(2px 2px at 60px 70px, #fff, rgba(0,0,0,0)),
+                    radial-gradient(1px 1px at 50px 50px, #ddd, rgba(0,0,0,0)),
+                    radial-gradient(1px 1px at 130px 80px, #fff, rgba(0,0,0,0));
+  background-size: 200px 200px;
+  background-position: 0 0;
+  animation: twinkle 3s ease-in-out infinite;
+  pointer-events: none;
+  opacity: 0.15;
+}
+
+/* ============================================
+   Main Card - Minimal & Transparent
+   ============================================ */
+
+.hobby-game-card {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 100%;
+  flex: 1;
+  padding: 0 20px;
+  text-align: center;
+  background: transparent;
+  overflow: hidden;
+}
+
+/* ============================================
+   Header - Minimal
+   ============================================ */
+
+.hg-header {
+  margin-bottom: 0;
+  display: none;
+}
+
+.hg-icon {
+  font-size: 36px;
+  display: inline-block;
+  margin-bottom: 8px;
+}
+
+.hg-title {
+  display: none;
+}
+
+.hg-tagline {
+  display: none;
+}
+
+.hg-divider {
+  display: none;
+}
+
+.hg-sub {
+  position: relative;
+  top: auto;
+  left: auto;
+  transform: none;
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0 0 8px 0;
+  font-size: 13px;
+  line-height: 1.4;
+  max-width: 500px;
+  font-weight: 400;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  z-index: 15;
+}
+
+.hg-sub strong {
+  color: rgba(255, 255, 255, 0.95);
+  font-weight: 600;
+}
+
+/* ============================================
+   Input Form - Small & Minimal Indicator
+   ============================================ */
+
+.hg-form {
+  position: relative;
+  bottom: auto;
+  left: auto;
+  transform: none;
+  display: flex;
+  justify-content: center;
+  margin: 0;
+  z-index: 20;
+  padding: 8px 16px;
+  flex-shrink: 0;
+  background: transparent;
+}
+
+.hg-input-wrapper {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+  max-width: 350px;
+}
+
+.hg-input {
+  flex: 1;
+  padding: 8px 12px;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(10px);
+  font-size: 12px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.9);
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.hg-input:focus {
+  outline: none;
+  border-color: rgba(255, 255, 255, 0.4);
+  box-shadow: 0 4px 20px rgba(255, 107, 157, 0.3), inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.hg-input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.hg-input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.hg-submit {
+  padding: 8px 16px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, rgba(255, 107, 157, 0.8), rgba(192, 108, 132, 0.8));
+  backdrop-filter: blur(10px);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 11px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.hg-submit:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(255, 107, 157, 0.4);
+  background: linear-gradient(135deg, rgba(255, 107, 157, 0.95), rgba(192, 108, 132, 0.95));
+}
+
+.hg-submit:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.hg-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ============================================
+   Feedback Message
+   ============================================ */
+
+.hg-feedback {
+  position: absolute;
+  bottom: auto;
+  left: auto;
+  transform: none;
+  padding: 8px 16px;
+  background: rgba(67, 233, 123, 0.25);
+  border-radius: 20px;
+  color: rgba(67, 233, 123, 1);
+  font-weight: 600;
+  font-size: 12px;
+  border: 1.5px solid rgba(67, 233, 123, 0.5);
+  box-shadow: 0 8px 24px rgba(67, 233, 123, 0.2),
+              inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  z-index: 19;
+  backdrop-filter: blur(10px);
+  animation: feedback-glow 2s ease-in-out;
+}
+
+@keyframes feedback-glow {
+  0% {
+    box-shadow: 0 8px 24px rgba(67, 233, 123, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  }
+  50% {
+    box-shadow: 0 8px 32px rgba(67, 233, 123, 0.35),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  }
+  100% {
+    box-shadow: 0 8px 24px rgba(67, 233, 123, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  }
+}
+
+/* ============================================
+   Bubble Container & Area - Free Spread Layout
+   ============================================ */
+
+.hg-bubble-container {
+  position: relative;
+  width: 100%;
+  flex: 1;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  min-height: 300px;
+}
+
+.hg-bubble-area {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: block;
+  padding: 8px 8px;
+  overflow: hidden;
+}
+
+.hg-empty {
+  text-align: center;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 16px;
+  z-index: 3;
+}
+
+.empty-icon {
+  font-size: 48px;
+  margin-bottom: 12px;
+  opacity: 0.5;
+}
+
+/* ============================================
+   Bubbles - DREAMY & FLOATING - FREE SPREAD
+   ============================================ */
+
+.hobby-bubble-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  transition: all 0.3s ease;
+}
+
+/* First bubble (largest) gets maximum visual impact */
+.hobby-bubble-wrapper:first-child .hobby-bubble {
+  box-shadow: 0 0 80px rgba(255, 107, 157, 0.6),
+              0 30px 100px rgba(0, 0, 0, 0.6),
+              inset 0 1px 0 rgba(255, 255, 255, 0.4),
+              0 0 120px rgba(255, 107, 157, 0.3);
+  border: 3px solid rgba(255, 255, 255, 0.35);
+  filter: brightness(1.1);
+}
+
+.hobby-bubble {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.4),
+              0 15px 50px rgba(0, 0, 0, 0.3),
+              inset 0 1px 0 rgba(255, 255, 255, 0.25),
+              0 0 60px rgba(255, 255, 255, 0.1);
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(12px);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  animation: subtle-glow 3s ease-in-out infinite;
+}
+
+@keyframes subtle-glow {
+  0%, 100% {
+    box-shadow: 0 0 40px rgba(0, 0, 0, 0.4),
+                0 15px 50px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.25),
+                0 0 60px rgba(255, 255, 255, 0.05);
+  }
+  50% {
+    box-shadow: 0 0 60px rgba(0, 0, 0, 0.3),
+                0 20px 60px rgba(0, 0, 0, 0.25),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3),
+                0 0 80px rgba(255, 255, 255, 0.15);
+  }
+}
+
+.hobby-bubble::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 35% 35%, rgba(255, 255, 255, 0.35), transparent 65%);
+  border-radius: 50%;
+  pointer-events: none;
+  animation: shine-pulse 2s ease-in-out infinite;
+}
+
+@keyframes shine-pulse {
+  0%, 100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.hobby-bubble:hover {
+  transform: scale(1.15) !important;
+  filter: drop-shadow(0 0 30px rgba(255, 255, 255, 0.3));
+}
+
+.bubble-inner {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  padding: 16px 12px;
+  box-sizing: border-box;
+}
+
+.bubble-text {
+  font-weight: 700;
+  font-size: clamp(11px, 3.5vw, 20px);
+  color: rgba(255, 255, 255, 0.98);
+  text-shadow: 0 0 10px rgba(0, 0, 0, 0.4),
+               0 2px 8px rgba(0, 0, 0, 0.2);
+  line-height: 1.3;
+  padding: 0 8px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  letter-spacing: 0.3px;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
+  max-width: 90%;
+}
+
+.bubble-count {
+  margin-top: 6px;
+  font-size: clamp(11px, 2vw, 14px);
+  font-weight: 700;
+  background: rgba(255, 255, 255, 0.18);
+  color: rgba(255, 255, 255, 0.98);
+  padding: 4px 8px;
+  border-radius: 12px;
+  backdrop-filter: blur(6px);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* ============================================
+   Stats - Minimal Floating
+   ============================================ */
+
+.hg-stats {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  z-index: 15;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.stat-label {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.stat-value {
+  font-size: 18px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.95);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* ============================================
+   Actions - Floating Button
+   ============================================ */
+
+.hg-actions {
+  position: relative;
+  bottom: auto;
+  left: auto;
+  transform: none;
+  display: flex;
+  justify-content: center;
+  z-index: 20;
+  padding: 4px 16px;
+  flex-shrink: 0;
+  background: transparent;
+}
+
+.hg-skip {
+  background: linear-gradient(135deg, rgba(67, 233, 123, 0.3), rgba(56, 249, 215, 0.3));
+  color: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(67, 233, 123, 0.4);
+  padding: 6px 12px;
+  border-radius: 16px;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 11px;
+  box-shadow: 0 4px 16px rgba(67, 233, 123, 0.15);
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  backdrop-filter: blur(10px);
+}
+
+.hg-skip:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(67, 233, 123, 0.3);
+}
+
+.hg-skip:active {
+  transform: translateY(0);
+}
+
+.arrow {
+  display: inline-block;
+}
+
+/* ============================================
+   Responsive Design
+   ============================================ */
+
+@media (max-width: 768px) {
+  .hobby-game-page {
+    padding: 0;
+  }
+
+  .hg-sub {
+    font-size: 14px;
+    top: 16px;
+  }
+
+  .hg-bubble-area {
+    padding: 16px 16px;
+  }
+
+  .hg-stats {
+    top: 8px;
+    right: 8px;
+    gap: 12px;
+    padding: 6px 10px;
+  }
+
+  .stat-label {
+    font-size: 9px;
+  }
+
+  .stat-value {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .hg-sub {
+    font-size: 13px;
+    top: 12px;
+  }
+
+  .hg-input-wrapper {
+    max-width: 300px;
+  }
+
+  .hg-input {
+    font-size: 11px;
+    padding: 6px 10px;
+  }
+
+  .hg-submit {
+    font-size: 10px;
+    padding: 6px 12px;
+  }
+
+  .hg-bubble-area {
+    padding: 12px 8px;
+  }
+
+  .hg-stats {
+    gap: 10px;
+    padding: 5px 8px;
+  }
+
+  .stat-value {
+    font-size: 14px;
+  }
+
+  .hg-skip {
+    font-size: 11px;
+    padding: 6px 12px;
+  }
+}

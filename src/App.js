@@ -5,11 +5,11 @@ import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
 import Twister from "./pages/Twister";
 import Blog from "./pages/Blog";
-import DailyNote from "./pages/DailyNote";
 import Corporate from "./pages/Corporate";
 import HobbyProviders from "./pages/HobbyProviders";
 import Shop from "./pages/Shop";
 import Quiz from "./pages/Quiz";
+import HobbyGame from "./pages/HobbyGame";
 import LoginPage from "./pages/Login";
 import SignupPage from "./pages/Signup";
 import SignUpEmail from "./pages/SignUpEmail";
@@ -33,10 +33,10 @@ const App = () => {
           <Route path="/" element={<Home />} />
           <Route path="/twister" element={<Twister />} />
           <Route path="/blog" element={<Blog />} />
-          <Route path="/daily-note" element={<DailyNote />} />
           <Route path="/corporate" element={<Corporate />} />
           <Route path="/hobby-providers" element={<HobbyProviders />} />
           <Route path="/shop" element={<Shop />} />
+          <Route path="/hobby-game" element={<HobbyGame />} />
           <Route path="/quiz" element={<Quiz />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />

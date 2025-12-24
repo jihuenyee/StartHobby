@@ -1,5 +1,6 @@
 // src/pages/Quiz.js
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Confetti from "react-confetti";
 import { useWindowSize } from "react-use";
 import { motion } from "framer-motion";
@@ -23,6 +24,7 @@ function Quiz() {
   const [saveMessage, setSaveMessage] = useState("");
 
   const { width, height } = useWindowSize();
+  const navigate = useNavigate();
 
   useEffect(() => {
     async function fetchQuiz() {
@@ -39,7 +41,7 @@ function Quiz() {
       }
     }
     fetchQuiz();
-  }, []);
+  }, [navigate]);
 
   const handleAnswerClick = (question_id, option_id) => {
     const newAnswers = [...answers, { question_id, selected_option_id: option_id }];
@@ -219,6 +221,15 @@ function Quiz() {
             onClick={() => window.print()}
           >
             Share Result 📤
+          </button>
+
+          <button
+            className="quiz-next-activity-button"
+            onClick={() => {
+              navigate("/hobby-game");
+            }}
+          >
+            Continue to Hobby Activity 🎯
           </button>
 
           <button

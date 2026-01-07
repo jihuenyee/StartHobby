@@ -23,6 +23,11 @@ app.use(cors({
 }));
 app.use(express.json());
 
+// ✅ Put root route at the very top
+app.get("/", (req, res) => {
+  res.send("StartHobby API is running 🚀");
+});
+
 // API routes
 app.use("/api/quizzes", quizRoutes);
 app.use("/api/posts", postRoutes);
@@ -46,10 +51,5 @@ app.get("/test-db", (req, res) => {
   });
 });
 
-// Root route
-app.get("/", (req, res) => {
-  res.send("StartHobby API is running 🚀");
-});
-
-// ✅ Correct module export for Vercel
+// ✅ Make sure module export is correct
 module.exports = app;

@@ -2,8 +2,9 @@ const express = require("express");
 
 const app = express();
 
+// This responds to /api
 app.get("/", (req, res) => {
-  res.send("API BOOT OK");
+  res.send("SERVER API BOOT OK 🚀");
 });
 
 module.exports = app;

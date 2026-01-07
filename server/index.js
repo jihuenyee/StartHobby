@@ -1,10 +1,9 @@
-// server/index.js
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const db = require("./db");
 
-const quizRoutes = require("./routes/quizRoutes")
+const quizRoutes = require("./routes/quizRoutes");
 const postRoutes = require("./routes/postRoutes");
 const userRoutes = require("./routes/userRoutes");
 const commentRoutes = require("./routes/commentRoutes");
@@ -14,6 +13,7 @@ const notificationRoutes = require("./routes/notificationRoutes");
 const followRoutes = require("./routes/followRoutes");
 const authRoutes = require("./routes/authRoutes");
 const hobbyGameRoutes = require("./routes/hobbyGameRoutes");
+
 const app = express();
 
 app.use(cors({
@@ -23,6 +23,7 @@ app.use(cors({
 }));
 app.use(express.json());
 
+// API routes
 app.use("/api/quizzes", quizRoutes);
 app.use("/api/posts", postRoutes);
 app.use("/api/hobby-game", hobbyGameRoutes);
@@ -34,7 +35,7 @@ app.use("/api/notifications", notificationRoutes);
 app.use("/api/follows", followRoutes);
 app.use("/api/auth", authRoutes);
 
-// ✅ Put test route BEFORE app.listen()
+// Test route
 app.get("/test-db", (req, res) => {
   db.query("SELECT * FROM users LIMIT 5", (err, results) => {
     if (err) {
@@ -45,9 +46,10 @@ app.get("/test-db", (req, res) => {
   });
 });
 
+// Root route
 app.get("/", (req, res) => {
   res.send("StartHobby API is running 🚀");
-}); 
+});
 
-
-module.export = app;
+// ✅ Correct module export for Vercel
+module.exports = app;

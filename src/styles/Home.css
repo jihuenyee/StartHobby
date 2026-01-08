@@ -56,19 +56,26 @@
 }
 
 .gamebtn {
-  background-color: #9094ca;
+  background-color: #ff8c42;
   color: white;
-  border-radius: 25px;
-  padding: 0.8rem 2rem;
-  font-size: 1.1rem;
-  font-weight: 600;
+  border-radius: 50px;
+  padding: 24px 80px;
+  font-size: clamp(1.5rem, 5vw, 2.5rem);
+  font-weight: 700;
   cursor: pointer;
   transition: all 0.3s ease;
   text-decoration: none;
+  display: inline-block;
+  margin: 30px 15px;
+  box-shadow: 0 8px 25px rgba(255, 140, 66, 0.3);
+  border: none;
+  letter-spacing: 1px;
 }
 
 .gamebtn:hover {
-  background-color: #585d9d;
+  background-color: #ff7a1a;
+  transform: translateY(-3px);
+  box-shadow: 0 12px 35px rgba(255, 140, 66, 0.5);
 }
 
 /* Optional: keep spacing smaller on small screens */

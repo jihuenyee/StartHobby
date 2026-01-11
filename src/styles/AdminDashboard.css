@@ -1,0 +1,438 @@
+
+.admin-page {
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 0 16px 40px;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+}
+
+.admin-title {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #3b2a1a;
+  margin-bottom: 8px;
+}
+
+.admin-status {
+  margin: 10px 0 20px;
+  padding: 10px 14px;
+  border-radius: 999px;
+  background: #f0f9f0;
+  color: #1f7a3a;
+  font-size: 0.9rem;
+  display: inline-block;
+}
+
+/* ================================
+   Grid for cards
+================================ */
+
+.admin-grid {
+  display: grid;
+  grid-template-columns: 1.1fr 1.2fr;
+  gap: 24px;
+  margin-top: 20px;
+}
+
+@media (max-width: 960px) {
+  .admin-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ================================
+   Card container
+================================ */
+
+.admin-card {
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 20px 22px;
+  border: 1px solid #f1e2d4;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+}
+
+.admin-card h2 {
+  font-size: 1.25rem;
+  margin-bottom: 12px;
+  color: #42281b;
+}
+
+/* ================================
+   Users table
+================================ */
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.admin-table thead {
+  background: #fdf5ec;
+}
+
+.admin-table th,
+.admin-table td {
+  padding: 8px 10px;
+  text-align: left;
+  border-bottom: 1px solid #f0ece6;
+}
+
+.admin-table th {
+  font-weight: 600;
+  color: #5a4332;
+  font-size: 0.85rem;
+}
+
+.admin-table tr:nth-child(even) {
+  background: #fafafa;
+}
+
+.admin-table tr:hover {
+  background: #f5f2ff;
+}
+
+/* Optional: when table might overflow on mobile */
+@media (max-width: 768px) {
+  .admin-card table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+}
+
+/* ================================
+   Quiz questions editor
+================================ */
+
+.admin-questions {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-height: 520px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+/* scroll bar tweak (optional) */
+.admin-questions::-webkit-scrollbar {
+  width: 6px;
+}
+.admin-questions::-webkit-scrollbar-thumb {
+  background: #d4c3ff;
+  border-radius: 999px;
+}
+.admin-questions::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.admin-question-block {
+  border-radius: 14px;
+  border: 1px solid #f0e5da;
+  padding: 12px 12px 10px;
+  background: #fffaf6;
+}
+
+.admin-question-block label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #6b4a31;
+  margin-bottom: 6px;
+}
+
+/* Textarea for question text */
+.admin-question-block textarea {
+  width: 100%;
+  min-height: 70px;
+  resize: vertical;
+  border-radius: 10px;
+  border: 1px solid #ddcec0;
+  padding: 8px 10px;
+  font-size: 0.9rem;
+  font-family: inherit;
+  outline: none;
+  background: #fff;
+  transition: border 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.admin-question-block textarea:focus {
+  border-color: #6c63ff;
+  box-shadow: 0 0 0 1px rgba(108, 99, 255, 0.3);
+  background: #ffffff;
+}
+
+/* Save button */
+.admin-question-block button {
+  margin-top: 8px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: none;
+  font-size: 0.85rem;
+  cursor: pointer;
+  background: #6c63ff;
+  color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: background 0.15s ease, transform 0.1s ease,
+    box-shadow 0.1s ease;
+}
+
+.admin-question-block button:hover {
+  background: #5950f0;
+  transform: translateY(-1px);
+  box-shadow: 0 3px 8px rgba(92, 81, 255, 0.4);
+}
+
+.admin-question-block button:disabled {
+  opacity: 0.6;
+  cursor: default;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Options list below each question */
+.admin-options {
+  margin-top: 10px;
+  padding-left: 16px;
+  list-style: none;
+}
+
+.admin-options li {
+  font-size: 0.85rem;
+  color: #4f453f;
+  position: relative;
+  padding-left: 14px;
+  margin-bottom: 3px;
+}
+
+.admin-options li::before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  color: #c47a3d;
+}
+
+/* ================================
+   Small helpers
+================================ */
+
+.admin-page p {
+  font-size: 0.95rem;
+  color: #555;
+}
+
+/* ===== Admin nav list on dashboard home ===== */
+.admin-nav-list {
+  margin-top: 16px;
+  padding-left: 18px;
+}
+
+.admin-nav-list li {
+  margin-bottom: 6px;
+}
+
+.admin-nav-list a {
+  color: #6c63ff;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.admin-nav-list a:hover {
+  text-decoration: underline;
+}
+
+/* ===== Inline edit inputs in AdminUsers ===== */
+.admin-inline-input {
+  width: 100%;
+  padding: 4px 6px;
+  font-size: 0.85rem;
+  border-radius: 6px;
+  border: 1px solid #d1c3b7;
+}
+
+.admin-inline-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.admin-small-btn {
+  padding: 4px 10px;
+  font-size: 0.8rem;
+  border-radius: 999px;
+  border: none;
+  background: #eee8ff;
+  cursor: pointer;
+}
+
+.admin-small-btn:hover {
+  background: #dcd3ff;
+}
+
+/* ===== Quiz header in AdminQuiz ===== */
+.admin-quiz-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 14px;
+}
+
+.admin-quiz-description {
+  font-size: 0.9rem;
+  color: #555;
+  margin-top: 4px;
+}
+
+.admin-add-btn {
+  border-radius: 999px;
+  border: none;
+  padding: 8px 16px;
+  background: #6c63ff;
+  color: #fff;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.admin-add-btn:hover {
+  background: #5950f0;
+}
+
+/* Question header row */
+.admin-question-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.admin-question-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #8b5c3a;
+}
+
+.admin-question-text {
+  margin-top: 4px;
+  font-size: 0.95rem;
+}
+
+/* Action buttons */
+.admin-question-actions button,
+.admin-option-actions button {
+  border-radius: 999px;
+  border: none;
+  padding: 4px 10px;
+  font-size: 0.8rem;
+  margin-left: 4px;
+  cursor: pointer;
+  background: #eee8ff;
+}
+
+.admin-question-actions button:hover,
+.admin-option-actions button:hover {
+  background: #dcd3ff;
+}
+
+.admin-question-actions .danger,
+.admin-option-actions .danger {
+  background: #ffe5e5;
+  color: #b23030;
+}
+
+.admin-question-actions .danger:hover,
+.admin-option-actions .danger:hover {
+  background: #ffd1d1;
+}
+
+/* Options section header */
+.admin-options-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+  margin-bottom: 4px;
+  font-size: 0.85rem;
+  color: #5b4a3b;
+}
+
+.admin-option-text {
+  font-size: 0.85rem;
+}
+
+/* ===== Modal styling for quiz editor ===== */
+
+.admin-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+}
+
+.admin-modal {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 18px 20px 16px;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+}
+
+.admin-modal h3 {
+  margin-bottom: 10px;
+  font-size: 1.1rem;
+  color: #3f2c1b;
+}
+
+.admin-modal-textarea {
+  width: 100%;
+  min-height: 110px;
+  resize: vertical;
+  border-radius: 10px;
+  border: 1px solid #ddcec0;
+  padding: 8px 10px;
+  font-size: 0.9rem;
+  font-family: inherit;
+  outline: none;
+}
+
+.admin-modal-textarea:focus {
+  border-color: #6c63ff;
+  box-shadow: 0 0 0 1px rgba(108, 99, 255, 0.35);
+}
+
+.admin-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.admin-modal-actions button {
+  border-radius: 999px;
+  border: none;
+  padding: 6px 14px;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.admin-modal-actions button.secondary {
+  background: #f2ece6;
+}
+
+.admin-modal-actions button.secondary:hover {
+  background: #e4dacd;
+}
+
+.admin-modal-actions button:not(.secondary) {
+  background: #6c63ff;
+  color: #fff;
+}
+
+.admin-modal-actions button:not(.secondary):hover {
+  background: #5950f0;
+}

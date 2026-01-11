@@ -14,7 +14,7 @@ function Navbar() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
 
-  const { user, logout } = useAuth();
+  const { user, logout, isAdmin } = useAuth();
   const navigate = useNavigate();
   const profileRef = useRef(null);
 
@@ -39,16 +39,13 @@ function Navbar() {
   const displayName =
     user?.username || user?.displayName || user?.email || "Profile";
 
-  // click-outside to close profile menu
   useEffect(() => {
     if (!profileOpen) return;
-
     function handleClickOutside(e) {
       if (profileRef.current && !profileRef.current.contains(e.target)) {
         setProfileOpen(false);
       }
     }
-
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [profileOpen]);
@@ -56,19 +53,16 @@ function Navbar() {
   return (
     <>
       <nav className="navbar">
-        {/* Left: logo */}
         <div className="navbar-left">
           <Link to="/" className="logo-link">
             <img src="/Logos-01.png" alt="Logo" />
           </Link>
         </div>
 
-        {/* Hamburger for mobile */}
         <div className="hamburger" onClick={toggleMenu}>
           {menuOpen ? <IoClose size={28} /> : <GiHamburgerMenu size={28} />}
         </div>
 
-        {/* Center links */}
         <ul className={`navbar-links ${menuOpen ? "open" : ""}`}>
           <li><Link to="/">Home</Link></li>
           <li><Link to="/twister">Twister</Link></li>
@@ -76,50 +70,58 @@ function Navbar() {
             <span className="dropbtn">Explore ▾</span>
             <div className="dropdown-content">
               <Link to="/blog">Blog</Link>
-              <Link to="/daily-note">Daily Note</Link>
             </div>
           </li>
           <li><Link to="/corporate">For Corporate</Link></li>
           <li><Link to="/hobby-providers">Hobby Providers</Link></li>
           <li><Link to="/shop">Shop</Link></li>
+
+          {/* ⭐ ADMIN FEATURE Dropdown */}
+          {isAdmin && (
+            <li className="dropdown">
+              <span className="dropbtn">Admin ▾</span>
+              <div className="dropdown-content">
+                <Link to="/admin">Dashboard</Link>
+                <Link to="/admin/users">Manage Users</Link>
+                <Link to="/admin/quiz">Manage Quiz</Link>
+              </div>
+            </li>
+          )}
         </ul>
 
-        {/* Right: profile + cart */}
         <div className={`navbar-profile ${menuOpen ? "open" : ""}`}>
           {user ? (
             <>
-              {/* PROFILE DROPDOWN (click to open) */}
               <div className="profile-dropdown" ref={profileRef}>
-                <button
-                  type="button"
-                  className="profile-trigger"
-                  onClick={toggleProfileMenu}
-                >
+                <button className="profile-trigger" onClick={toggleProfileMenu}>
                   <CgProfile size={18} />
                   <span>{displayName}</span>
                 </button>
 
                 {profileOpen && (
                   <div className="profile-menu">
-                    <Link
-                      to="/profile"
-                      onClick={() => setProfileOpen(false)}
-                      className="profile-menu-item"
-                    >
-                      View profile
+                    <Link to="/profile" onClick={() => setProfileOpen(false)} className="profile-menu-item">
+                      View Profile
                     </Link>
-                    <button
-                      type="button"
-                      className="profile-menu-item"
-                      onClick={confirmLogout}
-                    >
+
+                    {/* ⭐ ADMIN DROPDOWN OPTION */}
+                    {isAdmin && (
+                      <Link
+                        to="/admin"
+                        onClick={() => setProfileOpen(false)}
+                        className="profile-menu-item"
+                      >
+                        Admin Panel
+                      </Link>
+                    )}
+
+                    <button type="button" className="profile-menu-item" onClick={confirmLogout}>
                       Log out
                     </button>
                   </div>
                 )}
               </div>
 
-              {/* Cart icon */}
               <Link to="/cart" className="cart-link">
                 <FaShoppingCart size={20} />
               </Link>
@@ -134,11 +136,7 @@ function Navbar() {
       </nav>
 
       {isModalOpen && (
-        <ConfirmModal
-          title="Confirm Logout"
-          onConfirm={handleLogout}
-          onCancel={() => setIsModalOpen(false)}
-        >
+        <ConfirmModal title="Confirm Logout" onConfirm={handleLogout} onCancel={() => setIsModalOpen(false)}>
           <p>Are you sure you want to log out?</p>
         </ConfirmModal>
       )}

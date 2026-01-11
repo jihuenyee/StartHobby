@@ -127,6 +127,7 @@
 
 /* ---------------- BUTTONS ---------------- */
 .quiz-retake-button,
+.quiz-next-activity-button,
 .quiz-save-button,
 .quiz-share-button {
   margin-top: 15px;
@@ -150,6 +151,16 @@
 .quiz-retake-button:hover {
   transform: translateY(-3px);
   box-shadow: 0 8px 18px rgba(255, 64, 96, .3);
+}
+
+.quiz-next-activity-button {
+  background: linear-gradient(135deg, #43e97b, #38f9d7);
+  color: white;
+}
+
+.quiz-next-activity-button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 18px rgba(67, 233, 123, .3);
 }
 
 .quiz-save-button {
@@ -277,4 +288,59 @@
   .quiz-result-title {
     font-size: 32px;
   }
+}
+
+/* ===== Save Result Modal ===== */
+.quiz-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+}
+
+.quiz-modal {
+  background: #fffdf8;
+  border-radius: 18px;
+  padding: 24px 28px;
+  max-width: 360px;
+  width: 90%;
+  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.35);
+  text-align: center;
+}
+
+.quiz-modal-icon {
+  font-size: 36px;
+  margin-bottom: 8px;
+}
+
+.quiz-modal-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.quiz-modal-message {
+  font-size: 0.95rem;
+  color: #4b5563;
+  margin-bottom: 18px;
+}
+
+.quiz-modal-button {
+  background: linear-gradient(135deg, #f97316, #fb923c);
+  color: white;
+  border: none;
+  border-radius: 999px;
+  padding: 10px 22px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.quiz-modal-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(248, 113, 113, 0.35);
 }

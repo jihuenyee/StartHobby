@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { FaCrown, FaGift, FaCheckCircle, FaInfoCircle } from "react-icons/fa";
 import "../styles/Membership.css";
 
@@ -37,8 +38,10 @@ const REWARDS = [
 ];
 
 export default function MembershipPage() {
-  // In a real app, pass this wallet data via Context or API
+  
+  // pass this wallet data via Context or API
   const [walletPoints, setWalletPoints] = useState(540);
+  const navigate = useNavigate();
 
   return (
     <div className="membership-container" style={{ padding: '20px', maxWidth: '1000px', margin: '0 auto' }}>
@@ -49,9 +52,9 @@ export default function MembershipPage() {
           <h2 className="membership-title">
             <FaCrown color="#F59E0B" size={28} /> Membership Benefits
           </h2>
-          <p style={{ color: "#64748b", fontSize: "0.9rem" }}>Level up by booking experiences.</p>
+          <p style={{ color: "#64748b", fontSize: "0.9rem" }}>Level up by booking experiences or purchasing products from the shop.</p>
         </div>
-        <div className="membership-wallet">
+        <div className="membership-wallet" onClick={() => navigate("/profile")}>
           <div className="wallet-label">Your Wallet</div>
           <div className="wallet-amount">{walletPoints.toLocaleString()} pts</div>
         </div>

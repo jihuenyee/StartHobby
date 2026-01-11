@@ -1,0 +1,542 @@
+/* ==================== DAILY NOTE PAGE STYLING ==================== */
+
+.daily-note-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  min-height: 100vh;
+  background: #fafaf9;
+  padding-top: 0;
+}
+
+/* ==================== HERO SECTION ==================== */
+
+.daily-note-hero {
+  width: 100%;
+  background: #F7ECE4;
+  padding: 3.5rem 2rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.title {
+  text-align: center;
+  font-size: 60px;
+  font-weight: 700;
+  margin-bottom: 30px;
+}
+
+.daily-note-subtitle {
+  font-size: 1.1rem;
+  color: #4a3928;
+  margin: 0 0 1.5rem 0;
+  max-width: 600px;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+}
+
+.write-note-btn {
+  background-color: white;
+  color: #667eea;
+  border: none;
+  padding: 0.7rem 1.8rem;
+  border-radius: 6px;
+  font-weight: 700;
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  letter-spacing: 0.3px;
+}
+
+.write-note-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2);
+}
+
+/* ==================== CONTROLS SECTION ==================== */
+
+.daily-note-controls {
+  width: 100%;
+  background-color: white;
+  padding: 1.5rem 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1.5rem;
+  flex-wrap: nowrap;
+  position: sticky;
+  top: 60px;
+  z-index: 99;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.search-container {
+  position: relative;
+  width: 100%;
+  max-width: 350px;
+  flex: 0 0 auto;
+}
+
+.search-input {
+  width: 100%;
+  box-sizing: border-box; 
+  padding: 0.7rem 1rem 0.7rem 2.5rem;
+  border: 1px solid #dfe6e9;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  background-color: white;
+  transition: all 0.25s ease;
+  letter-spacing: 0.2px;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.search-icon {
+  position: absolute;
+  left: 0.8rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1rem;
+  color: #90a4ae;
+  pointer-events: none;
+}
+
+.note-count {
+  font-size: 0.9rem;
+  color: #90a4ae;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  white-space: nowrap; 
+  flex-shrink: 0;
+}
+
+/* ==================== CONTAINER ==================== */
+
+.daily-note-container {
+  width: 100%;
+  max-width: 850px;
+  padding: 2.5rem 2rem;
+  margin: 0 auto;
+}
+
+/* ==================== NOTES FEED ==================== */
+
+.notes-feed {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* ==================== NOTE CARD ==================== */
+
+.note-card {
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  padding: 1.5rem;
+  border: 1px solid #f0f3f7;
+}
+
+.note-card:hover {
+  box-shadow: 0 10px 30px rgba(102, 126, 234, 0.15);
+  transform: translateY(-4px);
+}
+
+.note-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.2rem;
+  padding-bottom: 1.2rem;
+  border-bottom: 1px solid #f0f3f7;
+}
+
+.note-header-info {
+  flex: 1;
+}
+
+.note-title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #2d3436;
+  margin: 0 0 0.4rem 0;
+  line-height: 1.4;
+  letter-spacing: -0.3px;
+}
+
+.note-date {
+  font-size: 0.8rem;
+  color: #90a4ae;
+  margin: 0;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+}
+
+.note-delete-btn {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: #90a4ae;
+  transition: all 0.2s ease;
+  padding: 0.4rem;
+  border-radius: 4px;
+}
+
+.note-delete-btn:hover {
+  color: #d63031;
+  background: rgba(214, 48, 49, 0.08);
+}
+
+.note-card-content {
+  margin-bottom: 1.2rem;
+}
+
+.note-excerpt {
+  font-size: 0.95rem;
+  color: #636e72;
+  line-height: 1.6;
+  margin: 0;
+  letter-spacing: 0.2px;
+}
+
+.note-card-footer {
+  text-align: left;
+}
+
+.note-length {
+  font-size: 0.8rem;
+  color: #90a4ae;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+}
+
+/* ==================== LOADING & ERROR ==================== */
+
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 4rem 2rem;
+  text-align: center;
+  color: #90a4ae;
+  font-size: 1rem;
+  letter-spacing: 0.2px;
+}
+
+.error-message {
+  background-color: #fff5f5;
+  color: #d63031;
+  padding: 1.5rem;
+  border-radius: 10px;
+  text-align: center;
+  font-weight: 500;
+  border: 1px solid #ffcccc;
+  letter-spacing: 0.2px;
+}
+
+.no-notes {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  text-align: center;
+  color: #90a4ae;
+  font-size: 1.1rem;
+  gap: 1.5rem;
+  letter-spacing: 0.2px;
+}
+
+.no-notes p {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 500;
+}
+
+/* ==================== WRITE NOTE MODAL ==================== */
+
+.write-note-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  width: 100%;
+  max-width: 700px;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.modal-header {
+  padding: 2rem;
+  border-bottom: 1px solid #f0f3f7;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #2d3436;
+  margin: 0;
+  letter-spacing: -0.3px;
+}
+
+.close-modal-btn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #90a4ae;
+  transition: all 0.2s ease;
+  padding: 0;
+}
+
+.close-modal-btn:hover {
+  color: #2d3436;
+}
+
+.modal-body {
+  padding: 2rem;
+  overflow-y: auto;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.form-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #2d3436;
+  letter-spacing: 0.2px;
+}
+
+.form-input {
+  padding: 0.8rem 1rem;
+  border: 1px solid #dfe6e9;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  font-family: inherit;
+  transition: all 0.25s ease;
+  letter-spacing: 0.2px;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.char-limit {
+  font-size: 0.75rem;
+  color: #90a4ae;
+  text-align: right;
+  margin-top: 0.3rem;
+  letter-spacing: 0.2px;
+}
+
+.form-textarea {
+  padding: 0.8rem 1rem;
+  border: 1px solid #dfe6e9;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  font-family: inherit;
+  resize: vertical;
+  min-height: 250px;
+  transition: all 0.25s ease;
+  line-height: 1.6;
+  letter-spacing: 0.2px;
+}
+
+.form-textarea:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.word-count-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.75rem;
+  color: #90a4ae;
+  margin-top: 0.4rem;
+  letter-spacing: 0.2px;
+}
+
+.modal-footer {
+  padding: 1.5rem 2rem;
+  border-top: 1px solid #f0f3f7;
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+}
+
+.modal-btn {
+  padding: 0.7rem 1.5rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  letter-spacing: 0.2px;
+}
+
+.modal-btn-cancel {
+  background-color: #f0f3f7;
+  color: #2d3436;
+}
+
+.modal-btn-cancel:hover {
+  background-color: #e8ecf1;
+}
+
+.modal-btn-submit {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.modal-btn-submit:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+}
+
+/* ==================== RESPONSIVE DESIGN ==================== */
+
+@media (max-width: 768px) {
+  .daily-note-title {
+    font-size: 2rem;
+  }
+
+  .daily-note-controls {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .search-container {
+    max-width: 100%;
+  }
+
+  .note-card {
+    padding: 1.2rem;
+  }
+
+  .modal-content {
+    max-width: 95%;
+    max-height: 90vh;
+  }
+
+  .modal-header {
+    padding: 1.5rem;
+  }
+
+  .modal-body {
+    padding: 1.5rem;
+  }
+
+  .modal-footer {
+    padding: 1.2rem 1.5rem;
+  }
+
+  .form-textarea {
+    min-height: 200px;
+  }
+}
+
+@media (max-width: 480px) {
+  .daily-note-hero {
+    padding: 2.5rem 1.5rem;
+  }
+
+  .daily-note-title {
+    font-size: 1.6rem;
+  }
+
+  .daily-note-subtitle {
+    font-size: 0.95rem;
+  }
+
+  .write-note-btn {
+    font-size: 0.85rem;
+    padding: 0.6rem 1.4rem;
+  }
+
+  .daily-note-controls {
+    padding: 1rem 1.5rem;
+  }
+
+  .daily-note-container {
+    padding: 1.5rem 1rem;
+  }
+
+  .note-card {
+    padding: 1rem;
+  }
+
+  .note-title {
+    font-size: 1.1rem;
+  }
+
+  .modal-content {
+    max-width: 100%;
+    max-height: 95vh;
+  }
+
+  .modal-header {
+    padding: 1.2rem;
+  }
+
+  .modal-body {
+    padding: 1.2rem;
+    gap: 1.2rem;
+  }
+
+  .modal-footer {
+    padding: 1rem 1.2rem;
+    gap: 0.8rem;
+  }
+
+  .modal-btn {
+    padding: 0.6rem 1.2rem;
+    font-size: 0.85rem;
+  }
+
+  .form-textarea {
+    min-height: 150px;
+  }
+}

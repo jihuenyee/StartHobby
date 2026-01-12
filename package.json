@@ -8,10 +8,15 @@
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^13.5.0",
+<<<<<<< HEAD
     "@vercel/node": "^3.0.0",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
+=======
+    "cors": "^2.8.5",
+    "express": "^4.22.1",
+>>>>>>> e4b2070fd35ac158cd4188fbf8c52beb3517dcb6
     "firebase": "^12.5.0",
     "framer-motion": "^12.24.10",
     "lottie-react": "^2.4.1",
@@ -24,7 +29,6 @@
     "react-router-dom": "^7.9.6",
     "react-scripts": "5.0.1",
     "react-use": "^17.6.0",
-    "serverless-http": "^4.0.0",
     "web-vitals": "^2.1.4"
   },
   "scripts": {

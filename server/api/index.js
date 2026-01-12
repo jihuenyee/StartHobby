@@ -1,5 +1,10 @@
-// server/api/index.js
-const app = require("../index"); // index.js is one level up
-const serverless = require("serverless-http");
+const express = require("express");
 
-module.exports = serverless(app);
+const app = express();
+
+// This responds to /api
+app.get("/", (req, res) => {
+  res.send("SERVER API BOOT OK 🚀");
+});
+
+module.exports = app;

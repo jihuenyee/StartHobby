@@ -4,42 +4,6 @@ const express = require("express");
 const db = require("../db");
 const router = express.Router();
 
-<<<<<<< HEAD
-router.get("/", async (req, res) => {
-  try {
-    const db = await getDB();
-    const [rows] = await db.query(`
-      SELECT 
-        u.user_id, u.username, u.email, u.type_id,
-        up.points, up.xp, up.current_streak_days, up.last_login_date,
-        m.color_name AS membership
-      FROM users u
-      LEFT JOIN user_progress up ON u.user_id = up.user_id
-      LEFT JOIN membership m ON up.membership_id = m.membership_id
-    `);
-    res.json(rows);
-  } catch (err) {
-  console.error("DB ERROR:", err);
-  res.status(500).json({ error: err.message });
-}
-
-});
-
-router.get("/:userId/profile", async (req, res) => {
-  try {
-    const db = await getDB();
-    const [rows] = await db.query(`
-      SELECT 
-        u.user_id, u.username, u.email, u.type_id,
-        up.points, up.xp, up.current_streak_days, up.last_login_date,
-        m.membership_id, m.color_name, m.min_xp
-      FROM users u
-      LEFT JOIN user_progress up ON u.user_id = up.user_id
-      LEFT JOIN membership m ON up.membership_id = m.membership_id
-      WHERE u.user_id = ?
-    `, [req.params.userId]);
-=======
->>>>>>> 7ec56d1f8c5540ee3f2dafa9b9f93bf2e983b5d5
 
 // GET /api/users/:userId/profile
 router.get("/:userId/profile", (req, res) => {

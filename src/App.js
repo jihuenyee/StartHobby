@@ -18,6 +18,8 @@ import MembershipPage from "./pages/Membership";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminUsers from "./pages/AdminUsers";       // 👈 NEW
 import AdminQuiz from "./pages/AdminQuiz";
+import Game from "./pages/Game";
+import SquirrelGame from "./pages/SquirrelGame";
 import "./App.css";
 
 const App = () => {
@@ -43,6 +45,8 @@ const App = () => {
           <Route path="/signup-email" element={<SignUpEmail />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/membership" element={<MembershipPage />} />
+          <Route path="/game" element={<Game />} />
+          <Route path="/squirrel-game" element={<SquirrelGame />} />
 
           {/* ADMIN ROUTES */}
           <Route path="/admin" element={<AdminDashboard />} />

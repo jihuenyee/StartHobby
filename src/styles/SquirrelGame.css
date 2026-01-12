@@ -1,0 +1,49 @@
+
+/* Screens & Overlays */
+.overlay { position: absolute; inset: 0; background: rgba(255,255,255,0.8); z-index: 100; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.backstory-fullscreen { position: absolute; inset: 0; background-size: cover; background-position: center; z-index: 200; display: flex; flex-direction: column; }
+.start-screen { background-size: cover; }
+
+/* Backstory Visuals */
+.illustration-area { position: relative; flex: 1; overflow: hidden; }
+.scene { position: absolute; inset: 0; }
+.mommy-img { position: absolute; bottom: 100px; right: 15%; width: 220px; }
+.baby-img { position: absolute; bottom: 110px; left: 20%; width: 120px; }
+.baby-img-center { position: absolute; bottom: 30%; left: 42%; width: 140px; }
+.wind-line { position: absolute; width: 150px; height: 5px; background: rgba(255,255,255,0.6); border-radius: 10px; }
+.dark-overlay { position: absolute; inset: 0; background: rgba(0, 20, 50, 0.3); }
+
+/* Story UI Text */
+.story-ui-overlay { position: absolute; top: 40px; width: 100%; text-align: center; }
+.story-ui-overlay h2 { font-size: 2rem; color: #2D5A27; text-shadow: 2px 2px white; margin-bottom: 20px; padding: 0 40px; }
+
+/* Choice Screen */
+.choice-container { display: flex; gap: 15px; margin-top: 20px; }
+.choice-btn { padding: 15px; background: white; border: 3px solid #5d4037; border-radius: 12px; cursor: pointer; font-weight: bold; }
+.choice-btn:hover { background: #5d4037; color: white; }
+
+/* Game World Visuals */
+.world { height: 100%; width: 100%; position: relative; }
+.mommy-game { position: absolute; top: 40px; right: 40px; width: 100px; }
+.baby-game { position: absolute; width: 60px; z-index: 10; }
+
+.hud { position: absolute; top: 10px; width: 100%; display: flex; justify-content: space-around; font-weight: bold; font-size: 1.2rem; color: #2d5a27; background: rgba(255,255,255,0.6); padding: 5px 0; }
+
+/* Stage Mechanics */
+.claw-arm { position: absolute; top: -10px; left: 50%; width: 5px; height: 50px; background: #444; transition: height 0.5s; font-size: 40px; }
+.animate-claw { height: 300px; }
+.fishing-line { position: absolute; top: 0; right: 30%; width: 2px; height: 0; background: white; transition: height 0.5s; font-size: 30px; }
+.animate-fish { height: 350px; }
+.tree-container { position: absolute; bottom: 80px; left: 50%; transform: translateX(-50%); }
+.tree-icon { font-size: 150px; }
+.shake { animation: shake 0.2s infinite; }
+@keyframes shake { 0%, 100% { transform: rotate(0); } 50% { transform: rotate(5deg); } }
+.falling-acorn { position: absolute; top: 0; left: 50%; font-size: 40px; }
+
+/* General Buttons */
+.next-btn, .action-btn { background: #FF8A65; color: white; border: none; padding: 12px 35px; font-size: 1.3rem; border-radius: 50px; cursor: pointer; box-shadow: 0 5px #E64A19; font-weight: bold; }
+.action-btn { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); }
+
+/* Quiz Modal */
+.quiz-modal { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 25px; border-radius: 20px; border: 5px solid #5d4037; width: 320px; z-index: 200; text-align: center; }
+.options button { display: block; width: 100%; margin: 10px 0; padding: 10px; border-radius: 10px; border: 1px solid #ddd; cursor: pointer; font-weight: bold; }

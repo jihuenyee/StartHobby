@@ -4,42 +4,13 @@
   align-items: center; /* Center all sections horizontally */
   justify-content:flex-start;
   width: 100%;
-  min-height: 100vh;
   text-align: center;
-}
-
-.title {
-  font-size: 60px;
-  font-weight: 700;
-  margin-top: 2rem !important;
-  color: #3b2a1a;
-}
-
-/* Styles for the container of the images */
-.image-container {
-  display: flex;
-  flex-wrap: wrap; /* Allow images to wrap */
-  justify-content: center; /* Center them horizontally */
-  align-items: center;
-  gap: 20px;
-  padding: 2rem 2rem;
-}
-
-/* Style for the individual images */
-.image-container img {
-  width: 365px; /* consistent size */
-  height: 365px;
-  object-fit: cover; /* keep proportions */
-  border-radius: 10px;
-  transition: transform 0.3s ease;
 }
 
 /* Quiz section */
 .quiz {
-  background-color: #F7ECE4;
   border-radius: 10px;
   width: 100%; /* full width */
-  padding: 3rem 0;
   margin: 1rem auto; /* centers the quiz section */
   display: flex;
   flex-direction: column;
@@ -84,6 +55,29 @@
   background-color: #72c3d2;
 }
 
+.gamebtn {
+  background-color: #ff8c42;
+  color: white;
+  border-radius: 50px;
+  padding: 24px 80px;
+  font-size: clamp(1.5rem, 5vw, 2.5rem);
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-block;
+  margin: 30px 15px;
+  box-shadow: 0 8px 25px rgba(255, 140, 66, 0.3);
+  border: none;
+  letter-spacing: 1px;
+}
+
+.gamebtn:hover {
+  background-color: #ff7a1a;
+  transform: translateY(-3px);
+  box-shadow: 0 12px 35px rgba(255, 140, 66, 0.5);
+}
+
 /* Optional: keep spacing smaller on small screens */
 @media (max-width: 768px) {
   .homepage {
@@ -102,93 +96,4 @@
     width: 90%; /* take up most of the width but not full */
     height: auto;
   }
-}
-
-/* Main container for the three hobby cards */
-.hobby-cards-container {
-  display: flex;
-  justify-content: center;
-  gap: 2rem;
-  padding: 2rem;
-  flex-wrap: wrap; /* This allows cards to stack on smaller screens */
-  max-width: 1200px;
-  margin: 0 auto; /* Center the container */
-}
-
-/* Individual card styling */
-.hobby-card {
-  background-color: white;
-  border: 1px solid #EAEAEA;
-  border-radius: 8px;
-  width: 320px;
-  text-align: center;
-  padding-bottom: 1.5rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  display: flex;
-  flex-direction: column;
-}
-
-.hobby-card img {
-  width: 100%;
-  height: 220px;
-  object-fit: cover; /* Ensures the image covers the area without distortion */
-  border-top-left-radius: 8px;
-  border-top-right-radius: 8px;
-}
-
-.hobby-card .card-content {
-  padding: 1rem;
-  display: flex;
-  flex-direction: column;
-  flex-grow: 1; /* Allows content to fill available space */
-}
-
-.hobby-card h3 {
-  font-size: 1.7rem;
-  color: #694E4E; /* Brownish text color */
-  margin: 0.5rem 0;
-  font-weight: 500;
-}
-
-.hobby-card p {
-  color: #777;
-  font-size: 1rem;
-  margin-bottom: 1rem;
-  flex-grow: 1; /* Pushes details and button down */
-}
-
-.hobby-card hr {
-  border: 0;
-  height: 1px;
-  background-color: #EAEAEA;
-  margin: 0 1.5rem 1rem 1.5rem;
-}
-
-.hobby-card .details {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  margin-bottom: 1.5rem;
-  min-height: 50px;
-  justify-content: center;
-  align-items: center;
-  font-size: 1.1rem;
-  color: #333;
-}
-
-.experience-btn {
-  background-color: #85C4D3; /* Blue color from the image */
-  color: white;
-  border: none;
-  padding: 0.8rem 1.5rem;
-  border-radius: 25px;
-  font-size: 1rem;
-  font-weight: bold;
-  cursor: pointer;
-  align-self: center; /* Center the button within the card */
-  transition: background-color 0.3s ease;
-}
-
-.experience-btn:hover {
-  background-color: #6DAAB7;
 }

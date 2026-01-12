@@ -3,6 +3,28 @@ import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import "../styles/HobbyGame.css";
 import { API_BASE_URL } from "../api";
+// Mascot SVG (simple squirrel)
+const Mascot = ({ size = 80 }) => (
+  <svg width={size} height={size} viewBox="0 0 80 80" fill="none" style={{ filter: `drop-shadow(0 0 ${size / 6}px #fff6)` }}>
+    <ellipse cx="40" cy="60" rx="18" ry="10" fill="#b97a56" />
+    <ellipse cx="40" cy="40" rx="20" ry="22" fill="#e2a76f" />
+    <ellipse cx="55" cy="35" rx="8" ry="10" fill="#b97a56" />
+    <ellipse cx="30" cy="35" rx="8" ry="10" fill="#b97a56" />
+    <ellipse cx="40" cy="50" rx="10" ry="8" fill="#fff" />
+    <ellipse cx="36" cy="38" rx="2.5" ry="3.5" fill="#222" />
+    <ellipse cx="44" cy="38" rx="2.5" ry="3.5" fill="#222" />
+    <ellipse cx="40" cy="46" rx="3" ry="1.5" fill="#222" />
+    <ellipse cx="48" cy="60" rx="7" ry="4" fill="#b97a56" />
+    <ellipse cx="32" cy="60" rx="7" ry="4" fill="#b97a56" />
+    <ellipse cx="60" cy="25" rx="4" ry="7" fill="#e2a76f" />
+    <ellipse cx="20" cy="25" rx="4" ry="7" fill="#e2a76f" />
+    <ellipse cx="40" cy="70" rx="12" ry="3" fill="#000" opacity="0.08" />
+  </svg>
+);
+// Sparkle component
+const Sparkle = ({ style }) => (
+  <div className="magic-sparkle" style={style} />
+);
 
 function HobbyGame() {
   const [input, setInput] = useState("");
@@ -131,6 +153,29 @@ function HobbyGame() {
 
   const getBubbleColor = (index) => bubbleColors[index % bubbleColors.length];
 
+  // Animated start overlay
+  const [showStart, setShowStart] = useState(true);
+  const [showStoryline, setShowStoryline] = useState(false);
+  useEffect(() => {
+    if (showStart) {
+      const t = setTimeout(() => setShowStart(false), 1800);
+      return () => clearTimeout(t);
+    }
+  }, [showStart]);
+
+  useEffect(() => {
+    if (!showStart && !showStoryline) {
+      setShowStoryline(true);
+    }
+  }, [showStart]);
+
+  // Sparkle positions
+  const sparkles = Array.from({ length: 18 }).map((_, i) => ({
+    top: `${Math.random() * 100}%`,
+    left: `${Math.random() * 100}%`,
+    animationDelay: `${Math.random() * 2}s`,
+  }));
+
   return (
     <div className="hobby-game-page">
       {/* Animated floating background */}
@@ -140,7 +185,113 @@ function HobbyGame() {
         <div className="float-circle c3" />
         <div className="float-circle c4" />
         <div className="float-circle c5" />
+        {/* Magical sparkles */}
+        {sparkles.map((s, i) => <Sparkle key={i} style={s} />)}
       </div>
+
+      {/* Animated mascot */}
+      <motion.div
+        className="mascot-container"
+        initial={{ y: -60, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 1.2, type: "spring", bounce: 0.4 }}
+      >
+        <Mascot />
+      </motion.div>
+
+      {/* Start overlay */}
+      <AnimatePresence>
+        {showStart && (
+          <motion.div
+            className="start-overlay"
+            initial={{ opacity: 1 }}
+            animate={{ opacity: 0 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 1.2 }}
+            onClick={() => setShowStart(false)}
+          >
+            <div className="start-content">
+              <motion.div
+                initial={{ scale: 0.3, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ duration: 1, type: 'spring', bounce: 0.5 }}
+              >
+                <Mascot size={380} />
+              </motion.div>
+              <motion.h2
+                className="start-title"
+                initial={{ y: 40, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.3, duration: 0.8 }}
+              >
+                Let the Hobby Magic Begin!
+              </motion.h2>
+              <motion.button
+                className="start-button"
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.6, duration: 0.8 }}
+                whileHover={{ scale: 1.08 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => setShowStart(false)}
+              >
+                Start ✨
+              </motion.button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Storyline overlay */}
+      <AnimatePresence>
+        {showStoryline && !showStart && (
+          <motion.div
+            className="storyline-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.8 }}
+          >
+            <div className="storyline-content">
+              <motion.div
+                initial={{ scale: 0.3, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ duration: 0.8, type: 'spring', bounce: 0.4 }}
+              >
+                <Mascot size={280} />
+              </motion.div>
+              <motion.h2
+                className="storyline-title"
+                initial={{ y: 30, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.3, duration: 0.8 }}
+              >
+                Welcome to the Hobby Garden! 🌸
+              </motion.h2>
+              <motion.p
+                className="storyline-text"
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.5, duration: 0.8 }}
+              >
+                Every hobby is like a magical bubble floating in our garden. <br />
+                Watch your interests grow and connect with others who share your passions!
+              </motion.p>
+              <motion.button
+                className="storyline-button"
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.7, duration: 0.8 }}
+                whileHover={{ scale: 1.08 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => setShowStoryline(false)}
+              >
+                Enter the Garden ✨
+              </motion.button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Main Card - Minimal Transparent */}
       <motion.div
@@ -149,12 +300,9 @@ function HobbyGame() {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
       >
-        {/* Top Descriptive Text */}
         <p className="hg-sub">
           What's your hobby? <strong>The more people share, the bigger the bubble!</strong>
         </p>
-
-        {/* Bubble Arena - FULL SCREEN */}
         <div className="hg-bubble-container">
           <div className="hg-bubble-area">
             {entries.length === 0 ? (
@@ -171,9 +319,7 @@ function HobbyGame() {
                 {entries
                   .sort((a, b) => b.count - a.count)
                   .map((it, idx) => {
-                    // Get position for this bubble
                     const pos = bubblePositions[it.key] || { top: 50, left: 50 };
-                    
                     return (
                       <motion.div
                         key={it.key}
@@ -204,11 +350,12 @@ function HobbyGame() {
                             width: sizeForCount(it.count),
                             height: sizeForCount(it.count),
                             background: getBubbleColor(idx),
+                            boxShadow: idx % 2 === 0 ? '0 0 32px #fff6, 0 0 80px #ff6b9d33' : undefined,
                           }}
                           title={`${it.hobby} — ${it.count} ${it.count === 1 ? "person" : "people"}`}
                           whileHover={{
                             scale: 1.15,
-                            boxShadow: "0 0 40px rgba(255, 255, 255, 0.3), 0 20px 60px rgba(0,0,0,0.5)",
+                            boxShadow: "0 0 40px #fff, 0 20px 60px #ff6b9d55",
                           }}
                           whileTap={{ scale: 0.95 }}
                         >
@@ -234,8 +381,6 @@ function HobbyGame() {
               </AnimatePresence>
             )}
           </div>
-
-          {/* Stats - Top Right */}
           {entries.length > 0 && (
             <motion.div
               className="hg-stats"
@@ -253,8 +398,6 @@ function HobbyGame() {
             </motion.div>
           )}
         </div>
-
-        {/* Bottom Input Form - Minimal */}
         <form className="hg-form" onSubmit={handleSubmit}>
           <div className="hg-input-wrapper">
             <input
@@ -276,8 +419,6 @@ function HobbyGame() {
             </motion.button>
           </div>
         </form>
-
-        {/* Submission feedback */}
         <AnimatePresence>
           {submitted && userHobby && (
             <motion.div
@@ -290,8 +431,6 @@ function HobbyGame() {
             </motion.div>
           )}
         </AnimatePresence>
-
-        {/* Done Button - Bottom */}
         <div className="hg-actions">
           <motion.button
             className="hg-skip"

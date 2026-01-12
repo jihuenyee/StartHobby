@@ -3,14 +3,14 @@ const getDB = require("../db");
 const router = express.Router();
 
 /**
- * GET all quizzes
+ * GET all quiz
  */
 router.get("/", async (req, res) => {
   try {
     const db = await getDB();
     const [rows] = await db.query(`
       SELECT quiz_id, title, description, created_at
-      FROM quizzes
+      FROM quiz
       ORDER BY created_at DESC
     `);
     res.json(rows);
@@ -27,7 +27,7 @@ router.get("/:quizId", async (req, res) => {
   try {
     const db = await getDB();
     const [rows] = await db.query(
-      "SELECT * FROM quizzes WHERE quiz_id = ?",
+      "SELECT * FROM quiz WHERE quiz_id = ?",
       [req.params.quizId]
     );
 

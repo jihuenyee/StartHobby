@@ -1,0 +1,125 @@
+/* =====================
+   MAP SCENE
+===================== */
+.map-scene {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  background-size: cover;
+  background-position: center;
+  overflow: hidden;
+  transition: transform 0.9s ease;
+}
+
+.map-scene.zoom {
+  transform: scale(1.15);
+}
+
+/* =====================
+   🐿️ SQUIRREL
+===================== */
+.map-squirrel {
+  position: absolute;
+  bottom: 14%;
+  left: 12%;
+  font-size: 48px;
+  z-index: 4;
+}
+
+.map-squirrel.walking {
+  animation: walkPath 2.6s ease-in-out forwards;
+}
+
+/* Curved road illusion */
+@keyframes walkPath {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  30% {
+    transform: translate(18vw, -6vh) scale(0.9);
+  }
+  60% {
+    transform: translate(36vw, -14vh) scale(0.8);
+  }
+  100% {
+    transform: translate(52vw, -22vh) scale(0.65);
+  }
+}
+
+/* =====================
+   🏠 BUILDINGS
+===================== */
+.map-building {
+  position: absolute;
+  z-index: 3;
+  transition: transform 0.4s ease, filter 0.4s ease;
+}
+
+/* Game 1 — first stop */
+.building-1 {
+  left: 65%;
+  top: 52%;
+  font-size: 44px;
+}
+
+/* Game 2 */
+.building-2 {
+  left: 38%;
+  top: 28%;
+  font-size: 40px;
+}
+
+/* Game 3 */
+.building-3 {
+  left: 63%;
+  top: 16%;
+  font-size: 36px;
+}
+
+.locked {
+  opacity: 0.4;
+  filter: grayscale(80%);
+}
+
+/* =====================
+   💬 STORY CHAT
+===================== */
+.story-chat {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  padding: 26px 20px;
+  background: linear-gradient(
+    to top,
+    rgba(255, 255, 255, 0.96),
+    rgba(255, 255, 255, 0.85)
+  );
+  box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.15);
+  text-align: center;
+  z-index: 5;
+}
+
+.chat-bubble {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  max-width: 760px;
+  font-size: 18px;
+  color: #333;
+}
+
+.squirrel-icon {
+  font-size: 26px;
+}
+
+.start-btn {
+  margin-top: 20px;
+  padding: 14px 40px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #6fcf97, #27ae60);
+  color: white;
+  border: none;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+}

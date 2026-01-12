@@ -19,6 +19,8 @@ import AdminDashboard from "./pages/AdminDashboard";
 import AdminUsers from "./pages/AdminUsers";       // 👈 NEW
 import AdminQuiz from "./pages/AdminQuiz";
 import Game from "./pages/Game";
+import StoryIntro from "./pages/StoryIntro";
+import GameMap from "./pages/GameMap";
 import SquirrelGame from "./pages/SquirrelGame";
 import "./App.css";
 
@@ -45,8 +47,11 @@ const App = () => {
           <Route path="/signup-email" element={<SignUpEmail />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/membership" element={<MembershipPage />} />
-          <Route path="/game" element={<Game />} />
+          {/* <Route path="/game" element={<Game />} /> */}
+          <Route path="/game-map" element={<GameMap />} />
           <Route path="/squirrel-game" element={<SquirrelGame />} />
+          <Route path="/story" element={<StoryIntro />} />
+
 
           {/* ADMIN ROUTES */}
           <Route path="/admin" element={<AdminDashboard />} />

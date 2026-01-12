@@ -16,8 +16,10 @@ router.get("/", async (req, res) => {
     `);
     res.json(rows);
   } catch (err) {
-    res.status(500).json({ error: "DB error" });
-  }
+  console.error("DB ERROR:", err);
+  res.status(500).json({ error: err.message });
+}
+
 });
 
 router.get("/:userId/profile", async (req, res) => {

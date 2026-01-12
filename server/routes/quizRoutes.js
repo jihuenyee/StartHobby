@@ -1,45 +1,6 @@
 const express = require("express");
 const getDB = require("../db");
 const router = express.Router();
-<<<<<<< HEAD
-const { GoogleGenerativeAI } = require("@google-generative-ai/client");
-
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY, {
-  apiVersion: "v1",
-});
-
-const geminiModel = genAI.getGenerativeModel({
-  model: "gemini-1.5-flash",
-});
-
-function query(sql, params = []) {
-  return new Promise((resolve, reject) => {
-    db.query(sql, params, (err, rows) => {
-      if (err) return reject(err);
-      resolve(rows);
-    });
-  });
-}
-
-/* =============================
-   GET quiz + questions + options
-   ============================= */
-router.get("/:quizId", async (req, res) => {
-  const quizId = req.params.quizId;
-
-  const sql = `
-    SELECT 
-      q.quiz_id, q.title AS quiz_title, q.description AS quiz_description,
-      qq.question_id, qq.question_text,
-      qo.option_id, qo.option_text
-    FROM quiz q
-    JOIN quizquestions qq ON q.quiz_id = qq.quiz_id
-    JOIN questionoption qo ON qq.question_id = qo.question_id
-    WHERE q.quiz_id = ?
-    ORDER BY qq.question_id, qo.option_id
-  `;
-=======
->>>>>>> e3eea3da4612d8ee5315b034f426690521ee1ab3
 
 /**
  * GET all quiz

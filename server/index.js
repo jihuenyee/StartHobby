@@ -15,10 +15,6 @@ const bookmarkRoutes = require("./routes/bookmarkRoutes");
 const notificationRoutes = require("./routes/notificationRoutes");
 const followRoutes = require("./routes/followRoutes");
 const authRoutes = require("./routes/authRoutes");
-<<<<<<< HEAD
-const app = express();
-=======
->>>>>>> e3eea3da4612d8ee5315b034f426690521ee1ab3
 
 const app = express();
 

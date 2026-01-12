@@ -1,7 +1,4 @@
 // src/api.js
-<<<<<<< HEAD
-const API_BASE_URL = "https://start-hobby-master.vercel.app";
-=======
 
 const PROD_URL = "https://starthobbybackend-tv31.vercel.app/api";
 const LOCAL_URL = "http://localhost:5000/api";
@@ -9,7 +6,6 @@ const LOCAL_URL = "http://localhost:5000/api";
 // Auto-detect environment
 export const API_BASE_URL =
   process.env.NODE_ENV === "development" ? LOCAL_URL : PROD_URL;
->>>>>>> e3eea3da4612d8ee5315b034f426690521ee1ab3
 
 export async function apiRequest(path, options = {}) {
   const token = localStorage.getItem("token");

@@ -1,10 +1,11 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState,useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/GameMap.css";
 
-const STORY_1 =
+const STORY_FIRST =
   "The squirrel feels braver now. A new challenge awaits deeper in the forest.";
-const STORY_2 =
+
+const STORY_SECOND =
   "You’re getting closer. One final path remains before reaching home.";
 
 export default function GameMap() {
@@ -12,16 +13,17 @@ export default function GameMap() {
   const sceneRef = useRef(null);
 
   const [typedText, setTypedText] = useState("");
-  const [phase, setPhase] = useState("story"); 
-  const [entry, setEntry] = useState("first"); 
-  // first | second
+  const [phase, setPhase] = useState("story"); // story | walking | entering
+  const [entry, setEntry] = useState("first"); // first | second
 
   const footstepSound = useRef(null);
   const clickSound = useRef(null);
 
-  const gameResults = JSON.parse(localStorage.getItem("gameResults"));
 
-  /* 🧠 DETERMINE ENTRY TYPE */
+  const gameResults = useMemo(() => {
+  return JSON.parse(localStorage.getItem("gameResults")) || {};},);
+
+  /* 🧠 DETERMINE ENTRY */
   useEffect(() => {
     if (gameResults?.clawGame?.completed) {
       setEntry("second");
@@ -32,13 +34,13 @@ export default function GameMap() {
 
   /* ⌨️ TYPE STORY */
   useEffect(() => {
-    const text = entry === "first" ? STORY_1 : STORY_2;
+    const text = entry === "first" ? STORY_FIRST : STORY_SECOND;
     let i = 0;
     setTypedText("");
 
     const interval = setInterval(() => {
       if (i < text.length) {
-        setTypedText((p) => p + text[i]);
+        setTypedText((prev) => prev + text[i]);
         i++;
       } else {
         clearInterval(interval);
@@ -48,7 +50,7 @@ export default function GameMap() {
     return () => clearInterval(interval);
   }, [entry]);
 
-  /* 🔊 INIT SOUNDS */
+  /* 🔊 INIT SOUNDS (PLAY ONCE PER ENTRY) */
   useEffect(() => {
     footstepSound.current = new Audio("/sounds/footsteps.mp3");
     footstepSound.current.volume = 0.4;
@@ -57,7 +59,7 @@ export default function GameMap() {
     clickSound.current.volume = 0.7;
   }, []);
 
-  /* ▶️ START */
+  /* ▶️ START GAME */
   const startGame = () => {
     clickSound.current?.play();
     setPhase("walking");
@@ -74,7 +76,7 @@ export default function GameMap() {
 
     setTimeout(() => {
       navigate(
-        entry === "first" ? "/claw-quiz-game" : "/squirrel-game"
+        entry === "first" ? "/claw-quiz-game" : "/hobby-game"
       );
     }, 4000);
   };
@@ -89,36 +91,47 @@ export default function GameMap() {
     >
       {/* 🐿️ SQUIRREL */}
       <div
-        className={`map-squirrel 
-          ${entry === "first" ? "start-forest" : "start-building"}
-          ${phase === "walking" ? entry + "-walk" : ""}
-          ${phase === "entering" ? "entering" : ""}`}
+        className={`map-squirrel
+          ${entry === "first" ? "start-forest" : "waiting-1 small"}
+          ${phase === "walking" ? (entry === "first" ? "walking" : "second-walk") : ""}
+          ${phase === "entering" ? "entering" : ""}
+        `}
       >
         🐿️
       </div>
 
       {/* 🏠 BUILDING 1 */}
       <div
-        className={`map-building building-1 
-        ${gameResults?.clawGame?.completed ? "completed" : "glow"}`}
+        className={`map-building building-1
+          ${gameResults?.clawGame?.completed ? "completed" : "glow"}
+        `}
       >
-        <div className={`door ${phase === "entering" && entry === "first" ? "open" : ""}`} />
+        <div
+          className={`door ${
+            phase === "entering" && entry === "first" ? "open" : ""
+          }`}
+        />
         🏠
       </div>
 
       {/* 🏰 BUILDING 2 */}
       <div
-        className={`map-building building-2 
-        ${gameResults?.clawGame?.completed ? "glow" : "locked"}`}
+        className={`map-building building-2
+          ${gameResults?.clawGame?.completed ? "glow" : "locked"}
+        `}
       >
-        <div className={`door ${phase === "entering" && entry === "second" ? "open" : ""}`} />
+        <div
+          className={`door ${
+            phase === "entering" && entry === "second" ? "open" : ""
+          }`}
+        />
         🏰
       </div>
 
       {/* 🏯 BUILDING 3 */}
       <div className="map-building building-3 locked">🏯</div>
 
-      {/* 💬 STORY */}
+      {/* 💬 STORY CHAT */}
       {phase === "story" && (
         <div className="story-chat">
           <div className="chat-bubble">

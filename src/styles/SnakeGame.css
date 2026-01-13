@@ -1,0 +1,246 @@
+/* src/styles/SnakeGame.css */
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@700&display=swap');
+
+.snake-game-container {
+  min-height: 100vh;
+  background-image: url('/public/backgrounds/forest-map.png');
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: 'Nunito', sans-serif;
+  padding: 10px;
+  color: white;
+}
+
+.game-header {
+  background: rgba(0, 0, 0, 0.6);
+  padding: 15px 30px;
+  border-radius: 20px;
+  margin-bottom: 20px;
+  text-align: center;
+  width: 90%;
+  max-width: 400px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.game-header h2 {
+  margin: 0 0 10px 0;
+  color: #caffbf;
+}
+
+.progress-bar {
+  background: rgba(255, 255, 255, 0.2);
+  height: 8px;
+  border-radius: 4px;
+  margin-bottom: 8px;
+  overflow: hidden;
+}
+
+.fill {
+  background: #ff9f1c;
+  height: 100%;
+  transition: width 0.3s ease;
+}
+
+.status-text {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #fff;
+}
+
+/* --- CLEAN GRID --- */
+.board-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+  width: 320px; /* Fixed width for phones */
+  background: rgba(255, 255, 255, 0.25);
+  padding: 10px;
+  border-radius: 15px;
+  backdrop-filter: blur(5px);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+}
+
+.tile {
+  background: rgba(255, 255, 255, 0.85);
+  height: 60px;
+  border-radius: 8px;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #333;
+  font-weight: bold;
+  box-shadow: inset 0 -3px 0 rgba(0,0,0,0.1);
+}
+
+.tile-num {
+  position: absolute;
+  top: 2px;
+  left: 4px;
+  font-size: 10px;
+  opacity: 0.6;
+}
+
+/* Direction Text (Replaces messy lines) */
+.direction-text {
+  position: absolute;
+  bottom: 2px;
+  font-size: 8px;
+  background: rgba(0,0,0,0.1);
+  padding: 1px 3px;
+  border-radius: 4px;
+}
+
+/* Special Tiles */
+.snake-tile {
+  background-color: #ffcccc; /* Light Red */
+  border: 2px solid #ff4d4d;
+}
+
+.ladder-tile {
+  background-color: #d4edda; /* Light Green */
+  border: 2px solid #28a745;
+}
+
+.finish-tile {
+  background-color: #fff9c4;
+  border: 2px solid #fbc02d;
+}
+
+.marker {
+  font-size: 20px;
+  margin-bottom: 5px;
+}
+
+/* Squirrel Token */
+.squirrel-token {
+  font-size: 32px;
+  position: absolute;
+  z-index: 10;
+  filter: drop-shadow(0 4px 3px rgba(0,0,0,0.4));
+  animation: bounce 0.6s infinite alternate;
+}
+
+@keyframes bounce {
+  from { transform: translateY(0); }
+  to { transform: translateY(-5px); }
+}
+
+/* --- CONTROLS --- */
+.controls-area {
+  margin-top: 20px;
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+.dice-display {
+  width: 55px;
+  height: 55px;
+  background: white;
+  border-radius: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 28px;
+  font-weight: bold;
+  color: #333;
+  box-shadow: 0 4px 0 #ccc;
+}
+
+.animate-roll {
+  animation: spin 0.6s ease-out;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg) scale(1); }
+  50% { transform: rotate(180deg) scale(1.4); }
+  100% { transform: rotate(360deg) scale(1); }
+}
+
+.roll-btn {
+  background: #ff9f1c;
+  border: none;
+  padding: 12px 30px;
+  color: white;
+  border-radius: 30px;
+  font-weight: bold;
+  font-size: 16px;
+  cursor: pointer;
+  box-shadow: 0 4px 0 #e67e22;
+  transition: transform 0.1s;
+}
+
+.roll-btn:active {
+  transform: translateY(3px);
+  box-shadow: none;
+}
+
+/* --- MODAL --- */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.85);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 50;
+  animation: fadeIn 0.3s;
+}
+
+.question-card {
+  background: #fff8e1;
+  padding: 25px;
+  border-radius: 15px;
+  width: 85%;
+  max-width: 400px;
+  text-align: center;
+  border: 4px solid #8d6e63;
+}
+
+.question-card h3 {
+  color: #5d4037;
+  margin-bottom: 20px;
+}
+
+.options-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.option-btn {
+  background: white;
+  border: 2px solid #deb887;
+  padding: 12px;
+  border-radius: 10px;
+  text-align: left;
+  font-weight: bold;
+  color: #5d4037;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: 0.2s;
+}
+
+.option-btn:hover {
+  background: #ffe082;
+  transform: scale(1.02);
+}
+
+.win-card {
+  background: white;
+  padding: 30px;
+  border-radius: 20px;
+  text-align: center;
+  color: #2e7d32;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}

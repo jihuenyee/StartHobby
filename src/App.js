@@ -1,5 +1,5 @@
 // src/App.js
-import React, { useEffect, useRef, useState, useMemo } from "react";
+import React, { useEffect } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
@@ -23,6 +23,7 @@ import GameMap from "./pages/GameMap";
 import SquirrelGame from "./pages/SquirrelGame";
 import ClawQuizGame from "./pages/ClawQuizGame";
 import CastleGame from "./pages/CastleGame";
+import SnakeLadderGame from "./pages/SnakeLadderGame";
 import { initGameResults } from "./utils/initGameResults";
 import ResultScreen from "./pages/ResultScreen";
 import "./App.css";
@@ -64,6 +65,7 @@ const App = () => {
           <Route path="/squirrel-game" element={<SquirrelGame />} />
           <Route path="/claw-quiz-game" element={<ClawQuizGame />} />
           <Route path="/castle-game" element={<CastleGame />} />
+          <Route path="/snake-ladder-game" element={<SnakeLadderGame />} />
           <Route path="/result" element={<ResultScreen />} />
 
           {/* ADMIN ROUTES */}

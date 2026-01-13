@@ -1,3 +1,4 @@
+// src/pages/StoryIntro.js
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/StoryIntro.css";
@@ -22,7 +23,6 @@ function StoryIntro() {
     "💡 Answer hobby questions to help the squirrel reach its family."
   ];
 
-  /* 🔊 INIT SOUNDS (PLAY ONCE) */
   useEffect(() => {
     forestSound.current = new Audio("/sounds/forest.mp3");
     forestSound.current.loop = true;
@@ -41,7 +41,6 @@ function StoryIntro() {
 
   const nextStep = () => {
     clickSound.current?.play();
-
     if (step < storyTexts.length - 1) {
       setStep((prev) => prev + 1);
     } else {
@@ -54,32 +53,23 @@ function StoryIntro() {
     forestSound.current.currentTime = 0;
     setIsExiting(true);
 
-    // ✅ RESET GAME STATE (IMPORTANT)
+    // ✅ FIXED: Resetting with correct keys for your game flow
     localStorage.setItem(
       "gameResults",
       JSON.stringify({
         clawGame: { completed: false, answers: [] },
-        game2: { completed: false, answers: [] },
-        game3: { completed: false, answers: [] }
+        castleGame: { completed: false, answers: [] },
+        snakeGame: { completed: false, answers: [] }
       })
     );
 
-    setTimeout(() => {
-      navigate("/game-map");
-    }, 900);
+    navigate("/game-map");
   };
 
   return (
-    <div
-      className={`story-scene ${isExiting ? "exit" : ""}`}
-      style={bgStyle}
-    >
+    <div className={`story-scene ${isExiting ? "exit" : ""}`} style={bgStyle}>
       <button className="skip-btn" onClick={exitScene}><h2>Skip</h2></button>
-
-      {/* 🐿️ ROAD-FOLLOWING SQUIRREL */}
       <div className={`baby-squirrel walk-step-${step}`}>🐿️</div>
-
-      {/* 💬 STORY TEXT */}
       <div className="story-box">
         <p>{storyTexts[step]}</p>
         <button className="story-btn" onClick={nextStep}>

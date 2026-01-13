@@ -3,78 +3,64 @@ import { useNavigate } from "react-router-dom";
 import "../styles/ClawQuizGame.css";
 
 const QUESTIONS = [
-  {
-    options: ["Making things", "Moving around", "Quiet learning", "Meeting people"]
-  },
-  {
-    options: ["DIY projects", "Outdoor fun", "Reading", "Group activities"]
-  },
-  {
-    options: ["Hands-on", "Energetic", "Focused", "Social"]
-  }
+  { options: ["Making things", "Moving around", "Quiet learning", "Meeting people"] },
+  { options: ["DIY projects", "Outdoor fun", "Reading", "Group activities"] },
+  { options: ["Hands-on", "Energetic", "Focused", "Social"] }
 ];
 
 function ClawQuizGame() {
   const navigate = useNavigate();
 
   const [questionIndex, setQuestionIndex] = useState(0);
-  const [selectedIndex, setSelectedIndex] = useState(null);
+  const [grabIndex, setGrabIndex] = useState(null);
   const [clawDown, setClawDown] = useState(false);
-  const [clawX, setClawX] = useState(50);
-
   const [answers, setAnswers] = useState([]);
 
-  const handleSelect = (answer, index) => {
-    if (selectedIndex !== null) return;
+  const handleGrab = (text, index) => {
+    if (grabIndex !== null) return;
 
-    setSelectedIndex(index);
-    setClawX(25 + index * 25);
+    setGrabIndex(index);
     setClawDown(true);
 
     setTimeout(() => {
-      setAnswers(prev => [...prev, answer]);
-      setClawDown(false);
+      setAnswers(prev => [...prev, text]);
 
       setTimeout(() => {
         if (questionIndex < QUESTIONS.length - 1) {
           setQuestionIndex(prev => prev + 1);
-          setSelectedIndex(null);
+          setGrabIndex(null);
+          setClawDown(false);
         } else {
-          // ✅ SAVE RAW ANSWERS ONLY
-          const stored =
-            JSON.parse(localStorage.getItem("gameResults")) || {};
-
-          stored.game1 = answers.concat(answer);
-
+          // Save ONLY raw answers
+          const stored = JSON.parse(localStorage.getItem("gameResults"));
+          stored.game1 = [...answers, text];
           localStorage.setItem("gameResults", JSON.stringify(stored));
-
           navigate("/game-map");
         }
-      }, 700);
+      }, 600);
     }, 900);
   };
 
   return (
     <div className="claw-page">
       <div className="machine">
-        {/* 🪝 CLAW */}
+        {/* CLAW */}
         <div
-          className="claw"
+          className={`claw ${clawDown ? "down" : ""}`}
           style={{
-            left: `${clawX}%`,
-            top: clawDown ? "55%" : "0%"
+            left: grabIndex !== null ? `${20 + grabIndex * 20}%` : "50%"
           }}
         >
           🪝
         </div>
 
-        {/* 🎯 OPTIONS */}
-        <div className="balls">
+        {/* OPTIONS */}
+        <div className="items">
           {QUESTIONS[questionIndex].options.map((text, i) => (
             <div
               key={i}
-              className={`ball ${selectedIndex === i ? "grabbed" : ""}`}
-              onClick={() => handleSelect(text, i)}
+              className={`item ${grabIndex === i ? "grabbed" : ""}`}
+              onClick={() => handleGrab(text, i)}
             >
               {text}
             </div>

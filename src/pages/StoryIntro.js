@@ -22,6 +22,7 @@ function StoryIntro() {
     "💡 Answer hobby questions to help the squirrel reach its family."
   ];
 
+  /* 🔊 INIT SOUNDS (PLAY ONCE) */
   useEffect(() => {
     forestSound.current = new Audio("/sounds/forest.mp3");
     forestSound.current.loop = true;
@@ -42,7 +43,7 @@ function StoryIntro() {
     clickSound.current?.play();
 
     if (step < storyTexts.length - 1) {
-      setStep(step + 1);
+      setStep((prev) => prev + 1);
     } else {
       exitScene();
     }
@@ -50,7 +51,18 @@ function StoryIntro() {
 
   const exitScene = () => {
     forestSound.current?.pause();
+    forestSound.current.currentTime = 0;
     setIsExiting(true);
+
+    // ✅ RESET GAME STATE (IMPORTANT)
+    localStorage.setItem(
+      "gameResults",
+      JSON.stringify({
+        clawGame: { completed: false, answers: [] },
+        game2: { completed: false, answers: [] },
+        game3: { completed: false, answers: [] }
+      })
+    );
 
     setTimeout(() => {
       navigate("/game-map");
@@ -64,10 +76,10 @@ function StoryIntro() {
     >
       <button className="skip-btn" onClick={exitScene}>Skip</button>
 
-      {/* ROAD-FOLLOWING SQUIRREL */}
+      {/* 🐿️ ROAD-FOLLOWING SQUIRREL */}
       <div className={`baby-squirrel walk-step-${step}`}>🐿️</div>
 
-      {/* FIXED TEXT */}
+      {/* 💬 STORY TEXT */}
       <div className="story-box">
         <p>{storyTexts[step]}</p>
         <button className="story-btn" onClick={nextStep}>

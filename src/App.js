@@ -23,6 +23,7 @@ import GameMap from "./pages/GameMap";
 import SquirrelGame from "./pages/SquirrelGame";
 import ClawQuizGame from "./pages/ClawQuizGame";
 import { initGameResults } from "./utils/initGameResults";
+import ResultScreen from "./pages/ResultScreen";
 import "./App.css";
 
 const App = () => {
@@ -61,6 +62,7 @@ const App = () => {
           <Route path="/game-map" element={<GameMap />} />
           <Route path="/squirrel-game" element={<SquirrelGame />} />
           <Route path="/claw-quiz-game" element={<ClawQuizGame />} />
+          <Route path="/result" element={<ResultScreen />} />
 
           {/* ADMIN ROUTES */}
           <Route path="/admin" element={<AdminDashboard />} />

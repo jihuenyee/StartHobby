@@ -5,9 +5,18 @@ export function initGameResults() {
     localStorage.setItem(
       "gameResults",
       JSON.stringify({
-        game1: null,
-        game2: null,
-        game3: null
+        clawGame: {
+          completed: false,
+          answers: []
+        },
+        game2: {
+          completed: false,
+          answers: []
+        },
+        game3: {
+          completed: false,
+          answers: []
+        }
       })
     );
   }

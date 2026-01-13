@@ -15,13 +15,6 @@
   transform: scale(1.15);
 }
 
-/* 📱 Mobile polish */
-@media (max-width: 768px) {
-  .map-scene {
-    background-position: center top;
-  }
-}
-
 /* =====================
    🐿️ SQUIRREL
 ===================== */
@@ -41,20 +34,21 @@
   animation: enterDoor 0.6s ease forwards;
 }
 
-/* Road-following illusion */
+
+
+.map-squirrel.waiting-1 {
+  left: 58%;
+  top: 48%;
+  transform: scale(0.65);
+}
+
+
+/* Walk animation */
 @keyframes walkPath {
-  0% {
-    transform: translate(0, 0) scale(1);
-  }
-  30% {
-    transform: translate(18vw, -6vh) scale(0.9);
-  }
-  60% {
-    transform: translate(36vw, -14vh) scale(0.8);
-  }
-  100% {
-    transform: translate(52vw, -22vh) scale(0.65);
-  }
+  0% { transform: translate(0,0) scale(1); }
+  30% { transform: translate(18vw,-6vh) scale(0.9); }
+  60% { transform: translate(36vw,-14vh) scale(0.8); }
+  100% { transform: translate(52vw,-22vh) scale(0.65); }
 }
 
 @keyframes enterDoor {
@@ -65,50 +59,36 @@
 }
 
 /* =====================
-   🏠 BUILDINGS
+   BUILDINGS
 ===================== */
 .map-building {
   position: absolute;
-  z-index: 3;
   font-size: 44px;
+  z-index: 3;
 }
 
-/* Game 1 */
-.building-1 {
-  left: 65%;
-  top: 50%;
-}
-
-/* Game 2 */
-.building-2 {
-  left: 38%;
-  top: 28%;
-}
-
-/* Game 3 */
-.building-3 {
-  left: 63%;
-  top: 16%;
-}
+.building-1 { left: 65%; top: 50%; }
+.building-2 { left: 38%; top: 28%; }
+.building-3 { left: 63%; top: 16%; }
 
 .locked {
   opacity: 0.4;
   filter: grayscale(80%);
 }
 
-/* ✨ Glow animation */
+/* Glow */
 .glow {
-  filter: drop-shadow(0 0 14px #6fcf97);
+  filter: drop-shadow(0 0 16px #6fcf97);
   animation: glowPulse 1.6s infinite;
 }
 
 @keyframes glowPulse {
   50% {
-    filter: drop-shadow(0 0 22px #6fcf97);
+    filter: drop-shadow(0 0 26px #6fcf97);
   }
 }
 
-/* 🚪 DOOR */
+/* Door */
 .door {
   position: absolute;
   bottom: 6px;
@@ -118,9 +98,7 @@
   background: #5a3825;
   transform-origin: left center;
   transform: translateX(-50%) rotateY(0deg);
-  border-radius: 2px;
   transition: transform 0.6s ease;
-  z-index: 6;
 }
 
 .door.open {
@@ -128,7 +106,7 @@
 }
 
 /* =====================
-   💬 STORY CHAT
+   STORY CHAT
 ===================== */
 .story-chat {
   position: absolute;
@@ -137,10 +115,10 @@
   padding: 26px 20px;
   background: linear-gradient(
     to top,
-    rgba(255, 255, 255, 0.96),
-    rgba(255, 255, 255, 0.85)
+    rgba(255,255,255,0.96),
+    rgba(255,255,255,0.85)
   );
-  box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 -10px 30px rgba(0,0,0,0.15);
   text-align: center;
   z-index: 10;
 }
@@ -168,4 +146,61 @@
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
+}
+
+/* Second entry starts outside building 1 */
+.start-building {
+  bottom: 48%;
+  left: 66%;
+}
+
+/* Second walk → Building 2 */
+.second-walk {
+  animation: walkSecondPath 2.6s ease-in-out forwards;
+}
+
+@keyframes walkSecondPath {
+  0% {
+    transform: translate(0, 0) scale(0.65);
+  }
+  40% {
+    transform: translate(-14vw, -6vh) scale(0.6);
+  }
+  100% {
+    transform: translate(-26vw, -18vh) scale(0.55);
+  }
+}
+
+.completed {
+  position: relative;
+}
+
+.completed::before {
+  content: "";
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 48px;
+  height: 10px;
+  background: #c7c7c7;
+  border-radius: 6px;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.25);
+}
+
+.completed::after {
+  content: "✔";
+  position: absolute;
+  top: -18px;
+  right: -16px;
+  width: 22px;
+  height: 22px;
+  background: #2ecc71;
+  color: white;
+  font-size: 13px;
+  font-weight: bold;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }

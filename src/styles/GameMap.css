@@ -15,6 +15,13 @@
   transform: scale(1.15);
 }
 
+/* 📱 Mobile polish */
+@media (max-width: 768px) {
+  .map-scene {
+    background-position: center top;
+  }
+}
+
 /* =====================
    🐿️ SQUIRREL
 ===================== */
@@ -23,14 +30,18 @@
   bottom: 14%;
   left: 12%;
   font-size: 48px;
-  z-index: 4;
+  z-index: 5;
 }
 
 .map-squirrel.walking {
   animation: walkPath 2.6s ease-in-out forwards;
 }
 
-/* Curved road illusion */
+.map-squirrel.entering {
+  animation: enterDoor 0.6s ease forwards;
+}
+
+/* Road-following illusion */
 @keyframes walkPath {
   0% {
     transform: translate(0, 0) scale(1);
@@ -46,39 +57,74 @@
   }
 }
 
+@keyframes enterDoor {
+  to {
+    transform: scale(0);
+    opacity: 0;
+  }
+}
+
 /* =====================
    🏠 BUILDINGS
 ===================== */
 .map-building {
   position: absolute;
   z-index: 3;
-  transition: transform 0.4s ease, filter 0.4s ease;
+  font-size: 44px;
 }
 
-/* Game 1 — first stop */
+/* Game 1 */
 .building-1 {
   left: 65%;
-  top: 52%;
-  font-size: 44px;
+  top: 50%;
 }
 
 /* Game 2 */
 .building-2 {
   left: 38%;
   top: 28%;
-  font-size: 40px;
 }
 
 /* Game 3 */
 .building-3 {
   left: 63%;
   top: 16%;
-  font-size: 36px;
 }
 
 .locked {
   opacity: 0.4;
   filter: grayscale(80%);
+}
+
+/* ✨ Glow animation */
+.glow {
+  filter: drop-shadow(0 0 14px #6fcf97);
+  animation: glowPulse 1.6s infinite;
+}
+
+@keyframes glowPulse {
+  50% {
+    filter: drop-shadow(0 0 22px #6fcf97);
+  }
+}
+
+/* 🚪 DOOR */
+.door {
+  position: absolute;
+  bottom: 6px;
+  left: 50%;
+  width: 14px;
+  height: 24px;
+  background: #5a3825;
+  transform-origin: left center;
+  transform: translateX(-50%) rotateY(0deg);
+  border-radius: 2px;
+  transition: transform 0.6s ease;
+  z-index: 6;
+}
+
+.door.open {
+  transform: translateX(-50%) rotateY(-70deg);
 }
 
 /* =====================
@@ -96,7 +142,7 @@
   );
   box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.15);
   text-align: center;
-  z-index: 5;
+  z-index: 10;
 }
 
 .chat-bubble {

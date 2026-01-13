@@ -5,17 +5,18 @@ import "../styles/GameMap.css";
 const STORY_TEXT =
   "A baby squirrel is lost in the forest. Help guide it through challenges and reunite it with its family.";
 
-function GameMap() {
+export default function GameMap() {
   const navigate = useNavigate();
+  const sceneRef = useRef(null);
 
   const [typedText, setTypedText] = useState("");
-  const [phase, setPhase] = useState("story"); // story | walking
+  const [phase, setPhase] = useState("story"); 
+  // story → walking → entering
 
-  /* 🔊 Sounds */
   const footstepSound = useRef(null);
   const clickSound = useRef(null);
 
-  /* ⌨️ Typing effect */
+  /* ⌨️ Typing animation */
   useEffect(() => {
     let index = 0;
     setTypedText("");
@@ -32,47 +33,63 @@ function GameMap() {
     return () => clearInterval(interval);
   }, []);
 
-  /* ▶️ Start game */
-  const startGame = () => {
-    setPhase("walking");
-
-    clickSound.current?.play();
-    footstepSound.current?.play();
-
-    setTimeout(() => {
-      document.querySelector(".map-scene").classList.add("zoom");
-
-      setTimeout(() => {
-        footstepSound.current.pause();
-        navigate("/quiz");
-      }, 900);
-    }, 2600);
-  };
-
-  /* 🔊 Init sounds ONCE */
+  /* 🔊 Init sounds */
   useEffect(() => {
     footstepSound.current = new Audio("/sounds/footsteps.mp3");
     footstepSound.current.loop = true;
-    footstepSound.current.volume = 0.5;
+    footstepSound.current.volume = 0.4;
 
     clickSound.current = new Audio("/sounds/click.mp3");
     clickSound.current.volume = 0.7;
   }, []);
 
+  /* ▶️ Start sequence */
+  const startGame = () => {
+    setPhase("walking");
+    clickSound.current?.play();
+    footstepSound.current?.play();
+
+    // Reach building → open door
+    setTimeout(() => {
+      setPhase("entering");
+      footstepSound.current.pause();
+    }, 2600);
+
+    // Camera zoom
+    setTimeout(() => {
+      sceneRef.current.classList.add("zoom");
+    }, 3200);
+
+    // Enter quiz
+    setTimeout(() => {
+      navigate("/quiz");
+    }, 4000);
+  };
+
   return (
     <div
+      ref={sceneRef}
       className="map-scene"
       style={{
         backgroundImage: `url(${process.env.PUBLIC_URL}/backgrounds/forest-map.png)`
       }}
     >
       {/* 🐿️ SQUIRREL */}
-      <div className={`map-squirrel ${phase === "walking" ? "walking" : ""}`}>
+      <div
+        className={`map-squirrel 
+          ${phase === "walking" ? "walking" : ""} 
+          ${phase === "entering" ? "entering" : ""}`}
+      >
         🐿️
       </div>
 
-      {/* 🏠 BUILDINGS */}
-      <div className="map-building building-1">🏠</div>
+      {/* 🏠 BUILDING 1 (ACTIVE) */}
+      <div className="map-building building-1 glow">
+        <div className={`door ${phase === "entering" ? "open" : ""}`} />
+        🏠
+      </div>
+
+      {/* 🔒 LOCKED BUILDINGS */}
       <div className="map-building building-2 locked">🏰</div>
       <div className="map-building building-3 locked">🏯</div>
 
@@ -92,5 +109,3 @@ function GameMap() {
     </div>
   );
 }
-
-export default GameMap;

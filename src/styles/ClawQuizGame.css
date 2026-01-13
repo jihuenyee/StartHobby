@@ -178,3 +178,142 @@
   color: #444;
   font-size: 14px;
 }
+
+/* Target highlight */
+.option.target {
+  outline: 2px dashed #ff5c8a;
+  animation: pulse 0.8s infinite;
+}
+
+@keyframes pulse {
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+/* Ending */
+.ending-message {
+  position: absolute;
+  bottom: 25%;
+  width: 100%;
+  text-align: center;
+  padding: 0 20px;
+}
+
+.ending-message p {
+  font-size: 18px;
+  color: #444;
+  margin-bottom: 20px;
+}
+
+/* 🐿️ Question squirrel */
+.question-squirrel {
+  position: absolute;
+  left: 10px;
+  top: 40%;
+  font-size: 40px;
+  z-index: 12;
+}
+
+.speech-bubble {
+  margin-top: 6px;
+  background: white;
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-size: 14px;
+  max-width: 180px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+}
+
+/* Target highlight */
+.option.target {
+  outline: 2px dashed #ff5c8a;
+  animation: pulse 0.8s infinite;
+}
+
+@keyframes pulse {
+  50% { transform: scale(1.05); }
+}
+
+/* Layout with squirrel */
+.with-squirrel {
+  display: flex;
+  gap: 20px;
+}
+
+/* 🐿️ Outside squirrel */
+.side-squirrel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 42px;
+}
+
+/* Speech bubble */
+.speech-bubble {
+  margin-top: 8px;
+  background: white;
+  padding: 12px 16px;
+  border-radius: 14px;
+  font-size: 14px;
+  max-width: 200px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+  position: relative;
+}
+
+/* Bubble arrow */
+.speech-bubble::after {
+  content: "";
+  position: absolute;
+  right: -8px;
+  top: 50%;
+  width: 0;
+  height: 0;
+  border-left: 8px solid white;
+  border-top: 6px solid transparent;
+  border-bottom: 6px solid transparent;
+  transform: translateY(-50%);
+}
+
+.machine-area {
+  display: flex;
+  align-items: flex-start;
+  gap: 30px;
+}
+
+/* 🐿️ Question Squirrel */
+.question-squirrel {
+  margin-top: 60px;
+  font-size: 46px;
+  position: relative;
+}
+
+.speech-bubble {
+  position: absolute;
+  top: -10px;
+  left: 60px;
+  max-width: 260px;
+  padding: 14px 18px;
+  background: white;
+  border-radius: 16px;
+  font-size: 15px;
+  color: #333;
+  box-shadow: 0 10px 24px rgba(0,0,0,0.15);
+}
+
+.speech-bubble::after {
+  content: "";
+  position: absolute;
+  left: -10px;
+  top: 24px;
+  border-width: 8px;
+  border-style: solid;
+  border-color: transparent white transparent transparent;
+}
+
+/* GRAB EFFECT */
+.option.grabbed {
+  transform: translateY(-200px) scale(0.85);
+  opacity: 0;
+}

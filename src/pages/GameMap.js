@@ -1,12 +1,16 @@
-import React, { useEffect, useRef, useState,useMemo } from "react";
+// src/pages/GameMap.js
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/GameMap.css";
 
 const STORY_FIRST =
-  "The squirrel feels braver now. A new challenge awaits deeper in the forest.";
+  "A baby squirrel is lost in the forest. One brave step begins the journey home.";
 
 const STORY_SECOND =
-  "You’re getting closer. One final path remains before reaching home.";
+  "The squirrel feels braver now. A new challenge awaits deeper in the forest.";
+
+const STORY_THIRD =
+  "Only one final challenge remains. Home is close.";
 
 export default function GameMap() {
   const navigate = useNavigate();
@@ -14,33 +18,45 @@ export default function GameMap() {
 
   const [typedText, setTypedText] = useState("");
   const [phase, setPhase] = useState("story"); // story | walking | entering
-  const [entry, setEntry] = useState("first"); // first | second
+  const [entry, setEntry] = useState("first"); // first | second | third
 
   const footstepSound = useRef(null);
   const clickSound = useRef(null);
 
-
+  /* ✅ Stable game results */
   const gameResults = useMemo(() => {
-  return JSON.parse(localStorage.getItem("gameResults")) || {};},);
+    return (
+      JSON.parse(localStorage.getItem("gameResults")) || {
+        clawGame: { completed: false },
+        game2: { completed: false },
+        game3: { completed: false }
+      }
+    );
+  }, []);
 
-  /* 🧠 DETERMINE ENTRY */
+  /* 🧠 Decide entry */
   useEffect(() => {
-    if (gameResults?.clawGame?.completed) {
+    if (gameResults.game2?.completed) {
+      setEntry("third");
+    } else if (gameResults.clawGame?.completed) {
       setEntry("second");
     } else {
       setEntry("first");
     }
   }, [gameResults]);
 
-  /* ⌨️ TYPE STORY */
+  /* ⌨️ Typing */
   useEffect(() => {
-    const text = entry === "first" ? STORY_FIRST : STORY_SECOND;
+    let text = STORY_FIRST;
+    if (entry === "second") text = STORY_SECOND;
+    if (entry === "third") text = STORY_THIRD;
+
     let i = 0;
     setTypedText("");
 
     const interval = setInterval(() => {
       if (i < text.length) {
-        setTypedText((prev) => prev + text[i]);
+        setTypedText((p) => p + text[i]);
         i++;
       } else {
         clearInterval(interval);
@@ -50,7 +66,7 @@ export default function GameMap() {
     return () => clearInterval(interval);
   }, [entry]);
 
-  /* 🔊 INIT SOUNDS (PLAY ONCE PER ENTRY) */
+  /* 🔊 Sounds */
   useEffect(() => {
     footstepSound.current = new Audio("/sounds/footsteps.mp3");
     footstepSound.current.volume = 0.4;
@@ -59,7 +75,7 @@ export default function GameMap() {
     clickSound.current.volume = 0.7;
   }, []);
 
-  /* ▶️ START GAME */
+  /* ▶️ Start */
   const startGame = () => {
     clickSound.current?.play();
     setPhase("walking");
@@ -71,15 +87,27 @@ export default function GameMap() {
     }, 2600);
 
     setTimeout(() => {
-      sceneRef.current.classList.add("zoom");
+      sceneRef.current?.classList.add("zoom");
     }, 3200);
 
     setTimeout(() => {
-      navigate(
-        entry === "first" ? "/claw-quiz-game" : "/hobby-game"
-      );
+      if (entry === "first") navigate("/claw-quiz-game");
+      else if (entry === "second") navigate("/hobby-game");
+      else navigate("/result");
     }, 4000);
   };
+
+  /* 🐿️ SQUIRREL CLASS LOGIC — THIS IS THE KEY FIX */
+  const squirrelClass = [
+    "map-squirrel",
+    entry === "first" ? "start-forest" : "waiting-1",
+    phase === "walking"
+      ? entry === "first"
+        ? "walking"
+        : "second-walk"
+      : "",
+    phase === "entering" ? "entering" : ""
+  ].join(" ");
 
   return (
     <div
@@ -90,21 +118,13 @@ export default function GameMap() {
       }}
     >
       {/* 🐿️ SQUIRREL */}
-      <div
-        className={`map-squirrel
-          ${entry === "first" ? "start-forest" : "waiting-1 small"}
-          ${phase === "walking" ? (entry === "first" ? "walking" : "second-walk") : ""}
-          ${phase === "entering" ? "entering" : ""}
-        `}
-      >
-        🐿️
-      </div>
+      <div className={squirrelClass}>🐿️</div>
 
       {/* 🏠 BUILDING 1 */}
       <div
-        className={`map-building building-1
-          ${gameResults?.clawGame?.completed ? "completed" : "glow"}
-        `}
+        className={`map-building building-1 ${
+          gameResults.clawGame?.completed ? "completed" : "glow"
+        }`}
       >
         <div
           className={`door ${
@@ -116,9 +136,13 @@ export default function GameMap() {
 
       {/* 🏰 BUILDING 2 */}
       <div
-        className={`map-building building-2
-          ${gameResults?.clawGame?.completed ? "glow" : "locked"}
-        `}
+        className={`map-building building-2 ${
+          gameResults.clawGame?.completed
+            ? gameResults.game2?.completed
+              ? "completed"
+              : "glow"
+            : "locked"
+        }`}
       >
         <div
           className={`door ${
@@ -129,9 +153,20 @@ export default function GameMap() {
       </div>
 
       {/* 🏯 BUILDING 3 */}
-      <div className="map-building building-3 locked">🏯</div>
+      <div
+        className={`map-building building-3 ${
+          gameResults.game2?.completed ? "glow" : "locked"
+        }`}
+      >
+        <div
+          className={`door ${
+            phase === "entering" && entry === "third" ? "open" : ""
+          }`}
+        />
+        🏯
+      </div>
 
-      {/* 💬 STORY CHAT */}
+      {/* 💬 STORY */}
       {phase === "story" && (
         <div className="story-chat">
           <div className="chat-bubble">

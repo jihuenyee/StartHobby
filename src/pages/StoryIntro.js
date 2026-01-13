@@ -74,7 +74,7 @@ function StoryIntro() {
       className={`story-scene ${isExiting ? "exit" : ""}`}
       style={bgStyle}
     >
-      <button className="skip-btn" onClick={exitScene}>Skip</button>
+      <button className="skip-btn" onClick={exitScene}><h2>Skip</h2></button>
 
       {/* 🐿️ ROAD-FOLLOWING SQUIRREL */}
       <div className={`baby-squirrel walk-step-${step}`}>🐿️</div>

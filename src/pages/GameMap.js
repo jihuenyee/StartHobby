@@ -10,8 +10,8 @@ export default function GameMap() {
   const sceneRef = useRef(null);
 
   const [typedText, setTypedText] = useState("");
+  const [isTypingDone, setIsTypingDone] = useState(false); // New state
   const [phase, setPhase] = useState("story"); 
-  // story → walking → entering
 
   const footstepSound = useRef(null);
   const clickSound = useRef(null);
@@ -20,12 +20,14 @@ export default function GameMap() {
   useEffect(() => {
     let index = 0;
     setTypedText("");
+    setIsTypingDone(false); // Reset on mount
 
     const interval = setInterval(() => {
       if (index < STORY_TEXT.length) {
         setTypedText((prev) => prev + STORY_TEXT.charAt(index));
         index++;
       } else {
+        setIsTypingDone(true); // Set to true when finished
         clearInterval(interval);
       }
     }, 35);
@@ -45,22 +47,21 @@ export default function GameMap() {
 
   /* ▶️ Start sequence */
   const startGame = () => {
+    if (!isTypingDone) return; // Prevent clicking before fade-in
+    
     setPhase("walking");
     clickSound.current?.play();
     footstepSound.current?.play();
 
-    // Reach building → open door
     setTimeout(() => {
       setPhase("entering");
       footstepSound.current.pause();
     }, 2600);
 
-    // Camera zoom
     setTimeout(() => {
       sceneRef.current.classList.add("zoom");
     }, 3200);
 
-    // Enter quiz
     setTimeout(() => {
       navigate("/claw-quiz-game");
     }, 4000);
@@ -74,7 +75,6 @@ export default function GameMap() {
         backgroundImage: `url(${process.env.PUBLIC_URL}/backgrounds/forest-map.png)`
       }}
     >
-      {/* 🐿️ SQUIRREL */}
       <div
         className={`map-squirrel 
           ${phase === "walking" ? "walking" : ""} 
@@ -83,17 +83,14 @@ export default function GameMap() {
         🐿️
       </div>
 
-      {/* 🏠 BUILDING 1 (ACTIVE) */}
       <div className="map-building building-1 glow">
         <div className={`door ${phase === "entering" ? "open" : ""}`} />
         🏠
       </div>
 
-      {/* 🔒 LOCKED BUILDINGS */}
       <div className="map-building building-2 locked">🏰</div>
       <div className="map-building building-3 locked">🏯</div>
 
-      {/* 💬 STORY CHAT */}
       {phase === "story" && (
         <div className="story-chat">
           <div className="chat-bubble">
@@ -101,7 +98,11 @@ export default function GameMap() {
             <p>{typedText}</p>
           </div>
 
-          <button className="start-btn" onClick={startGame}>
+          {/* Added conditional class for fade-in */}
+          <button 
+            className={`start-btn ${isTypingDone ? "visible" : "hidden"}`} 
+            onClick={startGame}
+          >
             Start Game
           </button>
         </div>

@@ -159,6 +159,12 @@
 }
 
 .start-btn {
+  /* Initial state: invisible and unclickable */
+  opacity: 0;
+  transform: translateY(10px);
+  pointer-events: none;
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+
   margin-top: 20px;
   padding: 14px 40px;
   border-radius: 999px;
@@ -168,4 +174,16 @@
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
+}
+
+/* State when typing is finished */
+.start-btn.visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto; /* Make it clickable */
+}
+
+.start-btn.hidden {
+  opacity: 0;
+  pointer-events: none;
 }

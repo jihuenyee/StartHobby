@@ -76,7 +76,7 @@ export default function GameMap() {
 
     setTimeout(() => {
       navigate(
-        entry === "first" ? "/claw-quiz-game" : "/hobby-game"
+        entry === "first" ? "/claw-quiz-game" : "/castle-game"
       );
     }, 4000);
   };

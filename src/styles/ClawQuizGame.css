@@ -1,0 +1,62 @@
+.claw-page {
+  height: 100vh;
+  background: linear-gradient(#ffd6e8, #ffc0da);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.machine {
+  width: 320px;
+  height: 420px;
+  background: white;
+  border-radius: 20px;
+  border: 6px solid #ff5a9f;
+  position: relative;
+  overflow: hidden;
+}
+
+.claw {
+  position: absolute;
+  top: 0;
+  font-size: 36px;
+  transition: top 0.6s ease, left 0.6s ease;
+  z-index: 5;
+}
+
+.balls {
+  position: absolute;
+  bottom: 30px;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  padding: 20px;
+}
+
+.ball {
+  background: #ff7fb0;
+  color: white;
+  border-radius: 999px;
+  padding: 16px;
+  text-align: center;
+  cursor: pointer;
+  font-weight: 600;
+  transition: transform 0.3s;
+}
+
+.ball:hover {
+  transform: scale(1.05);
+}
+
+.ball.grabbed {
+  transform: translateY(-140px) scale(0.9);
+  opacity: 0.6;
+}
+
+.progress {
+  margin-top: 16px;
+  font-size: 14px;
+  opacity: 0.7;
+}

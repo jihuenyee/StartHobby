@@ -1,6 +1,6 @@
 // src/api.js
 
-const PROD_URL = "https://starthobbybackend-tv31.vercel.app/api";
+const PROD_URL = "https://starthobbybackend-production.up.railway.app/api";
 const LOCAL_URL = "http://localhost:5000/api";
 
 // Auto-detect environment

@@ -123,14 +123,12 @@ export function AuthProvider({ children }) {
       );
     }
 
-    const data = await apiRequest("/auth/change-password", {
-      method: "POST",
-      body: {
-        email: user.email,
-        currentPassword,
-        newPassword,
-      },
-    });
+  const data = await apiRequest(`/users/${user.user_id}`, {
+    method: "PUT",
+    body: {
+      password: newPassword, // only send the new password
+    },
+  });
 
     console.log("[Auth] Change password response:", data);
     return data;

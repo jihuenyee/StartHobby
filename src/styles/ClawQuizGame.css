@@ -1,61 +1,180 @@
+/* =====================
+   PAGE
+===================== */
 .claw-page {
-  height: 100vh;
-  background: linear-gradient(#ffd1dc, #ffe6ee);
+  min-height: 100vh;
+  background: radial-gradient(#ffd6e5, #ffc1d6);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
 }
 
-.machine {
+/* =====================
+   MACHINE
+===================== */
+.machine-frame {
+  width: min(90vw, 420px);
+  height: min(80vh, 620px);
+  background: linear-gradient(145deg, #ff5c8a, #ff86a8);
+  border-radius: 32px;
+  padding: 14px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+}
+
+.machine-inner {
   position: relative;
-  width: 320px;
-  height: 420px;
-  background: #fff;
-  border-radius: 18px;
-  border: 6px solid #ff5c8a;
+  width: 100%;
+  height: 100%;
+  background: #fff2f7;
+  border-radius: 24px;
   overflow: hidden;
 }
 
-/* CLAW */
-.claw {
+/* =====================
+   CLAW SYSTEM
+===================== */
+
+.claw-wrapper {
   position: absolute;
   top: 0;
   transform: translateX(-50%);
-  font-size: 32px;
-  transition: top 0.9s ease;
+  transition: left 0.5s ease;
   z-index: 10;
 }
 
-.claw.down {
-  top: 55%;
+/* Rope */
+.rope {
+  width: 4px;
+  height: 60px;
+  background: #9a9a9a;
+  margin: 0 auto;
+  transition: height 0.6s ease;
 }
 
-/* OPTIONS */
-.items {
+/* Hinge dot */
+.hinge {
+  width: 18px;
+  height: 18px;
+  background: #777;
+  border-radius: 50%;
+  margin: 2px auto;
+}
+
+/* ===== STATIC 120° ARM ===== */
+.hinge-arm {
+  position: relative;
+  width: 60px;
+  height: 20px;
+  margin: 0 auto;
+}
+
+.hinge-arm::before,
+.hinge-arm::after {
+  content: "";
   position: absolute;
-  bottom: 40px;
+  top: 0;
+  width: 6px;
+  height: 20px;
+  background: #666;
+  border-radius: 4px;
+}
+
+.hinge-arm::before {
+  left: 12px;
+  transform-origin: top right;
+  transform: rotate(-320deg);
+}
+
+.hinge-arm::after {
+  right: 12px;
+  transform-origin: top left;
+  transform: rotate(320deg);
+}
+
+/* =====================
+   MOVING PRONGS < >
+===================== */
+
+.claw {
+  position: relative;
+  width: 10px;
+  height: 40px;
+  margin: 0 auto;
+}
+
+.prong {
+  position: absolute;
+  top: 0;
+  width: 5px;
+  height: 20px;
+  background: #666;
+  border-radius: 4px;
+  transition: transform 0.35s ease;
+}
+
+/* OPEN */
+.prong.left {
+  left: 30px;
+  transform-origin: top right;
+  transform: rotate(-10deg);
+}
+
+.prong.right {
+  right: 30px;
+  transform-origin: top left;
+  transform: rotate(10deg);
+}
+
+/* CLOSED */
+.claw.closed .prong.left {
+  transform: rotate(30deg);
+}
+
+.claw.closed .prong.right {
+  transform: rotate(-30deg);
+}
+
+/* =====================
+   OPTIONS
+===================== */
+
+.options {
+  position: absolute;
+  bottom: 6%;
   width: 100%;
-  display: flex;
-  justify-content: space-around;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  padding: 0 18px;
 }
 
-.item {
-  background: #ff82a9;
-  color: white;
-  padding: 14px 16px;
+.option {
+  background: #ff7aa2;
+  border: none;
   border-radius: 999px;
+  padding: 14px 12px;
+  font-size: 14px;
+  color: white;
+  font-weight: 600;
   cursor: pointer;
-  transition: transform 0.6s ease, opacity 0.6s ease;
+  transition: transform 0.3s ease, opacity 0.3s ease;
 }
 
-/* GRABBED ITEM MOVES UP */
-.item.grabbed {
-  transform: translateY(-140px) scale(0.8);
+.option:disabled {
+  opacity: 0.6;
+}
+
+.option.grabbed {
+  transform: translateY(-200px) scale(0.85);
   opacity: 0;
 }
 
-.progress {
-  margin-top: 16px;
+/* =====================
+   FOOTER
+===================== */
+.question-count {
+  margin-top: 14px;
+  color: #444;
   font-size: 14px;
 }

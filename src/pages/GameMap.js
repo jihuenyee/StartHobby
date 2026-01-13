@@ -20,6 +20,7 @@ export default function GameMap() {
   const [phase, setPhase] = useState("story"); // story | walking | entering
   const [entry, setEntry] = useState("first"); // first | second | third
 
+  const bgSound = useRef(null);
   const footstepSound = useRef(null);
   const clickSound = useRef(null);
 
@@ -29,9 +30,28 @@ export default function GameMap() {
       JSON.parse(localStorage.getItem("gameResults")) || {
         clawGame: { completed: false },
         game2: { completed: false },
-        game3: { completed: false }
+        game3: { completed: false },
       }
     );
+  }, []);
+
+  /* 🔊 INIT SOUNDS */
+  useEffect(() => {
+    bgSound.current = new Audio("/sounds/GamemapBG.mp3");
+    bgSound.current.loop = true;
+    bgSound.current.volume = 0.9;
+    bgSound.current.play().catch(() => {});
+
+    footstepSound.current = new Audio("/sounds/footsteps.mp3");
+    footstepSound.current.volume = 0.4;
+
+    clickSound.current = new Audio("/sounds/click.mp3");
+    clickSound.current.volume = 0.7;
+
+    return () => {
+      bgSound.current.pause();
+      bgSound.current.currentTime = 0;
+    };
   }, []);
 
   /* 🧠 Decide entry */
@@ -45,7 +65,7 @@ export default function GameMap() {
     }
   }, [gameResults]);
 
-  /* ⌨️ Typing */
+  /* ⌨️ Typing story */
   useEffect(() => {
     let text = STORY_FIRST;
     if (entry === "second") text = STORY_SECOND;
@@ -66,15 +86,6 @@ export default function GameMap() {
     return () => clearInterval(interval);
   }, [entry]);
 
-  /* 🔊 Sounds */
-  useEffect(() => {
-    footstepSound.current = new Audio("/sounds/footsteps.mp3");
-    footstepSound.current.volume = 0.4;
-
-    clickSound.current = new Audio("/sounds/click.mp3");
-    clickSound.current.volume = 0.7;
-  }, []);
-
   /* ▶️ Start */
   const startGame = () => {
     clickSound.current?.play();
@@ -91,13 +102,16 @@ export default function GameMap() {
     }, 3200);
 
     setTimeout(() => {
+      bgSound.current.pause();
+      bgSound.current.currentTime = 0;
+
       if (entry === "first") navigate("/claw-quiz-game");
       else if (entry === "second") navigate("/hobby-game");
       else navigate("/result");
     }, 4000);
   };
 
-  /* 🐿️ SQUIRREL CLASS LOGIC — THIS IS THE KEY FIX */
+  /* 🐿️ SQUIRREL CLASS LOGIC */
   const squirrelClass = [
     "map-squirrel",
     entry === "first" ? "start-forest" : "waiting-1",
@@ -106,7 +120,7 @@ export default function GameMap() {
         ? "walking"
         : "second-walk"
       : "",
-    phase === "entering" ? "entering" : ""
+    phase === "entering" ? "entering" : "",
   ].join(" ");
 
   return (
@@ -114,7 +128,7 @@ export default function GameMap() {
       ref={sceneRef}
       className="map-scene"
       style={{
-        backgroundImage: `url(${process.env.PUBLIC_URL}/backgrounds/forest-map.png)`
+        backgroundImage: `url(${process.env.PUBLIC_URL}/backgrounds/forest-map.png)`,
       }}
     >
       {/* 🐿️ SQUIRREL */}

@@ -1,34 +1,161 @@
-.start-quiz {
+/* =====================
+   PAGE WRAPPER
+===================== */
+.home-page {
+  position: relative;
   min-height: 100vh;
-  background: linear-gradient(180deg, #fffde7, #ffffff);
+  background: linear-gradient(
+    180deg,
+    #ffe4ef 0%,
+    #fff7fb 60%,
+    #ffffff 100%
+  );
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  text-align: center;
+  overflow: hidden;
   padding: 40px 20px;
 }
 
-.intro-text {
-  max-width: 500px;
-  margin: 20px 0;
-  font-size: 1.1rem;
+/* =====================
+   SOFT BACKGROUND SHAPES
+===================== */
+.home-bg::before,
+.home-bg::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.25;
+  filter: blur(40px);
 }
 
-.rules {
-  margin: 30px 0;
+.home-bg::before {
+  width: 280px;
+  height: 280px;
+  background: #ffb3c6;
+  top: -80px;
+  left: -80px;
+}
+
+.home-bg::after {
+  width: 320px;
+  height: 320px;
+  background: #b9fbc0;
+  bottom: -100px;
+  right: -100px;
+}
+
+/* =====================
+   MAIN CARD
+===================== */
+.home-card {
+  position: relative;
+  background: white;
+  max-width: 520px;
+  width: 100%;
+  padding: 42px 34px;
+  border-radius: 32px;
+  text-align: center;
+  box-shadow:
+    0 20px 40px rgba(0, 0, 0, 0.12),
+    0 0 0 8px rgba(255, 182, 193, 0.15);
+  animation: floatIn 0.9s ease;
+  z-index: 2;
+}
+
+@keyframes floatIn {
+  from {
+    transform: translateY(20px) scale(0.96);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+/* =====================
+   SQUIRREL HERO
+===================== */
+.squirrel-hero {
+  font-size: 64px;
+  margin-bottom: 10px;
+  animation: bob 2.6s ease-in-out infinite;
+}
+
+@keyframes bob {
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+/* =====================
+   TEXT
+===================== */
+.home-title {
+  font-size: 2rem;
+  margin-bottom: 14px;
+  color: #333;
+}
+
+.home-subtitle {
+  font-size: 1.05rem;
+  color: #555;
+  margin-bottom: 28px;
+  line-height: 1.6;
+}
+
+/* =====================
+   RULES
+===================== */
+.home-rules {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  font-size: 1.1rem;
+  gap: 12px;
+  margin-bottom: 30px;
 }
 
-.begin-btn {
-  margin-top: 20px;
-  padding: 14px 34px;
-  font-size: 18px;
-  background-color: #ffb300;
+.rule-item {
+  background: #fff4f8;
+  padding: 12px 18px;
+  border-radius: 999px;
+  font-size: 0.95rem;
+  color: #444;
+}
+
+/* =====================
+   START BUTTON
+===================== */
+.home-start-btn {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 16px 44px;
+  border-radius: 999px;
+  background: linear-gradient(
+    135deg,
+    #6fcf97,
+    #27ae60
+  );
   color: white;
+  font-size: 1.05rem;
+  font-weight: 600;
   text-decoration: none;
-  border-radius: 30px;
+  box-shadow: 0 12px 24px rgba(39, 174, 96, 0.35);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.home-start-btn:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 16px 30px rgba(39, 174, 96, 0.45);
+}
+
+/* =====================
+   FOOTER TEXT
+===================== */
+.home-hint {
+  margin-top: 24px;
+  font-size: 0.9rem;
+  color: #777;
+  z-index: 2;
 }

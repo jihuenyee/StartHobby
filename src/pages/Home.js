@@ -4,25 +4,38 @@ import "../styles/Home.css";
 
 function Home() {
   return (
-    <div className="start-quiz">
+    <div className="home-page">
+      {/* 🌿 Decorative background */}
+      <div className="home-bg" />
 
-      <h1>🐿️ Squirrel Rescue Quiz</h1>
+      {/* 🐿️ Main Card */}
+      <div className="home-card">
+        <div className="squirrel-hero">🐿️</div>
 
-      <p className="intro-text">
-        You will answer simple hobby-related questions.
-        Each correct answer helps a baby squirrel move closer to home.
-      </p>
+        <h1 className="home-title">
+          Squirrel Rescue Adventure
+        </h1>
 
-      <div className="rules">
-        <div>❓ Multiple-choice questions</div>
-        <div>🕒 No time limit</div>
-        <div>🌲 Story-driven adventure</div>
+        <p className="home-subtitle">
+          Help a lost baby squirrel find its way home by answering
+          simple hobby questions.
+        </p>
+
+        <div className="home-rules">
+          <div className="rule-item">❓ Simple multiple-choice questions</div>
+          <div className="rule-item">🕒 No time pressure</div>
+          <div className="rule-item">🌲 Story-driven journey</div>
+        </div>
+
+        <Link to="/story" className="home-start-btn">
+          Begin Adventure
+        </Link>
       </div>
 
-      <Link to="/story" className="begin-btn">
-        Begin Adventure
-      </Link>
-
+      {/* 🌼 Footer hint */}
+      <p className="home-hint">
+        Your answers will shape the hobbies suggested to you ✨
+      </p>
     </div>
   );
 }

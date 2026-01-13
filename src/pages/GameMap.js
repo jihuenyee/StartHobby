@@ -62,7 +62,7 @@ export default function GameMap() {
 
     // Enter quiz
     setTimeout(() => {
-      navigate("/quiz");
+      navigate("/claw-quiz-game");
     }, 4000);
   };
 

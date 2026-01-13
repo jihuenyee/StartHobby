@@ -1,78 +1,122 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useRef } from "react";
 import "../styles/ClawQuizGame.css";
 
-const QUESTIONS = [
-  { options: ["Making things", "Moving around", "Quiet learning", "Meeting people"] },
-  { options: ["DIY projects", "Outdoor fun", "Reading", "Group activities"] },
-  { options: ["Hands-on", "Energetic", "Focused", "Social"] }
+const OPTIONS = [
+  "DIY projects",
+  "Outdoor fun",
+  "Reading",
+  "Group activities",
 ];
 
-function ClawQuizGame() {
-  const navigate = useNavigate();
+export default function ClawQuizGame() {
+  const [clawX, setClawX] = useState(50);
+  const [ropeHeight, setRopeHeight] = useState(60);
+  const [closed, setClosed] = useState(false);
+  const [grabbing, setGrabbing] = useState(false);
+  const [grabbedIndex, setGrabbedIndex] = useState(null);
 
-  const [questionIndex, setQuestionIndex] = useState(0);
-  const [grabIndex, setGrabIndex] = useState(null);
-  const [clawDown, setClawDown] = useState(false);
-  const [answers, setAnswers] = useState([]);
+  const optionRefs = useRef([]);
+  const clawRef = useRef(null);
 
-  const handleGrab = (text, index) => {
-    if (grabIndex !== null) return;
+  const grabOption = async (index) => {
+    if (grabbing) return;
+    setGrabbing(true);
 
-    setGrabIndex(index);
-    setClawDown(true);
+    const option = optionRefs.current[index];
+    const machine = document
+      .querySelector(".machine-inner")
+      .getBoundingClientRect();
 
-    setTimeout(() => {
-      setAnswers(prev => [...prev, text]);
+    const optionRect = option.getBoundingClientRect();
+    const clawRect = clawRef.current.getBoundingClientRect();
 
-      setTimeout(() => {
-        if (questionIndex < QUESTIONS.length - 1) {
-          setQuestionIndex(prev => prev + 1);
-          setGrabIndex(null);
-          setClawDown(false);
-        } else {
-          // Save ONLY raw answers
-          const stored = JSON.parse(localStorage.getItem("gameResults"));
-          stored.game1 = [...answers, text];
-          localStorage.setItem("gameResults", JSON.stringify(stored));
-          navigate("/game-map");
-        }
-      }, 600);
-    }, 900);
+    /* === CALCULATE TARGET X === */
+    const targetX =
+      ((optionRect.left + optionRect.width / 2 - machine.left) /
+        machine.width) *
+      100;
+
+    /* === CALCULATE TARGET ROPE LENGTH === */
+    const targetRope =
+      optionRect.top +
+      optionRect.height / 2 -
+      clawRect.top -
+      40; // offset for hinge + prongs
+
+    /* 1️⃣ MOVE */
+    setClawX(targetX);
+    await wait(500);
+
+    /* 2️⃣ DROP (EXACT) */
+    setRopeHeight(targetRope);
+    await wait(600);
+
+    /* 3️⃣ CLOSE */
+    setClosed(true);
+    await wait(300);
+
+    /* 4️⃣ LIFT */
+    setGrabbedIndex(index);
+    setRopeHeight(60);
+    await wait(700);
+
+    /* RESET */
+    setClosed(false);
+    setGrabbedIndex(null);
+    setGrabbing(false);
   };
 
   return (
     <div className="claw-page">
-      <div className="machine">
-        {/* CLAW */}
-        <div
-          className={`claw ${clawDown ? "down" : ""}`}
-          style={{
-            left: grabIndex !== null ? `${20 + grabIndex * 20}%` : "50%"
-          }}
-        >
-          🪝
-        </div>
+      <div className="machine-frame">
+        <div className="machine-inner">
 
-        {/* OPTIONS */}
-        <div className="items">
-          {QUESTIONS[questionIndex].options.map((text, i) => (
+          {/* CLAW */}
+          <div
+            className="claw-wrapper"
+            ref={clawRef}
+            style={{ left: `${clawX}%` }}
+          >
             <div
-              key={i}
-              className={`item ${grabIndex === i ? "grabbed" : ""}`}
-              onClick={() => handleGrab(text, i)}
-            >
-              {text}
+              className="rope"
+              style={{ height: `${ropeHeight}px` }}
+            />
+
+            <div className="hinge" />
+
+            <div className="hinge-arm" />
+
+            <div className={`claw ${closed ? "closed" : ""}`}>
+              <div className="prong left" />
+              <div className="prong right" />
             </div>
-          ))}
+          </div>
+
+          {/* OPTIONS */}
+          <div className="options">
+            {OPTIONS.map((opt, i) => (
+              <button
+                key={i}
+                ref={(el) => (optionRefs.current[i] = el)}
+                className={`option ${
+                  grabbedIndex === i ? "grabbed" : ""
+                }`}
+                onClick={() => grabOption(i)}
+                disabled={grabbing}
+              >
+                {opt}
+              </button>
+            ))}
+          </div>
+
         </div>
       </div>
 
-      <div className="progress">
-        Question {questionIndex + 1} / {QUESTIONS.length}
-      </div>
+      <p className="question-count">Question 1 / 3</p>
     </div>
   );
 }
 
-export default ClawQuizGame;
+function wait(ms) {
+  return new Promise((res) => setTimeout(res, ms));
+}

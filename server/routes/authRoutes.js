@@ -54,7 +54,8 @@ router.post("/login", (req, res) => {
       success: true,
       user_id: user.user_id,
       username: user.username,
-      email: user.email
+      email: user.email,
+      type_id: user.type_id // ✅ REQUIRED
     });
   });
 });

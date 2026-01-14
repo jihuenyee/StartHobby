@@ -1,26 +1,21 @@
-require("dotenv").config(); // loads .env from project root
-const mysql = require("mysql2");
+require("dotenv").config();
+const mysql = require("mysql2/promise"); // Change this to promise
 
-console.log("DB_HOST:", process.env.DB_HOST);
-console.log("DB_USER:", process.env.DB_USER);
-console.log("DB_PASSWORD:", process.env.DB_PASSWORD ? "✅" : "❌");
-console.log("DB_NAME:", process.env.DB_NAME);
-
-const db = mysql.createPool({
+const pool = mysql.createPool({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
-  port: process.env.DB_PORT || 3306
+  port: process.env.DB_PORT || 3306,
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0
 });
 
-db.getConnection((err, conn) => {
-  if (err) {
-    console.error("❌ MySQL connection failed:", err);
-  } else {
-    console.log("✅ Connected to MySQL");
-    conn.release();
-  }
-});
+// A helper function to return the pool
+async function getDB() {
+  return pool;
+}
 
-module.exports = db;
+// Export the function so quizroute.js can find it
+module.exports = { getDB };

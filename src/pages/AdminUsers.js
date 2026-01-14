@@ -18,6 +18,7 @@ function AdminUsers() {
   const [saving, setSaving] = useState(false);
   const [status, setStatus] = useState("");
 
+  // Fetch users
   useEffect(() => {
     async function fetchUsers() {
       try {
@@ -32,9 +33,7 @@ function AdminUsers() {
       }
     }
 
-    if (user && isAdmin) {
-      fetchUsers();
-    }
+    if (user && isAdmin) fetchUsers();
   }, [user, isAdmin]);
 
   if (!user) {
@@ -55,6 +54,7 @@ function AdminUsers() {
     );
   }
 
+  // Start editing a user
   const startEdit = (u) => {
     setStatus("");
     setEditingId(u.user_id);
@@ -65,21 +65,24 @@ function AdminUsers() {
     });
   };
 
+  // Cancel editing
   const cancelEdit = () => {
     setEditingId(null);
     setEditData({ username: "", email: "", type_id: "normal" });
   };
 
+  // Handle inline field changes
   const handleChange = (field, value) => {
     setEditData((prev) => ({ ...prev, [field]: value }));
   };
 
+  // Save edited user
   const saveEdit = async () => {
     if (!editingId) return;
     setSaving(true);
     setStatus("");
     try {
-      const updated = await apiRequest(`/users/${editingId}`, {
+      await apiRequest(`/users/${editingId}`, {
         method: "PUT",
         body: {
           username: editData.username,
@@ -88,18 +91,20 @@ function AdminUsers() {
         },
       });
 
+      // Update frontend immediately using editData
       setUsers((prev) =>
         prev.map((u) =>
           u.user_id === editingId
             ? {
                 ...u,
-                username: updated.username,
-                email: updated.email,
-                type_id: updated.type_id || u.type_id,
+                username: editData.username,
+                email: editData.email,
+                type_id: editData.type_id,
               }
             : u
         )
       );
+
       setStatus("User updated successfully ✅");
       cancelEdit();
     } catch (err) {

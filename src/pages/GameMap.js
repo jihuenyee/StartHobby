@@ -98,10 +98,20 @@ export default function GameMap() {
     }, 4000);
   };
 
+  // ... inside GameMap component
+
   const squirrelClass = [
     "map-squirrel",
-    entry === "first" ? "start-forest" : "waiting-1",
-    phase === "walking" ? (entry === "first" ? "walking" : "second-walk") : "",
+    // Determining starting position
+    entry === "first" ? "start-forest" : 
+    entry === "second" ? "waiting-1" : "waiting-2", 
+    
+    // Determining which walk animation to play
+    phase === "walking" ? (
+      entry === "first" ? "walking" : 
+      entry === "second" ? "second-walk" : "third-walk"
+    ) : "",
+    
     phase === "entering" ? "entering" : "",
   ].join(" ");
 

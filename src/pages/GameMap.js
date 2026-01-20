@@ -92,25 +92,7 @@ export default function GameMap() {
     }, 4000);
   };
 
-<<<<<<< HEAD
-  // ... inside GameMap component
-
-  const squirrelClass = [
-    "map-squirrel",
-    // Determining starting position
-    entry === "first" ? "start-forest" : 
-    entry === "second" ? "waiting-1" : "waiting-2", 
-    
-    // Determining which walk animation to play
-    phase === "walking" ? (
-      entry === "first" ? "walking" : 
-      entry === "second" ? "second-walk" : "third-walk"
-    ) : "",
-    
-    phase === "entering" ? "entering" : "",
-  ].join(" ");
-=======
-  // ✅ UPDATED LOGIC FOR CORRECT ENTRY
+  // UPDATED LOGIC FOR CORRECT ENTRY
   const getSquirrelClass = () => {
     let base = "map-squirrel";
 
@@ -135,7 +117,6 @@ export default function GameMap() {
 
     return base;
   };
->>>>>>> bd91329 (final result)
 
   return (
     <div ref={sceneRef} className="map-scene">

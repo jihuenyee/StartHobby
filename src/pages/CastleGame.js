@@ -41,15 +41,8 @@ const INGREDIENTS = [
     name: 'Flour', 
     target: { x: '88%', y: '51%' }, 
     bgAfter: '/pantry/flour_gone.jpeg', 
-<<<<<<< HEAD
     question: "When you create something, what is most important?",
     options: ["The final result", "The fun of the process", "Making others happy", "Learning something new"],
-=======
-    question: "In baking, what makes bread rise?",
-    options: ["Sugar", "Salt", "Yeast", "Butter"],
-    correct: 2,
-    type: "Strategic"
->>>>>>> bd91329 (final result)
   }
 ];
 
@@ -58,22 +51,14 @@ const CastleGame = () => {
   const [scene, setScene] = useState('narrative'); 
   const [narrativeStep, setNarrativeStep] = useState(0);
   const [itemIndex, setItemIndex] = useState(0);
-  const [currentBg, setCurrentBg] = useState('/castle.jpg'); // Ensure this image exists in public/
+  const [currentBg, setCurrentBg] = useState('/castle.jpg'); 
   const [squirrelPos, setSquirrelPos] = useState({ x: '50%', y: '70%' });
   const [showQuiz, setShowQuiz] = useState(false);
-<<<<<<< HEAD
-  const [isMoving, setIsMoving] = useState(false);
-  const [hasCake, setHasCake] = useState(false);
-  const [isExiting, setIsExiting] = useState(false);
-  const [typedText, setTypedText] = useState("");
-  const [userChoices, setUserChoices] = useState([]); 
-=======
   const [isMoving, setIsMoving] = useState(false); 
   const [hasCake, setHasCake] = useState(false);
   const [isExiting, setIsExiting] = useState(false);
   const [typedText, setTypedText] = useState("");
-  const [collectedTypes, setCollectedTypes] = useState([]);
->>>>>>> bd91329 (final result)
+  const [userChoices, setUserChoices] = useState([]);
 
   const clickSound = useRef(null);
 
@@ -98,7 +83,7 @@ const CastleGame = () => {
       setNarrativeStep(prev => prev + 1);
     } else {
       setScene('pantry');
-      setCurrentBg('/pantry/stocked.jpeg'); // Ensure this image exists
+      setCurrentBg('/pantry/stocked.jpeg'); 
       setSquirrelPos({ x: '45%', y: '85%' });
     }
   };
@@ -106,6 +91,8 @@ const CastleGame = () => {
   const handleIngredientCollection = (optionIdx) => {
     safePlay(clickSound);
     const currentItem = INGREDIENTS[itemIndex];
+    
+    // Collect choice (Personality Logic)
     const choice = currentItem.options[optionIdx];
     setUserChoices(prev => [...prev, choice]);
 
@@ -114,7 +101,12 @@ const CastleGame = () => {
     setSquirrelPos(currentItem.target);
     
     setTimeout(() => {
-      setCurrentBg(currentItem.bgAfter);
+      // Keep current BG if the specific 'gone' image is missing/placeholder
+      if (currentItem.bgAfter) {
+          // Optional: Add check or just try to set it
+          setCurrentBg(currentItem.bgAfter);
+      }
+      
       setTimeout(() => {
         if (itemIndex < INGREDIENTS.length - 1) {
           setItemIndex(itemIndex + 1);
@@ -149,11 +141,13 @@ const CastleGame = () => {
     setScene('end');
     const raw = localStorage.getItem("gameResults");
     const gameResults = raw ? JSON.parse(raw) : {};
+    
     gameResults.castleGame = { 
-      completed: true, 
-      personalityChoices: userChoices, 
-      completedAt: Date.now() 
+        completed: true, 
+        answers: userChoices, // Saving personality answers
+        completedAt: Date.now() 
     };
+    
     localStorage.setItem("gameResults", JSON.stringify(gameResults));
     const message = INSPIRATION_TEXTS[Math.floor(Math.random() * INSPIRATION_TEXTS.length)];
     typeEndingText(message);
@@ -204,11 +198,6 @@ const CastleGame = () => {
         </div>
       )}
 
-<<<<<<< HEAD
-      {/* CHANGED: Dynamic button text here */}
-=======
-      {/* Button only appears when NOT moving */}
->>>>>>> bd91329 (final result)
       {scene === 'pantry' && !showQuiz && !isMoving && (
         <div className="story-box">
           <p>Help Bibble find the <b>{INGREDIENTS[itemIndex].name}</b></p>

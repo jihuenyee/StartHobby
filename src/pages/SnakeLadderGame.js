@@ -4,7 +4,7 @@ import "../styles/SnakeLadderGame.css";
 
 // 🎲 CONFIGURATION
 const BOARD_SIZE = 25;
-const REQUIRED_QUESTIONS = 5; // Must answer this many
+const REQUIRED_QUESTIONS = 5; // Game ends EXACTLY after this many
 
 // 🐍 SNAKES & LADDERS MAP
 const SNAKES = { 14: 4, 19: 8, 22: 20, 24: 16 };
@@ -40,7 +40,7 @@ export default function SnakeLadderGame() {
   const [askedQuestionIds, setAskedQuestionIds] = useState([]); 
   const [miniInsight, setMiniInsight] = useState(null); 
 
-  // 🛡️ NEW: Track specific requirements
+  // Tracks if we have met the movement requirements
   const [hasHitSnake, setHasHitSnake] = useState(false);
   const [hasHitLadder, setHasHitLadder] = useState(false);
 
@@ -48,7 +48,6 @@ export default function SnakeLadderGame() {
   const slideSound = useRef(null);
   const winSound = useRef(null);
 
-  // --- SAFE AUDIO FUNCTIONS ---
   const createAudio = (path) => {
     const audio = new Audio(path);
     audio.onerror = () => console.warn(`Audio missing: ${path}`);
@@ -79,64 +78,32 @@ export default function SnakeLadderGame() {
     setTimeout(() => {
       clearInterval(rollInterval);
 
-      // --- 🧠 THE "GAME MASTER" LOGIC ---
+      // --- 😈 AGGRESSIVE GAME MASTER LOGIC ---
+      // We FORCE snakes/ladders early so the game isn't boring
       let calculatedRoll = Math.floor(Math.random() * 6) + 1;
 
-      // 1. Force LADDER if not hit yet (and available within 1-6 steps)
+      // 1. If we haven't hit a LADDER, look for one close by and force it
       if (!hasHitLadder) {
         for (let i = 1; i <= 6; i++) {
           if (LADDERS[position + i]) {
-            calculatedRoll = i; // Force roll to hit ladder
+            calculatedRoll = i; 
             break;
           }
         }
       } 
-      // 2. Force SNAKE if not hit yet (Prioritize this if close to end)
+      // 2. If we haven't hit a SNAKE, look for one and force it
       else if (!hasHitSnake) {
          for (let i = 1; i <= 6; i++) {
           if (SNAKES[position + i]) {
-            calculatedRoll = i; // Force roll to hit snake
+            calculatedRoll = i; 
             break;
           }
         }
       }
 
-      // 3. Prevent Finish if Quota not Met
-      // If going to finish line BUT (haven't hit snake OR ladder OR answered 5 questions)
-      if (position + calculatedRoll >= BOARD_SIZE) {
-         if (!hasHitSnake || !hasHitLadder || answers.length < REQUIRED_QUESTIONS) {
-             // Try to force a snake instead of winning
-             let foundSnake = false;
-             for (let i = 1; i < 6; i++) {
-                 // Check backwards or forwards for a snake within reach (simplification: just force snake if valid)
-                 if (SNAKES[position + i] && (position + i) < BOARD_SIZE) {
-                     calculatedRoll = i;
-                     foundSnake = true;
-                     break;
-                 }
-             }
-             
-             // If no snake to force, just limit roll so they don't finish
-             if (!foundSnake) {
-                calculatedRoll = BOARD_SIZE - position - 1; // Land on 24
-                if (calculatedRoll < 1) calculatedRoll = 1; // Fallback
-                
-                // Special case: If at 24 and need to fail, bounce back? 
-                // For simplicity, we just trigger questions on current tile if stuck
-             }
-         }
-      }
-
-      // Apply the roll
       setDiceNum(calculatedRoll);
-      
       let nextPos = position + calculatedRoll;
-      
-      // Bounce logic if over 25
-      if (nextPos > BOARD_SIZE) {
-        const excess = nextPos - BOARD_SIZE;
-        nextPos = BOARD_SIZE - excess;
-      }
+      if (nextPos > BOARD_SIZE) nextPos = BOARD_SIZE; // Cap at 25
 
       setPosition(nextPos);
       setIsRolling(false);
@@ -146,64 +113,49 @@ export default function SnakeLadderGame() {
   };
 
   const checkTile = (currentPos) => {
-    // 1. Check Snake
+    // 1. SNAKE
     if (SNAKES[currentPos]) {
-      setHasHitSnake(true); // ✅ Mark Requirement Met
+      setHasHitSnake(true);
       setStatusMsg("🐍 Oh no! Snake!");
       safePlay(slideSound);
       setTimeout(() => {
         setPosition(SNAKES[currentPos]);
         setStatusMsg(`Slid down to tile ${SNAKES[currentPos]}...`);
-        setTimeout(triggerQuestion, 1000); // Always question on snake
+        // ALWAYS TRIGGER QUESTION
+        setTimeout(triggerQuestion, 1000); 
       }, 800);
       return;
     }
 
-    // 2. Check Ladder
+    // 2. LADDER
     if (LADDERS[currentPos]) {
-      setHasHitLadder(true); // ✅ Mark Requirement Met
+      setHasHitLadder(true);
       setStatusMsg("🪜 Awesome! Ladder!");
       safePlay(slideSound);
       setTimeout(() => {
         setPosition(LADDERS[currentPos]);
         setStatusMsg(`Climbed up to tile ${LADDERS[currentPos]}!`);
-        setTimeout(triggerQuestion, 1000); // Always question on ladder
+        // ALWAYS TRIGGER QUESTION
+        setTimeout(triggerQuestion, 1000); 
       }, 800);
       return;
     }
 
-    // 3. Normal Tile
-    // If we haven't answered 5 questions yet, force a question more often
-    const needQuestions = answers.length < REQUIRED_QUESTIONS;
-    
-    if (currentPos === BOARD_SIZE) {
-      if (needQuestions || !hasHitSnake || !hasHitLadder) {
-         // Should have been caught by handleRollDice, but safety net:
-         setStatusMsg("Not ready to finish yet! Go back!");
-         setPosition(BOARD_SIZE - 2); 
-      } else {
-         calculateMiniInsight(); // Finish Game
-      }
-    } else if (needQuestions || Math.random() > 0.5) {
-      triggerQuestion();
-    } else {
-      setStatusMsg("Safe spot! Roll again.");
-    }
+    // 3. NORMAL TILE
+    // NO SAFE SPOTS. ALWAYS TRIGGER QUESTION.
+    triggerQuestion();
   };
 
   const triggerQuestion = () => {
-    // Stop if we have enough questions AND we are at the end
-    if (position === BOARD_SIZE && answers.length >= REQUIRED_QUESTIONS) {
+    // If we've already answered 5, the game ends NOW.
+    if (answers.length >= REQUIRED_QUESTIONS) {
       calculateMiniInsight();
       return;
     }
 
-    // Filter used questions
     const availableQuestions = QUESTIONS_DB.filter(q => !askedQuestionIds.includes(q.id));
-    
-    // Safety check if we ran out of questions (shouldn't happen with 12 Qs and 5 limit)
     if (availableQuestions.length === 0) {
-        if (position === BOARD_SIZE) calculateMiniInsight();
+        calculateMiniInsight(); // Fallback end
         return;
     }
 
@@ -222,8 +174,9 @@ export default function SnakeLadderGame() {
     
     setModalData(null);
 
-    // If they just answered the 5th question AND they are at the finish line
-    if (newAnswers.length >= REQUIRED_QUESTIONS && position === BOARD_SIZE && hasHitSnake && hasHitLadder) {
+    // 🛑 HARD STOP CHECK: If 5 questions answered, END GAME.
+    if (newAnswers.length >= REQUIRED_QUESTIONS) {
+      setStatusMsg("Adventure Complete!");
       setTimeout(calculateMiniInsight, 500);
     } else {
       setStatusMsg(`Progress: ${newAnswers.length}/${REQUIRED_QUESTIONS} Answers`);
@@ -271,7 +224,7 @@ export default function SnakeLadderGame() {
     navigate("/personality-reveal");
   };
 
-  // 📐 ZIG-ZAG GRID VISUALS
+  // 📐 ZIG-ZAG GRID
   const gridCells = [];
   for (let r = 0; r < 5; r++) { 
     const logicRow = 4 - r; 
@@ -286,17 +239,15 @@ export default function SnakeLadderGame() {
     gridCells.push(...rowNumbers);
   }
 
-  // 🐿️ SQUIRREL POSITION
-  const getGridIndex = (tileNum) => {
-    const row = Math.floor((tileNum - 1) / 5); 
-    const col = (tileNum - 1) % 5;
-    let actualCol = col;
-    if (row % 2 !== 0) actualCol = 4 - col;
-    const visualRow = 4 - row;
-    return visualRow * 5 + actualCol;
-  };
-
   const getPlayerStyle = () => {
+    const getGridIndex = (tileNum) => {
+        const row = Math.floor((tileNum - 1) / 5); 
+        const col = (tileNum - 1) % 5;
+        let actualCol = col;
+        if (row % 2 !== 0) actualCol = 4 - col;
+        const visualRow = 4 - row;
+        return visualRow * 5 + actualCol;
+    };
     const gridIndex = getGridIndex(position);
     const row = Math.floor(gridIndex / 5);
     const col = gridIndex % 5;

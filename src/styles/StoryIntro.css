@@ -21,136 +21,65 @@
   padding: 8px 18px;
   border-radius: 20px;
   cursor: pointer;
-  opacity: 0.6;
   z-index: 10;
   width: 9rem;
   height: 4rem;
 }
 
-.skip-btn:hover {
-  opacity: 1;
-}
-
-/* ===== SQUIRREL ===== */
-.baby-squirrel {
+/* Unique Class: intro-squirrel */
+.intro-squirrel {
   position: absolute;
-  font-size: 4rem;
-  animation: bounce 1.6s infinite;
-  transition: transform 1s ease, opacity 1s ease;
-}
-
-/* ===== ROAD FOLLOWING WITH STRONG DEPTH ===== */
-
-/* ===== SQUIRREL BASE ===== */
-.baby-squirrel {
-  position: absolute;
-  font-size: 4rem;
   left: 50%;
-  transform-origin: center center;
-  transition: transform 1.4s ease, bottom 1.4s ease, opacity 1.4s ease;
-  animation: walkBounce 1.8s infinite;
+  width: 120px;
+  margin-left: -60px; /* Center without transform */
+  text-align: center;
+  transition: bottom 1.4s ease, font-size 1.4s ease, opacity 1.4s ease;
+  
+  /* Slower, heavy "waddle" into the woods */
+  animation: forestWaddle 1.2s infinite ease-in-out;
+  z-index: 5;
 }
 
-/* ===== STEP 0 – CLOSE ===== */
-.walk-step-0 {
-  bottom: 32%;
-  transform: translateX(-50%) scale(1);
-  opacity: 1;
+@keyframes forestWaddle {
+  0%, 100% { margin-bottom: 0; }
+  50% { margin-bottom: 25px; } /* High, slow bounce */
 }
 
-/* ===== STEP 1 – MID ===== */
-.walk-step-1 {
-  bottom: 45%;
-  transform: translateX(-50%) scale(0.7);
-  opacity: 0.85;
-}
+/* Steps: Moving UP and getting SMALLER */
+.intro-walk-step-0 { bottom: 35%; left:50%; font-size: 4rem; opacity: 1; }
+.intro-walk-step-1 { bottom: 45%; left:50%; font-size: 4rem; opacity: 1; }
+.intro-walk-step-2 { bottom: 55%; left:50%; font-size: 2.5rem; opacity: 1; }
 
-/* ===== STEP 2 – FAR ===== */
-.walk-step-2 {
-  bottom: 60%;
-  transform: translateX(-50%) scale(0.45);
-  opacity: 0.7;
-}
-
-/* ===== EXIT ===== */
-.story-scene.exit .baby-squirrel {
-  opacity: 0;
-  transform: translateX(-50%) scale(0.3);
-}
-
-/* ===== WALK ANIMATION ===== */
-@keyframes walkBounce {
-  0%, 100% { transform: translateX(-50%) translateY(0) scale(var(--scale, 1)); }
-  50% { transform: translateX(-50%) translateY(-6px) scale(var(--scale, 1)); }
-}
-
-
-/* ===== DIALOGUE ===== */
+/* ===== DIALOGUE BOX (Centering without transform) ===== */
 .story-box {
   position: absolute;
   bottom: 5%;
   left: 50%;
-  transform: translateX(-50%);
+  width: 520px;
+  margin-left: -260px; /* Half of 520px */
+  
   background: rgba(255,255,255,0.92);
   padding: 22px 28px;
   border-radius: 18px;
-  max-width: 520px;
   text-align: center;
   box-shadow: 0 10px 25px rgba(0,0,0,0.12);
   border: 3px solid #aed581;
+  z-index: 100;
 }
 
-.story-box p {
-  font-size: 1.1rem;
-  margin-bottom: 12px;
-}
-
-/* ===== BUTTON ===== */
 .story-btn {
   margin-top: 14px;
   padding: 12px 36px;
   font-size: 16px;
   font-weight: 600;
   border-radius: 30px;
-
-  /* Forest theme */
   background: linear-gradient(135deg, #7ccf9b, #4caf50);
   color: white;
-
   border: 2px solid #388e3c;
   cursor: pointer;
-
-  box-shadow:
-    0 4px 10px rgba(76, 175, 80, 0.35),
-    inset 0 1px 0 rgba(255, 255, 255, 0.4);
-
-  transition: all 0.25s ease;
+  transition: background 0.2s;
 }
 
 .story-btn:hover {
-  transform: translateY(-2px);
-  box-shadow:
-    0 6px 14px rgba(76, 175, 80, 0.45),
-    inset 0 1px 0 rgba(255, 255, 255, 0.5);
-}
-
-.story-btn:active {
-  transform: translateY(0);
-  box-shadow:
-    0 3px 6px rgba(76, 175, 80, 0.3),
-    inset 0 2px 4px rgba(0, 0, 0, 0.15);
-}
-
-
-/* ===== WALK BOUNCE ===== */
-@keyframes bounce {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-6px); }
-}
-
-/* ===== ACCESSIBILITY ===== */
-@media (prefers-reduced-motion: reduce) {
-  .baby-squirrel {
-    animation: none;
-  }
+    background: #388e3c;
 }

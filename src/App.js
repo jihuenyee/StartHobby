@@ -25,6 +25,7 @@ import CastleGame from "./pages/CastleGame";
 import SnakeLadderGame from "./pages/SnakeLadderGame";
 import { initGameResults } from "./utils/initGameResults";
 import ResultScreen from "./pages/ResultScreen";
+import PersonalityReveal from "./pages/PersonalityReveal";
 import "./App.css";
 
 const App = () => {
@@ -65,6 +66,7 @@ const App = () => {
           <Route path="/castle-game" element={<CastleGame />} />
           <Route path="/snake-ladder-game" element={<SnakeLadderGame />} />
           <Route path="/result" element={<ResultScreen />} />
+          <Route path="/personality-reveal" element={<PersonalityReveal />} />
 
           {/* ADMIN ROUTES */}
           <Route path="/admin" element={<AdminDashboard />} />

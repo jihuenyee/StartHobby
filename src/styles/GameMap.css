@@ -1,25 +1,27 @@
-/* =====================
-   MAP SCENE
-===================== */
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap');
+
 .map-scene {
   position: relative;
-  width: 100%;
-  height: 100vh;
+  width: 100vw;
+  height: 100dvh; 
+  background-image: url('/public/backgrounds/forest-map.png');
   background-size: cover;
   background-position: center;
   overflow: hidden;
-  transition: transform 0.9s ease;
+  font-family: 'Nunito', sans-serif;
 }
 
 .map-scene.zoom {
-  transform: scale(1.15);
+  transform: scale(1.6);
+  transition: transform 1s ease-in-out;
 }
 
 /* =====================
-   🐿️ SQUIRREL
+   🐿️ SQUIRREL & ANIMATION
 ===================== */
 .map-squirrel {
   position: absolute;
+<<<<<<< HEAD
   font-size: 48px;
   z-index: 5;
   transition: opacity 0.3s ease;
@@ -93,26 +95,68 @@
     transform: scale(0);
     opacity: 0;
   }
+=======
+  font-size: 65px;
+  z-index: 50; 
+  transition: transform 0.1s linear;
+  filter: drop-shadow(0 5px 5px rgba(0,0,0,0.5));
+  pointer-events: none;
+}
+
+/* --- STATIC POSITIONS --- */
+.start-forest { left: 10%; top: 80%; }
+.waiting-1 { left: 75%; top: 65%; transform: scaleX(-1); }
+.waiting-2 { left: 25%; top: 40%; transform: scaleX(1); }
+
+/* --- ANIMATIONS --- */
+.walking { animation: pathOne 2.5s forwards linear; }
+.second-walk { animation: pathTwo 2.5s forwards linear; }
+.third-walk { animation: pathThree 2.5s forwards linear; }
+
+.entering-1 { left: 75% !important; top: 65% !important; animation: hopIn 0.5s forwards ease-in; }
+.entering-2 { left: 25% !important; top: 40% !important; animation: hopIn 0.5s forwards ease-in; }
+.entering-3 { left: 70% !important; top: 15% !important; animation: hopIn 0.5s forwards ease-in; }
+
+@keyframes pathOne {
+  0%   { left: 10%; top: 80%; transform: scale(1); }
+  100% { left: 75%; top: 65%; transform: scale(0.8); }
+}
+@keyframes pathTwo {
+  0%   { left: 75%; top: 65%; transform: scaleX(-1) scale(0.8); }
+  100% { left: 25%; top: 40%; transform: scaleX(-1) scale(0.9); }
+}
+@keyframes pathThree {
+  0%   { left: 25%; top: 40%; transform: scaleX(1) scale(0.9); }
+  100% { left: 70%; top: 15%; transform: scaleX(1) scale(0.7); }
+}
+@keyframes hopIn {
+  to { opacity: 0; transform: scale(0.1); }
+>>>>>>> bd91329 (final result)
 }
 
 /* =====================
-   BUILDINGS
+   🏰 BUILDINGS
 ===================== */
 .map-building {
   position: absolute;
-  font-size: 44px;
-  z-index: 3;
+  z-index: 10;
+  transform: translate(-50%, -50%);
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  font-size: 100px;
+  cursor: pointer;
 }
 
-.building-1 { left: 65%; top: 50%; }
-.building-2 { left: 38%; top: 28%; }
-.building-3 { left: 63%; top: 16%; }
+.building-1 { left: 75%; top: 65%; }
+.building-2 { left: 25%; top: 40%; font-size: 130px; }
+.building-3 { left: 70%; top: 15%; }
 
-.locked {
-  opacity: 0.4;
-  filter: grayscale(80%);
-}
+.locked { opacity: 0.6; filter: grayscale(1); }
+.glow { animation: pulse 1.5s infinite; filter: drop-shadow(0 0 15px gold); }
+.completed { filter: drop-shadow(0 0 10px #27ae60); }
 
+<<<<<<< HEAD
 /* Glow (active building) */
 .glow {
   filter: drop-shadow(0 0 16px #6fcf97);
@@ -149,48 +193,97 @@
 
 /* =====================
    STORY CHAT UI
+=======
+@keyframes pulse { 50% { transform: translate(-50%, -50%) scale(1.05); } }
+
+/* =====================
+   💬 TRANSPARENT STORY CHAT
+>>>>>>> bd91329 (final result)
 ===================== */
 .story-chat {
-  position: absolute;
-  bottom: 0;
+  position: fixed; 
+  bottom: 20px; /* Lifted slightly */
+  left: 0;
   width: 100%;
-  padding: 26px 20px;
-  background: linear-gradient(
-    to top,
-    rgba(255,255,255,0.96),
-    rgba(255,255,255,0.85)
-  );
-  box-shadow: 0 -10px 30px rgba(0,0,0,0.15);
-  text-align: center;
-  z-index: 10;
+  z-index: 9999; 
+  
+  /* ✅ FULLY TRANSPARENT BACKGROUND */
+  background: transparent;
+  box-shadow: none;
+  border: none;
+  
+  padding: 0 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
 }
 
 .chat-bubble {
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  gap: 12px;
-  max-width: 760px;
-  font-size: 18px;
-  color: #333;
+  justify-content: center;
+  gap: 15px;
+  max-width: 800px;
+  width: 100%;
+  margin-bottom: 15px;
+  
+  /* Optional: Very subtle dark fade behind text only for readability */
+  background: radial-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0) 70%);
+  padding: 10px 20px;
+  border-radius: 50px;
 }
 
 .squirrel-icon {
-  font-size: 26px;
+  font-size: 3rem;
+  animation: bounce 2s infinite;
+  min-width: 60px;
+  filter: drop-shadow(0 4px 4px rgba(0,0,0,0.5));
+}
+
+.chat-bubble p {
+  font-size: 1.4rem;
+  font-weight: 900; 
+  color: white; /* White text */
+  margin: 0;
+  line-height: 1.4;
+  
+  /* ✅ HEAVY TEXT STROKE (Outline) - Makes it readable on any background */
+  text-shadow: 
+    2px 2px 0 #000, 
+   -1px -1px 0 #000,  
+    1px -1px 0 #000,
+   -1px 1px 0 #000,
+    1px 1px 0 #000;
 }
 
 .start-btn {
-  margin-top: 20px;
-  padding: 14px 40px;
-  border-radius: 999px;
-  background: linear-gradient(135deg, #6fcf97, #27ae60);
-  color: white;
-  border: none;
-  font-size: 16px;
-  font-weight: 600;
+  background: linear-gradient(135deg, #ff9f1c, #ffcd3c); /* Brighter button */
+  color: #333;
+  border: 3px solid white;
+  padding: 14px 50px;
+  border-radius: 50px;
+  font-size: 1.3rem;
+  font-weight: 800;
   cursor: pointer;
+<<<<<<< HEAD
   transition: transform 0.2s ease;
+=======
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+  transition: transform 0.2s;
+  text-transform: uppercase;
+>>>>>>> bd91329 (final result)
 }
 
 .start-btn:hover {
   transform: scale(1.05);
+<<<<<<< HEAD
+=======
+  background: #ffcd3c;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+>>>>>>> bd91329 (final result)
 }

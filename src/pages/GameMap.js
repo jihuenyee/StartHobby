@@ -1,4 +1,3 @@
-// src/pages/GameMap.js
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/GameMap.css";
@@ -19,7 +18,6 @@ export default function GameMap() {
   const footstepSound = useRef(null);
   const clickSound = useRef(null);
 
-  /* ✅ CORRECTED: Read specific keys (clawGame, castleGame, snakeGame) */
   const gameResults = useMemo(() => {
     return (
       JSON.parse(localStorage.getItem("gameResults")) || {
@@ -45,14 +43,13 @@ export default function GameMap() {
     };
   }, []);
 
-  /* 🧠 LOGIC: Check previous game completion to set entry point */
   useEffect(() => {
     if (gameResults.castleGame?.completed) {
-      setEntry("third"); // Unlocks Snake Game
+      setEntry("third");
     } else if (gameResults.clawGame?.completed) {
-      setEntry("second"); // Unlocks Castle Game
+      setEntry("second");
     } else {
-      setEntry("first"); // Starts at Claw Game
+      setEntry("first");
     }
   }, [gameResults]);
 
@@ -61,27 +58,25 @@ export default function GameMap() {
     if (entry === "second") text = STORY_SECOND;
     if (entry === "third") text = STORY_THIRD;
 
+    setTypedText(""); 
     let i = 0;
-    setTypedText("");
     const interval = setInterval(() => {
-      if (i < text.length) {
-        setTypedText((p) => p + text[i]);
-        i++;
-      } else {
-        clearInterval(interval);
-      }
-    }, 35);
+      i++;
+      setTypedText(text.slice(0, i)); 
+      if (i === text.length) clearInterval(interval);
+    }, 30);
+
     return () => clearInterval(interval);
   }, [entry]);
 
   const startGame = () => {
-    clickSound.current?.play();
+    clickSound.current?.play().catch(() => {});
     setPhase("walking");
-    footstepSound.current?.play();
+    footstepSound.current?.play().catch(() => {});
 
     setTimeout(() => {
       setPhase("entering");
-      footstepSound.current.pause();
+      footstepSound.current?.pause();
     }, 2600);
 
     setTimeout(() => {
@@ -89,8 +84,7 @@ export default function GameMap() {
     }, 3200);
 
     setTimeout(() => {
-      bgSound.current.pause();
-      // ✅ NAVIGATION LOGIC
+      bgSound.current?.pause();
       if (entry === "first") navigate("/claw-quiz-game");
       else if (entry === "second") navigate("/castle-game");
       else if (entry === "third") navigate("/snake-ladder-game"); 
@@ -98,6 +92,7 @@ export default function GameMap() {
     }, 4000);
   };
 
+<<<<<<< HEAD
   // ... inside GameMap component
 
   const squirrelClass = [
@@ -114,29 +109,51 @@ export default function GameMap() {
     
     phase === "entering" ? "entering" : "",
   ].join(" ");
+=======
+  // ✅ UPDATED LOGIC FOR CORRECT ENTRY
+  const getSquirrelClass = () => {
+    let base = "map-squirrel";
+
+    // 1. Entering Phase (The Fix)
+    if (phase === "entering") {
+      if (entry === "first") return `${base} entering-1`;
+      if (entry === "second") return `${base} entering-2`;
+      if (entry === "third") return `${base} entering-3`;
+    }
+
+    // 2. Walking Phase
+    if (phase === "walking") {
+      if (entry === "first") return `${base} walking`;
+      if (entry === "second") return `${base} second-walk`;
+      if (entry === "third") return `${base} third-walk`;
+    }
+
+    // 3. Story Phase (Static Waiting)
+    if (entry === "first") return `${base} start-forest`;
+    if (entry === "second") return `${base} waiting-1`;
+    if (entry === "third") return `${base} waiting-2`;
+
+    return base;
+  };
+>>>>>>> bd91329 (final result)
 
   return (
-    <div ref={sceneRef} className="map-scene" style={{ backgroundImage: `url(${process.env.PUBLIC_URL}/backgrounds/forest-map.png)` }}>
+    <div ref={sceneRef} className="map-scene">
       
-      <div className={squirrelClass}>🐿️</div>
+      {/* 🐿️ SQUIRREL */}
+      <div className={getSquirrelClass()}>🐿️</div>
 
-      {/* 🏠 BUILDING 1: Claw Game */}
       <div className={`map-building building-1 ${gameResults.clawGame?.completed ? "completed" : "glow"}`}>
         <div className={`door ${phase === "entering" && entry === "first" ? "open" : ""}`} />
         🏠
       </div>
 
-      {/* 🏰 BUILDING 2: Castle Game (Unlocks if Claw Game done) */}
       <div className={`map-building building-2 ${gameResults.clawGame?.completed ? (gameResults.castleGame?.completed ? "completed" : "glow") : "locked"}`}>
         <div className={`door ${phase === "entering" && entry === "second" ? "open" : ""}`} />
         🏰
       </div>
 
-      {/* 🏯 BUILDING 3: Snake Game (Unlocks if Castle Game done) */}
-      <div 
-        className={`map-building building-3 ${gameResults.castleGame?.completed ? "glow" : "locked"}`}
-        style={{ cursor: gameResults.castleGame?.completed ? "pointer" : "default" }}
-      >
+      <div className={`map-building building-3 ${gameResults.castleGame?.completed ? "glow" : "locked"}`}>
         <div className={`door ${phase === "entering" && entry === "third" ? "open" : ""}`} />
         🏯
       </div>
@@ -147,7 +164,7 @@ export default function GameMap() {
             <span className="squirrel-icon">🐿️</span>
             <p>{typedText}</p>
           </div>
-          <button className="start-btn" onClick={startGame}>Start Game</button>
+          <button className="start-btn" onClick={startGame}>Start Adventure</button>
         </div>
       )}
     </div>

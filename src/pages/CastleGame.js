@@ -106,7 +106,6 @@ const CastleGame = () => {
   const handleIngredientCollection = (optionIdx) => {
     safePlay(clickSound);
     const currentItem = INGREDIENTS[itemIndex];
-<<<<<<< HEAD
     const choice = currentItem.options[optionIdx];
     setUserChoices(prev => [...prev, choice]);
 
@@ -137,44 +136,6 @@ const CastleGame = () => {
         }
       }, 800);
     }, 1000);
-=======
-    if (optionIdx === currentItem.correct) {
-      // Save type
-      setCollectedTypes([...collectedTypes, currentItem.type]);
-
-      setShowQuiz(false);
-      setIsMoving(true); 
-      setSquirrelPos(currentItem.target);
-      
-      setTimeout(() => {
-        // Change background if you have individual images, else keep current
-        if (currentItem.bgAfter) setCurrentBg(currentItem.bgAfter);
-        
-        setTimeout(() => {
-          if (itemIndex < INGREDIENTS.length - 1) {
-            setItemIndex(itemIndex + 1);
-            setSquirrelPos({ x: '45%', y: '85%' }); // Move back to floor
-            
-            setTimeout(() => {
-              setIsMoving(false); 
-            }, 1200);
-            
-          } else {
-            setScene('baking');
-            setTimeout(() => {
-              setHasCake(true);
-              setScene('finale');
-              setCurrentBg('/castle.jpg');
-              setSquirrelPos({ x: '10%', y: '75%' });
-              setIsMoving(false);
-            }, 3000);
-          }
-        }, 800);
-      }, 1000);
-    } else {
-      alert("Wrong answer! The squirrel is confused.");
-    }
->>>>>>> bd91329 (final result)
   };
 
   const handleSneakPast = () => {
@@ -188,22 +149,11 @@ const CastleGame = () => {
     setScene('end');
     const raw = localStorage.getItem("gameResults");
     const gameResults = raw ? JSON.parse(raw) : {};
-<<<<<<< HEAD
     gameResults.castleGame = { 
       completed: true, 
       personalityChoices: userChoices, 
       completedAt: Date.now() 
     };
-=======
-    
-    gameResults.castleGame = { 
-        completed: true, 
-        answers: [], 
-        types: collectedTypes,
-        completedAt: Date.now() 
-    };
-    
->>>>>>> bd91329 (final result)
     localStorage.setItem("gameResults", JSON.stringify(gameResults));
     const message = INSPIRATION_TEXTS[Math.floor(Math.random() * INSPIRATION_TEXTS.length)];
     typeEndingText(message);

@@ -3,80 +3,105 @@ import { useNavigate } from "react-router-dom";
 import "../styles/ClawQuizGame.css";
 
 /* =====================
-   QUESTIONS
+   HOBBY DISCOVERY QUESTIONS
 ===================== */
 const QUESTIONS = [
   {
-    text: "What kind of activities do you enjoy most?",
-    options: ["DIY projects", "Outdoor fun", "Reading", "Group activities"],
+    text: "It's a free Saturday! What is your first instinct?",
+    options: [
+      "Create something new 🎨",  
+      "Go outside and move 🏃",   
+      "Solve a tricky puzzle 🧩", 
+      "Call some friends 📞"      
+    ],
   },
   {
-    text: "How do you usually spend your free time?",
-    options: ["Relaxing alone", "Being active", "Learning new things", "Socialising"],
+    text: "Pick an object to take on an adventure:",
+    options: [
+      "Sketchbook & Pen ✏️",     
+      "Hiking Boots 🥾",         
+      "Map & Compass 🧭",        
+      "Camera to share 📸"       
+    ],
   },
   {
-    text: "Which environment feels most comfortable to you?",
-    options: ["Home", "Nature", "Libraries / cafés", "Crowded places"],
+    text: "What brings you the most satisfaction?",
+    options: [
+      "Expressing myself ✨",     
+      "Breaking a sweat 💦",      
+      "Learning how it works ⚙️", 
+      "Helping others 🤝"         
+    ],
   },
 ];
 
 const ENDING_TEXTS = [
-  "Nice choices. You’re learning more about yourself.",
+  "Interesting choices! I'm getting a vibe from you...",
   "Every answer brings you closer to your perfect hobby.",
-  "Great job! Let’s see what fits you best…",
+  "Great job! Let’s head to the Castle next...",
 ];
 
 export default function ClawQuizGame() {
   const navigate = useNavigate();
 
-  /* =====================
-     STATE
-  ===================== */
+  /* STATE */
   const [questionIndex, setQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState([]);
-
   const [clawX, setClawX] = useState(50);
-  const [ropeHeight, setRopeHeight] = useState(60);
+  const [ropeHeight, setRopeHeight] = useState(60); 
   const [closed, setClosed] = useState(false);
   const [grabbing, setGrabbing] = useState(false);
   const [grabbedIndex, setGrabbedIndex] = useState(null);
-
   const [typedQuestion, setTypedQuestion] = useState("");
   const [showEnding, setShowEnding] = useState(false);
   const [typedEnding, setTypedEnding] = useState("");
+  const [miniInsight, setMiniInsight] = useState(null);
 
   const optionRefs = useRef([]);
   const clawRef = useRef(null);
 
-  /* =====================
-     SOUNDS
-  ===================== */
+  /* SAFE AUDIO */
   const bgSound = useRef(null);
   const motorSound = useRef(null);
   const grabSound = useRef(null);
+  const winSound = useRef(null);
+
+  const createAudio = (path, loop = false, volume = 1.0) => {
+    const audio = new Audio(path);
+    audio.loop = loop;
+    audio.volume = volume;
+    audio.onerror = () => console.warn(`Missing audio: ${path}`);
+    return audio;
+  };
+
+  const safePlay = (audioRef) => {
+    if (audioRef.current) audioRef.current.play().catch(() => {});
+  };
+
+  const safePause = (audioRef) => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+    }
+  };
 
   useEffect(() => {
-    bgSound.current = new Audio("/sounds/ClawMachineBackground.mp3");
-    bgSound.current.loop = true;
-    bgSound.current.volume = 0.35;
-    bgSound.current.play().catch(() => {});
+    bgSound.current = createAudio("/sounds/ClawMachineBackground.mp3", true, 0.3);
+    motorSound.current = createAudio("/sounds/clawdrop.mp3", false, 0.4);
+    grabSound.current = createAudio("/sounds/grab.mp3", false, 0.5);
+    winSound.current = createAudio("/sounds/win.mp3", false, 0.6);
 
-    motorSound.current = new Audio("/sounds/clawdrop.mp3");
-    motorSound.current.volume = 0.4;
-
-    grabSound.current = new Audio("/sounds/grab.mp3");
-    grabSound.current.volume = 0.5;
+    safePlay(bgSound);
 
     return () => {
-      bgSound.current.pause();
-      bgSound.current.currentTime = 0;
+      safePause(bgSound);
     };
   }, []);
 
-  /* =====================
-     TYPE QUESTION
-  ===================== */
+  /* TYPEWRITER */
   useEffect(() => {
+    if (showEnding || miniInsight) return;
+    
     let i = 0;
     setTypedQuestion("");
     const text = QUESTIONS[questionIndex].text;
@@ -91,51 +116,42 @@ export default function ClawQuizGame() {
     }, 35);
 
     return () => clearInterval(interval);
-  }, [questionIndex]);
+  }, [questionIndex, showEnding, miniInsight]);
 
-  /* =====================
-     GRAB SEQUENCE
-  ===================== */
+  /* GRAB LOGIC */
   const grabOption = async (index) => {
-    if (grabbing || showEnding) return;
+    if (grabbing || showEnding || miniInsight) return;
     setGrabbing(true);
 
     const option = optionRefs.current[index];
-    const machine = document
-      .querySelector(".machine-inner")
-      .getBoundingClientRect();
+    const machine = document.querySelector(".machine-inner").getBoundingClientRect();
     const optionRect = option.getBoundingClientRect();
-    const clawRect = clawRef.current.getBoundingClientRect();
+    
+    if (!machine || !optionRect) return;
 
-    const targetX =
-      ((optionRect.left + optionRect.width / 2 - machine.left) /
-        machine.width) *
-      100;
+    const targetX = ((optionRect.left + optionRect.width / 2 - machine.left) / machine.width) * 100;
+    
+    // Adjusted Calculation for the new CSS layout
+    const clawHeadHeight = 60; 
+    const distanceToDrop = (optionRect.top - machine.top) + (optionRect.height / 2) - clawHeadHeight;
 
-    const targetRope =
-      optionRect.top + optionRect.height / 2 - clawRect.top - 30;
-
-    /* MOVE */
-    motorSound.current.play();
+    /* ANIMATION */
+    safePlay(motorSound);
     setClawX(targetX);
-    await wait(500);
+    await wait(800); 
 
-    /* DROP */
-    setRopeHeight(targetRope);
-    await wait(600);
+    setRopeHeight(distanceToDrop);
+    await wait(1000); 
 
-    /* GRAB */
-    grabSound.current.play();
+    safePlay(grabSound);
     setClosed(true);
-    await wait(300);
+    await wait(400);
 
-    /* LIFT (THIS WAS MISSING BEFORE) */
     setGrabbedIndex(index);
-    setRopeHeight(60);
-    await wait(700);
+    setRopeHeight(60); 
+    await wait(1000); 
 
-    motorSound.current.pause();
-    motorSound.current.currentTime = 0;
+    safePause(motorSound);
 
     const newAnswers = [
       ...answers,
@@ -151,7 +167,6 @@ export default function ClawQuizGame() {
     setGrabbedIndex(null);
     setGrabbing(false);
 
-    /* NEXT */
     if (questionIndex < QUESTIONS.length - 1) {
       setQuestionIndex((q) => q + 1);
     } else {
@@ -159,26 +174,45 @@ export default function ClawQuizGame() {
     }
   };
 
-  /* =====================
-     FINISH
-  ===================== */
+  /* FINISH */
   const finishQuiz = (finalAnswers) => {
     const raw = localStorage.getItem("gameResults");
     const gameResults = raw ? JSON.parse(raw) : {};
 
+    const types = finalAnswers.map(a => {
+        const text = a.answer;
+        if(text.includes("Create") || text.includes("Sketchbook") || text.includes("Express")) return "Creative";
+        if(text.includes("Move") || text.includes("Hiking") || text.includes("Sweat")) return "Active";
+        if(text.includes("Call") || text.includes("Share") || text.includes("Helping")) return "Social";
+        return "Strategic";
+    });
+
     gameResults.clawGame = {
       completed: true,
       answers: finalAnswers,
+      types: types,
       completedAt: Date.now(),
     };
-
     localStorage.setItem("gameResults", JSON.stringify(gameResults));
 
-    setShowEnding(true);
+    const counts = {};
+    types.forEach(t => counts[t] = (counts[t] || 0) + 1);
+    const dominant = Object.keys(counts).reduce((a, b) => counts[a] > counts[b] ? a : b);
 
-    const msg =
-      ENDING_TEXTS[Math.floor(Math.random() * ENDING_TEXTS.length)];
+    let message = "";
+    if (dominant === "Creative") message = "Oh! I see you have a Creative soul! 🎨";
+    else if (dominant === "Active") message = "Oh! I see you're a Sporty person! 🏃";
+    else if (dominant === "Social") message = "Oh! I see you're a Social butterfly! 🦋";
+    else message = "Oh! I see you have a Strategic mind! 🧠";
 
+    safePlay(winSound);
+    setMiniInsight(message);
+  };
+
+  const handleCloseInsight = () => {
+    setMiniInsight(null);
+    setShowEnding(true); 
+    const msg = ENDING_TEXTS[Math.floor(Math.random() * ENDING_TEXTS.length)];
     typeEnding(msg);
   };
 
@@ -199,7 +233,6 @@ export default function ClawQuizGame() {
     <div className="claw-page">
       <div className="machine-area">
 
-        {/* 🐿️ QUESTION SQUIRREL (LEFT SIDE) */}
         <div className="question-squirrel">
           🐿️
           <div className="speech-bubble">
@@ -216,7 +249,6 @@ export default function ClawQuizGame() {
 
           <div className="machine-inner">
 
-            {/* CLAW */}
             <div
               className="claw-wrapper"
               ref={clawRef}
@@ -231,7 +263,6 @@ export default function ClawQuizGame() {
               </div>
             </div>
 
-            {/* OPTIONS */}
             {!showEnding && (
               <div className="options">
                 {QUESTIONS[questionIndex].options.map((opt, i) => (
@@ -250,14 +281,13 @@ export default function ClawQuizGame() {
               </div>
             )}
 
-            {/* END */}
             {showEnding && (
               <div className="ending-message">
                 <button
                   className="start-btn"
                   onClick={() => navigate("/game-map")}
                 >
-                  Continue
+                  Continue Journey
                 </button>
               </div>
             )}
@@ -285,13 +315,25 @@ export default function ClawQuizGame() {
           Question {questionIndex + 1} / {QUESTIONS.length}
         </p>
       )}
+
+      {miniInsight && (
+        <div className="modal-overlay">
+          <div className="insight-card">
+            <h1>Claw Machine Cleared!</h1>
+            <div style={{ fontSize: "50px", margin: "10px 0" }}>💡</div>
+            <h2>{miniInsight}</h2>
+            <p>That was interesting... let's keep going!</p>
+            <button className="start-btn" onClick={handleCloseInsight}>
+              Awesome!
+            </button>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
 
-/* =====================
-   UTILITY
-===================== */
 function wait(ms) {
   return new Promise((res) => setTimeout(res, ms));
 }

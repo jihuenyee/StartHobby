@@ -1,173 +1,158 @@
-/* =====================
-   MAP SCENE
-===================== */
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap');
+
 .map-scene {
   position: relative;
-  width: 100%;
-  height: 100vh;
+  width: 100vw;
+  height: 100dvh; 
+  background-image: url('/public/backgrounds/forest-map.png');
   background-size: cover;
   background-position: center;
   overflow: hidden;
-  transition: transform 0.9s ease;
+  font-family: 'Nunito', sans-serif;
 }
 
 .map-scene.zoom {
-  transform: scale(1.15);
+  transform: scale(1.6);
+  transition: transform 1s ease-in-out;
 }
 
 /* =====================
-   🐿️ SQUIRREL
+   🐿️ SQUIRREL & ANIMATION
 ===================== */
 .map-squirrel {
   position: absolute;
-  font-size: 48px;
-  z-index: 5;
+  font-size: 65px;
+  z-index: 50; 
+  transition: transform 0.1s linear;
+  filter: drop-shadow(0 5px 5px rgba(0,0,0,0.5));
+  pointer-events: none;
 }
 
-/* First entry start */
-.start-forest {
-  bottom: 14%;
-  left: 12%;
-}
+/* --- STATIC POSITIONS --- */
+.start-forest { left: 10%; top: 80%; }
+.waiting-1 { left: 75%; top: 65%; transform: scaleX(-1); }
+.waiting-2 { left: 25%; top: 40%; transform: scaleX(1); }
 
-/* Waiting outside building 1 */
-.map-squirrel.waiting-1 {
-  left: 58%;
-  bottom: 40%;
-  transform: scale(0.65);
-}
+/* --- ANIMATIONS --- */
+.walking { animation: pathOne 2.5s forwards linear; }
+.second-walk { animation: pathTwo 2.5s forwards linear; }
+.third-walk { animation: pathThree 2.5s forwards linear; }
 
-.small {
-  scale: 0.65;
-}
+.entering-1 { left: 75% !important; top: 65% !important; animation: hopIn 0.5s forwards ease-in; }
+.entering-2 { left: 25% !important; top: 40% !important; animation: hopIn 0.5s forwards ease-in; }
+.entering-3 { left: 70% !important; top: 15% !important; animation: hopIn 0.5s forwards ease-in; }
 
-/* First walk */
-.map-squirrel.walking {
-  animation: walkPath 2.6s ease-in-out forwards;
+@keyframes pathOne {
+  0%   { left: 10%; top: 80%; transform: scale(1); }
+  100% { left: 75%; top: 65%; transform: scale(0.8); }
 }
-
-/* Second walk */
-.second-walk {
-  animation: walkSecondPath 2.6s ease-in-out forwards;
+@keyframes pathTwo {
+  0%   { left: 75%; top: 65%; transform: scaleX(-1) scale(0.8); }
+  100% { left: 25%; top: 40%; transform: scaleX(-1) scale(0.9); }
 }
-
-/* Enter door */
-.map-squirrel.entering {
-  animation: enterDoor 0.6s ease forwards;
+@keyframes pathThree {
+  0%   { left: 25%; top: 40%; transform: scaleX(1) scale(0.9); }
+  100% { left: 70%; top: 15%; transform: scaleX(1) scale(0.7); }
 }
-
-@keyframes walkPath {
-  0% { transform: translate(0,0) scale(1); }
-  30% { transform: translate(18vw,-6vh) scale(0.9); }
-  60% { transform: translate(36vw,-14vh) scale(0.8); }
-  100% { transform: translate(52vw,-22vh) scale(0.65); }
-}
-
-@keyframes walkSecondPath {
-  0% { transform: translate(0,0) scale(0.65); }
-  40% { transform: translate(-14vw,-6vh) scale(0.6); }
-  100% { transform: translate(-26vw,-18vh) scale(0.55); }
-}
-
-@keyframes enterDoor {
-  to {
-    transform: scale(0);
-    opacity: 0;
-  }
+@keyframes hopIn {
+  to { opacity: 0; transform: scale(0.1); }
 }
 
 /* =====================
-   BUILDINGS
+   🏰 BUILDINGS
 ===================== */
 .map-building {
   position: absolute;
-  font-size: 44px;
-  z-index: 3;
+  z-index: 10;
+  transform: translate(-50%, -50%);
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  font-size: 100px;
+  cursor: pointer;
 }
 
-.building-1 { left: 65%; top: 50%; }
-.building-2 { left: 38%; top: 28%; }
-.building-3 { left: 63%; top: 16%; }
+.building-1 { left: 75%; top: 65%; }
+.building-2 { left: 25%; top: 40%; font-size: 130px; }
+.building-3 { left: 70%; top: 15%; }
 
-.locked {
-  opacity: 0.4;
-  filter: grayscale(80%);
-}
+.locked { opacity: 0.6; filter: grayscale(1); }
+.glow { animation: pulse 1.5s infinite; filter: drop-shadow(0 0 15px gold); }
+.completed { filter: drop-shadow(0 0 10px #27ae60); }
 
-/* Glow (active) */
-.glow {
-  filter: drop-shadow(0 0 16px #6fcf97);
-  animation: glowPulse 1.6s infinite;
-}
-
-@keyframes glowPulse {
-  50% {
-    filter: drop-shadow(0 0 26px #6fcf97);
-  }
-}
-
-/* Completed look */
-.completed {
-  opacity: 0.9;
-  filter: drop-shadow(0 0 10px rgba(255,215,120,0.9));
-}
-
-/* Door */
-.door {
-  position: absolute;
-  bottom: 6px;
-  left: 50%;
-  width: 14px;
-  height: 24px;
-  background: #5a3825;
-  transform-origin: left center;
-  transform: translateX(-50%) rotateY(0deg);
-  transition: transform 0.6s ease;
-}
-
-.door.open {
-  transform: translateX(-50%) rotateY(-70deg);
-}
+@keyframes pulse { 50% { transform: translate(-50%, -50%) scale(1.05); } }
 
 /* =====================
-   STORY CHAT
+   💬 TRANSPARENT STORY CHAT
 ===================== */
 .story-chat {
-  position: absolute;
-  bottom: 0;
+  position: fixed; 
+  bottom: 20px; 
+  left: 0;
   width: 100%;
-  padding: 26px 20px;
-  background: linear-gradient(
-    to top,
-    rgba(255,255,255,0.96),
-    rgba(255,255,255,0.85)
-  );
-  box-shadow: 0 -10px 30px rgba(0,0,0,0.15);
-  text-align: center;
-  z-index: 10;
+  z-index: 9999; 
+  background: transparent;
+  padding: 0 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
 }
 
 .chat-bubble {
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  gap: 12px;
-  max-width: 760px;
-  font-size: 18px;
-  color: #333;
+  justify-content: center;
+  gap: 15px;
+  max-width: 800px;
+  width: 100%;
+  margin-bottom: 15px;
+  background: radial-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0) 70%);
+  padding: 10px 20px;
+  border-radius: 50px;
 }
 
 .squirrel-icon {
-  font-size: 26px;
+  font-size: 3rem;
+  animation: bounce 2s infinite;
+  min-width: 60px;
+  filter: drop-shadow(0 4px 4px rgba(0,0,0,0.5));
+}
+
+.chat-bubble p {
+  font-size: 1.4rem;
+  font-weight: 900; 
+  color: white; 
+  margin: 0;
+  line-height: 1.4;
+  text-shadow: 
+    2px 2px 0 #000, 
+   -1px -1px 0 #000,  
+    1px -1px 0 #000,
+   -1px 1px 0 #000,
+    1px 1px 0 #000;
 }
 
 .start-btn {
-  margin-top: 20px;
-  padding: 14px 40px;
-  border-radius: 999px;
-  background: linear-gradient(135deg, #6fcf97, #27ae60);
-  color: white;
-  border: none;
-  font-size: 16px;
-  font-weight: 600;
+  background: linear-gradient(135deg, #ff9f1c, #ffcd3c); 
+  color: #333;
+  border: 3px solid white;
+  padding: 14px 50px;
+  border-radius: 50px;
+  font-size: 1.3rem;
+  font-weight: 800;
   cursor: pointer;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+  transition: transform 0.2s;
+  text-transform: uppercase;
+}
+
+.start-btn:hover {
+  transform: scale(1.05);
+  background: #ffcd3c;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
 }

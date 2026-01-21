@@ -20,12 +20,12 @@ import AdminUsers from "./pages/AdminUsers";
 import AdminQuiz from "./pages/AdminQuiz";
 import StoryIntro from "./pages/StoryIntro";
 import GameMap from "./pages/GameMap";
-import SquirrelGame from "./pages/SquirrelGame";
 import ClawQuizGame from "./pages/ClawQuizGame";
 import CastleGame from "./pages/CastleGame";
 import SnakeLadderGame from "./pages/SnakeLadderGame";
 import { initGameResults } from "./utils/initGameResults";
 import ResultScreen from "./pages/ResultScreen";
+import PersonalityReveal from "./pages/PersonalityReveal";
 import "./App.css";
 
 const App = () => {
@@ -62,11 +62,11 @@ const App = () => {
           {/* GAME FLOW */}
           <Route path="/story" element={<StoryIntro />} />
           <Route path="/game-map" element={<GameMap />} />
-          <Route path="/squirrel-game" element={<SquirrelGame />} />
           <Route path="/claw-quiz-game" element={<ClawQuizGame />} />
           <Route path="/castle-game" element={<CastleGame />} />
           <Route path="/snake-ladder-game" element={<SnakeLadderGame />} />
           <Route path="/result" element={<ResultScreen />} />
+          <Route path="/personality-reveal" element={<PersonalityReveal />} />
 
           {/* ADMIN ROUTES */}
           <Route path="/admin" element={<AdminDashboard />} />

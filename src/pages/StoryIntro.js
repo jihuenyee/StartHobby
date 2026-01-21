@@ -1,4 +1,3 @@
-// src/pages/StoryIntro.js
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/StoryIntro.css";
@@ -12,6 +11,7 @@ function StoryIntro() {
   const clickSound = useRef(null);
 
   const bgStyle = {
+    // Uses process.env to ensure it works on all deployments
     backgroundImage: `url(${process.env.PUBLIC_URL}/backgrounds/forest-bg.png)`,
     backgroundSize: "cover",
     backgroundPosition: "center bottom"
@@ -23,24 +23,54 @@ function StoryIntro() {
     "💡 Answer hobby questions to help the squirrel reach its family."
   ];
 
+  // --- 🛡️ SAFE AUDIO HELPERS ---
+  const createAudio = (path, loop = false, volume = 1.0) => {
+    const audio = new Audio(path);
+    audio.loop = loop;
+    audio.volume = volume;
+    // THIS LINE PREVENTS THE CRASH:
+    audio.onerror = () => console.warn(`Audio missing or not supported: ${path}`);
+    return audio;
+  };
+
+  const safePlay = (audioRef) => {
+    if (audioRef.current) {
+      const playPromise = audioRef.current.play();
+      if (playPromise !== undefined) {
+        playPromise.catch((error) => {
+          console.warn("Audio play blocked (interaction needed) or missing:", error);
+        });
+      }
+    }
+  };
+
+  const safePause = (audioRef) => {
+    if (audioRef.current) {
+      try {
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+      } catch (e) {
+        // Ignore pause errors
+      }
+    }
+  };
+
   useEffect(() => {
-    forestSound.current = new Audio("/sounds/forest.mp3");
-    forestSound.current.loop = true;
-    forestSound.current.volume = 0.35;
+    // Initialize audio safely
+    forestSound.current = createAudio("/sounds/forest.mp3", true, 0.35);
+    clickSound.current = createAudio("/sounds/click.mp3", false, 0.6);
 
-    clickSound.current = new Audio("/sounds/click.mp3");
-    clickSound.current.volume = 0.6;
+    // Attempt to play BG music
+    safePlay(forestSound);
 
-    forestSound.current.play().catch(() => {});
-
+    // Cleanup when leaving page
     return () => {
-      forestSound.current.pause();
-      forestSound.current.currentTime = 0;
+      safePause(forestSound);
     };
   }, []);
 
   const nextStep = () => {
-    clickSound.current?.play();
+    safePlay(clickSound);
     if (step < storyTexts.length - 1) {
       setStep((prev) => prev + 1);
     } else {
@@ -49,11 +79,10 @@ function StoryIntro() {
   };
 
   const exitScene = () => {
-    forestSound.current?.pause();
-    forestSound.current.currentTime = 0;
+    safePause(forestSound);
     setIsExiting(true);
 
-    // ✅ FIXED: Resetting with correct keys for your game flow
+    // Reset game state for a fresh start
     localStorage.setItem(
       "gameResults",
       JSON.stringify({
@@ -63,13 +92,20 @@ function StoryIntro() {
       })
     );
 
-    navigate("/game-map");
+    // Wait for fade out animation (1s) then navigate
+    setTimeout(() => {
+        navigate("/game-map");
+    }, 1000);
   };
 
   return (
     <div className={`story-scene ${isExiting ? "exit" : ""}`} style={bgStyle}>
       <button className="skip-btn" onClick={exitScene}><h2>Skip</h2></button>
-      <div className={`baby-squirrel walk-step-${step}`}>🐿️</div>
+      
+      {/* Squirrel Animation */}
+      <div className={`intro-squirrel intro-walk-step-${step}`}>🐿️</div>
+      
+      {/* Story Box */}
       <div className="story-box">
         <p>{storyTexts[step]}</p>
         <button className="story-btn" onClick={nextStep}>

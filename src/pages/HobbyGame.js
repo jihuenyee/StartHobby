@@ -167,7 +167,7 @@ function HobbyGame() {
     if (!showStart && !showStoryline) {
       setShowStoryline(true);
     }
-  }, [showStart]);
+  }, [showStart, showStoryline]); // Added showStoryline here
 
   // Sparkle positions
   const sparkles = Array.from({ length: 18 }).map((_, i) => ({

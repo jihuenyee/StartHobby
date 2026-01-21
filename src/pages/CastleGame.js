@@ -1,53 +1,48 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from "react-router-dom";
-
 import "../styles/CastleGame.css";
 
 const INSPIRATION_TEXTS = [
-  "Nice choice. Sometimes curiosity leads us to unexpected paths.",
-  "Every small preference shapes who we are becoming.",
-  "You’re discovering what excites you — keep going.",
-  "This journey is just getting interesting…"
+  "Nice choice. Your intuition reveals a creative spirit.",
+  "Every preference tells a story of who you are becoming.",
+  "You follow your heart rather than the rules — that is a gift.",
+  "The dragon senses your unique energy through the choices you made."
 ];
 
 const STORY_STEPS = [
   "🏰 You've reached the Ancient Castle, but a giant dragon blocks the way!",
-  "🐲 He looks grumpy because he's hungry... maybe a cake will cheer him up?",
-  "🧁 Let's head to the pantry and find the ingredients!"
+  "🐲 We need a distraction... Let's make a cake!",
+  "🧁 Let's head to the pantry to find ingredients!"
 ];
 
 const INGREDIENTS = [
   { 
     name: 'Milk', 
-    target: { x: '10%', y: '15%' },
+    target: { x: '14%', y: '13%' },
     bgAfter: '/pantry/milk_gone.jpg', 
-    question: "Which hobby involves 'Philately'?",
-    options: ["Stamp Collecting", "Star Gazing", "Bird Watching", "Coin Collecting"],
-    correct: 0 
+    question: "What kind of energy should the base of this cake have?",
+    options: ["Pure & Traditional", "Wild & Magical", "Sweet & Gentle", "Bold & Rich"],
   },
   { 
     name: 'Eggs', 
     target: { x: '26%', y: '39%' }, 
     bgAfter: '/pantry/egg_gone.jpeg', 
-    question: "What is the standard number of strings on a guitar?",
-    options: ["4", "5", "6", "8"],
-    correct: 2 
+    question: "How do you usually approach a big challenge?",
+    options: ["Crack right into it!", "Handle with extreme care", "Look for the golden opportunity", "Ask for a friend's help"],
   },
   { 
     name: 'Frosting', 
     target: { x: '54%', y: '51%' }, 
     bgAfter: '/pantry/frosting_gone.jpeg', 
-    question: "Which art form uses 'Bokeh' as a common term?",
-    options: ["Painting", "Photography", "Sculpting", "Dance"],
-    correct: 1 
+    question: "What's the 'flavor' of your personality?",
+    options: ["Classic & Reliable", "Sparkly & Dramatic", "Dark & Mysterious", "Zesty & Adventurous"],
   },
   { 
     name: 'Flour', 
     target: { x: '88%', y: '51%' }, 
     bgAfter: '/pantry/flour_gone.jpeg', 
-    question: "In baking, what makes bread rise?",
-    options: ["Sugar", "Salt", "Yeast", "Butter"],
-    correct: 2 
+    question: "When you create something, what is most important?",
+    options: ["The final result", "The fun of the process", "Making others happy", "Learning something new"],
   }
 ];
 
@@ -56,69 +51,87 @@ const CastleGame = () => {
   const [scene, setScene] = useState('narrative'); 
   const [narrativeStep, setNarrativeStep] = useState(0);
   const [itemIndex, setItemIndex] = useState(0);
-  const [currentBg, setCurrentBg] = useState('/castle.jpg');
+  const [currentBg, setCurrentBg] = useState('/castle.jpg'); 
   const [squirrelPos, setSquirrelPos] = useState({ x: '50%', y: '70%' });
   const [showQuiz, setShowQuiz] = useState(false);
-  const [isMoving, setIsMoving] = useState(false); // NEW: Track movement
+  const [isMoving, setIsMoving] = useState(false); 
   const [hasCake, setHasCake] = useState(false);
   const [isExiting, setIsExiting] = useState(false);
   const [typedText, setTypedText] = useState("");
+  const [userChoices, setUserChoices] = useState([]);
 
   const clickSound = useRef(null);
 
+  // --- SAFE AUDIO HELPER ---
+  const createAudio = (path) => {
+    const audio = new Audio(path);
+    audio.onerror = () => console.warn(`Missing audio: ${path}`);
+    return audio;
+  };
+
+  const safePlay = (audioRef) => {
+    if (audioRef.current) audioRef.current.play().catch(() => {});
+  };
+
   useEffect(() => {
-    clickSound.current = new Audio("/sounds/click.mp3");
+    clickSound.current = createAudio("/sounds/click.mp3");
   }, []);
 
   const handleNextNarrative = () => {
-    clickSound.current?.play();
+    safePlay(clickSound);
     if (narrativeStep < STORY_STEPS.length - 1) {
       setNarrativeStep(prev => prev + 1);
     } else {
       setScene('pantry');
-      setCurrentBg('/pantry/stocked.jpeg');
+      setCurrentBg('/pantry/stocked.jpeg'); 
       setSquirrelPos({ x: '45%', y: '85%' });
     }
   };
 
   const handleIngredientCollection = (optionIdx) => {
+    safePlay(clickSound);
     const currentItem = INGREDIENTS[itemIndex];
-    if (optionIdx === currentItem.correct) {
-      setShowQuiz(false);
-      setIsMoving(true); // START MOVING
-      setSquirrelPos(currentItem.target);
+    
+    // Collect choice (Personality Logic)
+    const choice = currentItem.options[optionIdx];
+    setUserChoices(prev => [...prev, choice]);
+
+    setShowQuiz(false);
+    setIsMoving(true); 
+    setSquirrelPos(currentItem.target);
+    
+    setTimeout(() => {
+      // Keep current BG if the specific 'gone' image is missing/placeholder
+      if (currentItem.bgAfter) {
+          // Optional: Add check or just try to set it
+          setCurrentBg(currentItem.bgAfter);
+      }
       
       setTimeout(() => {
-        setCurrentBg(currentItem.bgAfter);
-        setTimeout(() => {
-          if (itemIndex < INGREDIENTS.length - 1) {
-            setItemIndex(itemIndex + 1);
-            setSquirrelPos({ x: '45%', y: '85%' }); // Move back to floor
-            
-            // Wait for return transition (1.2s) before showing button again
-            setTimeout(() => {
-              setIsMoving(false); // FINISHED MOVING
-            }, 1200);
-            
-          } else {
-            setScene('baking');
-            setTimeout(() => {
-              setHasCake(true);
-              setScene('finale');
-              setCurrentBg('/castle.jpg');
-              setSquirrelPos({ x: '10%', y: '75%' });
-              setIsMoving(false);
-            }, 3000);
-          }
-        }, 800);
-      }, 1000);
-    } else {
-      alert("Wrong answer! The squirrel is confused.");
-    }
+        if (itemIndex < INGREDIENTS.length - 1) {
+          setItemIndex(itemIndex + 1);
+          setSquirrelPos({ x: '45%', y: '85%' }); 
+          
+          setTimeout(() => {
+            setIsMoving(false); 
+          }, 1200);
+          
+        } else {
+          setScene('baking');
+          setTimeout(() => {
+            setHasCake(true);
+            setScene('finale');
+            setCurrentBg('/castle.jpg');
+            setSquirrelPos({ x: '10%', y: '75%' });
+            setIsMoving(false);
+          }, 3000);
+        }
+      }, 800);
+    }, 1000);
   };
 
   const handleSneakPast = () => {
-    clickSound.current?.play();
+    safePlay(clickSound);
     setIsMoving(true);
     setSquirrelPos({ x: '115%', y: '75%' });
     setTimeout(() => triggerEndingSequence(), 1500);
@@ -128,7 +141,13 @@ const CastleGame = () => {
     setScene('end');
     const raw = localStorage.getItem("gameResults");
     const gameResults = raw ? JSON.parse(raw) : {};
-    gameResults.castleGame = { completed: true, answers: [], completedAt: Date.now() };
+    
+    gameResults.castleGame = { 
+        completed: true, 
+        answers: userChoices, // Saving personality answers
+        completedAt: Date.now() 
+    };
+    
     localStorage.setItem("gameResults", JSON.stringify(gameResults));
     const message = INSPIRATION_TEXTS[Math.floor(Math.random() * INSPIRATION_TEXTS.length)];
     typeEndingText(message);
@@ -151,7 +170,7 @@ const CastleGame = () => {
   };
 
   return (
-    <div className={`castle-scene ${isExiting ? "exit" : ""}`} style={{ backgroundImage: `url(${currentBg})` }}>
+    <div className={`castle-scene ${isExiting ? "exit" : ""}`} style={{ backgroundImage: `url(${process.env.PUBLIC_URL + currentBg})` }}>
       
       {scene !== 'end' && (
         <div 
@@ -159,7 +178,7 @@ const CastleGame = () => {
           style={(scene === 'pantry' || scene === 'finale' || scene === 'baking') ? 
             { left: squirrelPos.x, top: squirrelPos.y, transform: 'none' } : {}}
         >
-          {hasCake ? '🐿️🎂' : '🐿️'}
+          {hasCake ? '🐿️' : '🐿️'}
         </div>
       )}
 
@@ -179,17 +198,18 @@ const CastleGame = () => {
         </div>
       )}
 
-      {/* MODIFIED: Added !isMoving condition here */}
       {scene === 'pantry' && !showQuiz && !isMoving && (
         <div className="story-box">
           <p>Help Bibble find the <b>{INGREDIENTS[itemIndex].name}</b></p>
-          <button className="story-btn" onClick={() => setShowQuiz(true)}>Search Shelf</button>
+          <button className="story-btn" onClick={() => setShowQuiz(true)}>
+            Get {INGREDIENTS[itemIndex].name}
+          </button>
         </div>
       )}
 
       {showQuiz && (
         <div className="quiz-card">
-          <h3>Collecting {INGREDIENTS[itemIndex].name}</h3>
+          <h3>Selecting {INGREDIENTS[itemIndex].name}</h3>
           <p>{INGREDIENTS[itemIndex].question}</p>
           <div className="options-grid">
             {INGREDIENTS[itemIndex].options.map((opt, idx) => (
@@ -207,8 +227,8 @@ const CastleGame = () => {
 
       {scene === 'finale' && (
         <div className="story-box">
-          <p>The Dragon is asleep! Now is our chance to sneak past.</p>
-          <button className="story-btn" onClick={handleSneakPast}>Sneak Past</button>
+          <p>The Dragon loves your cake and fell asleep! Time to sneak past.</p>
+          <button className="story-btn" onClick={handleSneakPast}>Continue Journey</button>
         </div>
       )}
 

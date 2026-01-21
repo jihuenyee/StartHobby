@@ -82,9 +82,12 @@ export default function ClawQuizGame() {
     const text = QUESTIONS[questionIndex].text;
 
     const interval = setInterval(() => {
-      setTypedQuestion((prev) => prev + text[i]);
-      i++;
-      if (i >= text.length) clearInterval(interval);
+      if (i < text.length) {
+        setTypedQuestion((prev) => prev + text[i]);
+        i++;
+      } else {
+        clearInterval(interval);
+      }
     }, 35);
 
     return () => clearInterval(interval);
@@ -183,9 +186,12 @@ export default function ClawQuizGame() {
     let i = 0;
     setTypedEnding("");
     const interval = setInterval(() => {
-      setTypedEnding((p) => p + text[i]);
-      i++;
-      if (i >= text.length) clearInterval(interval);
+      if (i < text.length) {
+        setTypedEnding((p) => p + text[i]);
+        i++;
+      } else {
+        clearInterval(interval);
+      }
     }, 35);
   };
 
@@ -202,6 +208,12 @@ export default function ClawQuizGame() {
         </div>
 
         <div className="machine-frame">
+          {/* Corner bolts */}
+          <div className="corner-bolt top-left"></div>
+          <div className="corner-bolt top-right"></div>
+          <div className="corner-bolt bottom-left"></div>
+          <div className="corner-bolt bottom-right"></div>
+
           <div className="machine-inner">
 
             {/* CLAW */}
@@ -251,7 +263,21 @@ export default function ClawQuizGame() {
             )}
 
           </div>
+
+          {/* Control Panel */}
+          <div className="control-panel">
+            <div className="coin-slot">
+              <div className="coin-label">INSERT COIN</div>
+              <div className="slot"></div>
+            </div>
+            <div className="joystick-indicator">🕹️</div>
+            <div className="prize-chute">
+              <div className="chute-label">PRIZE CHUTE</div>
+              <div className="chute-door"></div>
+            </div>
+          </div>
         </div>
+
       </div>
 
       {!showEnding && (

@@ -13,18 +13,18 @@ function Home() {
         <div className="squirrel-hero">🐿️</div>
 
         <h1 className="home-title">
-          Squirrel Rescue Adventure
+          Lost in the Magical Forest
         </h1>
 
         <p className="home-subtitle">
-          Help a lost baby squirrel find its way home by answering
-          simple hobby questions.
+          A baby squirrel is lost in a magical forest and needs your help!
+          Guide them home through a magical claw-machine adventure.
         </p>
 
         <div className="home-rules">
-          <div className="rule-item">❓ Simple multiple-choice questions</div>
-          <div className="rule-item">🕒 No time pressure</div>
-          <div className="rule-item">🌲 Story-driven journey</div>
+          <div className="rule-item">🎮 Play the magical claw quiz game</div>
+          <div className="rule-item">✨ Help squirrel gain confidence</div>
+          <div className="rule-item">🌲 Discover hobbies along the way</div>
         </div>
 
         <Link to="/story" className="home-start-btn">
@@ -34,7 +34,7 @@ function Home() {
 
       {/* 🌼 Footer hint */}
       <p className="home-hint">
-        Your answers will shape the hobbies suggested to you ✨
+        Every choice brings the baby squirrel closer to home 🏡✨
       </p>
     </div>
   );

@@ -1,283 +1,251 @@
 @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Quicksand:wght@500;700&display=swap');
 
-/* --- ☁️ DREAMY CONTAINER (LOCKED SCREEN) --- */
+/* --- ☁️ CONTAINER --- */
 .reveal-container {
     height: 100vh;
     width: 100vw;
-    /* Pastel Aurora Background */
     background: linear-gradient(120deg, #fdfbfb 0%, #ebedee 100%);
     background: radial-gradient(circle at top left, #e0c3fc 0%, #8ec5fc 100%);
     display: flex;
     justify-content: center;
     align-items: center;
-    overflow: hidden; /* No window scroll */
+    overflow: hidden;
     font-family: 'Quicksand', sans-serif;
     position: relative;
 }
 
-/* Floating Orbs for "Magical" Feel */
+/* Orbs */
 .reveal-container::before, .reveal-container::after {
-    content: "";
-    position: absolute;
-    border-radius: 50%;
-    filter: blur(80px);
-    z-index: 0;
-    animation: floatOrb 10s infinite alternate;
+    content: ""; position: absolute; border-radius: 50%; filter: blur(80px); z-index: 0; animation: floatOrb 10s infinite alternate;
 }
-.reveal-container::before {
-    width: 400px; height: 400px;
-    background: rgba(255, 215, 0, 0.3); /* Gold Orb */
-    top: -10%; left: -10%;
-}
-.reveal-container::after {
-    width: 500px; height: 500px;
-    background: rgba(255, 105, 180, 0.2); /* Pink Orb */
-    bottom: -10%; right: -10%;
-    animation-delay: -5s;
-}
-
+.reveal-container::before { width: 400px; height: 400px; background: rgba(255, 215, 0, 0.3); top: -10%; left: -10%; }
+.reveal-container::after { width: 500px; height: 500px; background: rgba(255, 105, 180, 0.2); bottom: -10%; right: -10%; animation-delay: -5s; }
 @keyframes floatOrb { 0% { transform: translate(0, 0); } 100% { transform: translate(30px, 30px); } }
 
-/* --- 📜 THE MAGICAL SCROLL (MAIN CARD) --- */
+/* --- 📜 MAGIC SCROLL --- */
 .magic-scroll {
     display: flex;
     width: 90vw;
-    max-width: 1100px;
-    height: 85vh;
+    max-width: 1000px; /* Reduced max-width for better fit */
+    height: 80vh;      /* Reduced height */
     background: rgba(255, 255, 255, 0.85);
     backdrop-filter: blur(20px);
     border: 2px solid #fff;
-    border-radius: 40px;
-    box-shadow: 
-        0 20px 50px rgba(0,0,0,0.1),
-        inset 0 0 0 2px rgba(255,255,255,0.5);
+    border-radius: 30px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.1), inset 0 0 0 2px rgba(255,255,255,0.5);
     z-index: 10;
     overflow: hidden;
     opacity: 0;
     animation: openScroll 1s cubic-bezier(0.2, 0.8, 0.2, 1) forwards 0.3s;
 }
-
 @keyframes openScroll { from { opacity: 0; transform: scale(0.9) translateY(20px); } to { opacity: 1; transform: scale(1) translateY(0); } }
 
-/* --- 🎨 LEFT PANEL: IDENTITY --- */
+/* --- 🎨 LEFT PANEL --- */
 .left-panel {
     width: 35%;
     background: linear-gradient(160deg, #ffffff 0%, #f0f4f8 100%);
-    padding: 40px;
+    padding: 30px; /* Reduced padding */
     display: flex;
     flex-direction: column;
     align-items: center;
     text-align: center;
     border-right: 1px solid rgba(0,0,0,0.05);
-    position: relative;
 }
 
 .profile-icon {
-    font-size: 7rem;
+    font-size: 5rem; /* Smaller Icon */
     margin-bottom: 10px;
     filter: drop-shadow(0 10px 15px rgba(0,0,0,0.1));
     animation: bounceIcon 3s ease-in-out infinite;
 }
-
-@keyframes bounceIcon { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+@keyframes bounceIcon { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
 
 .class-badge {
     background: #ffeb3b;
     color: #bfa004;
-    padding: 6px 15px;
-    border-radius: 20px;
+    padding: 5px 12px;
+    border-radius: 15px;
     font-weight: 800;
-    font-size: 0.8rem;
+    font-size: 0.7rem;
     letter-spacing: 1px;
     text-transform: uppercase;
-    margin-bottom: 15px;
+    margin-bottom: 10px;
     box-shadow: 0 4px 10px rgba(255, 235, 59, 0.4);
 }
 
 .magic-title {
     font-family: 'Cinzel', serif;
-    font-size: 2.2rem;
+    font-size: 1.8rem; /* Smaller Title */
     color: #333;
     line-height: 1.1;
-    margin-bottom: 30px;
-    background: linear-gradient(45deg, #333, #666);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    margin-bottom: 20px;
 }
 
-/* RPG Stats */
+/* Stats Box */
 .stats-box {
     width: 100%;
     background: white;
-    padding: 20px;
-    border-radius: 20px;
+    padding: 15px;
+    border-radius: 15px;
     box-shadow: 0 10px 25px rgba(0,0,0,0.03);
-    margin-top: auto; /* Push to bottom */
+    margin-top: auto;
 }
+.stat-row { margin-bottom: 10px; }
+.stat-label { display: flex; justify-content: space-between; font-size: 0.75rem; font-weight: 700; color: #555; margin-bottom: 4px; }
+.progress-bg { height: 6px; background: #f0f0f0; border-radius: 10px; overflow: hidden; }
+.progress-fill { height: 100%; border-radius: 10px; background: linear-gradient(90deg, #ff9a9e 0%, #fecfef 100%); transition: width 1.5s ease-out; }
 
-.stat-row {
-    margin-bottom: 12px;
-}
-
-.stat-label {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.9rem;
-    font-weight: 700;
-    color: #555;
-    margin-bottom: 5px;
-}
-
-.progress-bg {
-    height: 8px;
-    background: #f0f0f0;
-    border-radius: 10px;
-    overflow: hidden;
-}
-
-.progress-fill {
-    height: 100%;
-    border-radius: 10px;
-    /* Beautiful Gradient Bars */
-    background: linear-gradient(90deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%);
-    width: 0; /* Animated later */
-    transition: width 1.5s ease-out;
-}
-
-/* --- 📝 RIGHT PANEL: STORY & QUESTS --- */
+/* --- 📝 RIGHT PANEL --- */
 .right-panel {
     width: 65%;
-    padding: 40px;
+    padding: 30px; /* Reduced padding */
     display: flex;
     flex-direction: column;
-    overflow-y: auto; /* Internal scroll if needed */
+    overflow-y: auto;
 }
 
-/* Aura Box */
+/* Narrative Box */
 .aura-box {
+    position: relative;
     background: #fff;
-    border-left: 5px solid #a18cd1;
-    padding: 20px 25px;
+    border-left: 4px solid #a18cd1;
+    padding: 20px;
     border-radius: 0 15px 15px 0;
     box-shadow: 0 5px 20px rgba(0,0,0,0.03);
-    margin-bottom: 30px;
-}
-
-.aura-text {
-    font-size: 1.1rem;
-    color: #555;
-    font-style: italic;
-    line-height: 1.6;
-}
-
-.superpower-highlight {
-    margin-top: 10px;
-    display: inline-block;
-    font-weight: bold;
-    color: #6a11cb;
-    background: rgba(106, 17, 203, 0.1);
-    padding: 5px 12px;
-    border-radius: 8px;
-}
-
-/* Quest Grid */
-.quest-header {
-    font-family: 'Cinzel', serif;
-    font-size: 1.3rem;
-    color: #333;
     margin-bottom: 20px;
+}
+
+.aura-text { 
+    font-size: 0.95rem; /* More compact text */
+    color: #555; font-style: italic; line-height: 1.6; margin-bottom: 10px; position: relative; z-index: 1; 
+}
+.motto-text {
+    font-family: 'Cinzel', serif;
+    font-size: 0.75rem;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 15px;
+    text-align: right;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+
+/* Superpower Badge */
+.superpower-container {
+    background: #f3f0ff;
+    border-radius: 12px;
+    padding: 8px 15px;
     display: flex;
     align-items: center;
     gap: 10px;
+    border: 1px dashed #a18cd1;
+}
+.superpower-label { font-size: 0.65rem; font-weight: 900; color: #6a11cb; background: white; padding: 3px 6px; border-radius: 6px; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+.superpower-text { font-size: 0.85rem; color: #333; font-weight: 700; }
+
+/* Quests */
+.quest-header { font-family: 'Cinzel', serif; font-size: 1.1rem; color: #333; margin-bottom: 15px; }
+.quests-grid { 
+    display: grid; 
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Smaller Cards */
+    gap: 12px; 
+    margin-bottom: 15px; 
 }
 
-.quests-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 15px;
-    margin-bottom: 20px;
-}
-
+/* Card Links */
 .quest-card {
+    display: block; 
+    text-decoration: none;
     background: white;
     border: 1px solid #f0f0f0;
-    border-radius: 15px;
-    padding: 20px;
+    border-radius: 12px;
+    padding: 15px;
     transition: all 0.3s ease;
-    cursor: default;
+    cursor: pointer;
     position: relative;
     overflow: hidden;
 }
+.quest-card:hover { transform: translateY(-4px); box-shadow: 0 10px 20px rgba(0,0,0,0.08); border-color: #a18cd1; }
+.quest-card h4 { margin: 0 0 4px 0; color: #333; font-size: 0.95rem; font-weight: 800; }
+.quest-card p { font-size: 0.8rem; color: #777; line-height: 1.3; margin-bottom: 8px; }
 
-.quest-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 15px 30px rgba(0,0,0,0.08);
-    border-color: #a18cd1;
-}
-
-/* Color bar on cards */
-.quest-card::top {
-    content: "";
-    position: absolute; top:0; left:0; width: 100%; height: 5px;
-    background: #a18cd1;
-}
-
-.quest-card h4 {
-    margin: 0 0 5px 0;
-    color: #333;
-    font-size: 1.1rem;
-    font-weight: 800;
-}
-
-.quest-card p {
-    font-size: 0.9rem;
-    color: #777;
-    line-height: 1.4;
-    margin-bottom: 12px;
-}
-
-.tags-container {
-    display: flex;
-    gap: 6px;
-    flex-wrap: wrap;
-}
+.tags-container { display: flex; gap: 5px; flex-wrap: wrap; }
 
 .quest-tag {
-    font-size: 0.7rem;
+    font-size: 0.65rem;
     background: #eef2f6;
     color: #555;
-    padding: 4px 8px;
-    border-radius: 6px;
+    padding: 3px 6px;
+    border-radius: 5px;
     font-weight: 700;
     text-transform: uppercase;
+    cursor: help;
+    transition: background 0.2s;
 }
+.quest-tag:hover { background: #d1c4e9; color: #4527a0; }
+
+/* --- 🧙‍♂️ FIXED FLOATING BUBBLE --- */
+.magic-tooltip {
+    position: fixed; 
+    z-index: 10000;
+    width: 240px; /* Smaller tooltip */
+    background: white;
+    background: linear-gradient(135deg, #ffffff, #f8f9fa);
+    color: #333;
+    padding: 12px 15px;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+    border: 2px solid #a18cd1;
+    transform: translate(-50%, -100%);
+    margin-top: -12px; 
+    animation: popIn 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    pointer-events: none;
+}
+
+.tooltip-arrow {
+    position: absolute;
+    bottom: -7px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 14px;
+    height: 14px;
+    background: white;
+    border-bottom: 2px solid #a18cd1;
+    border-right: 2px solid #a18cd1;
+    rotate: 45deg;
+}
+
+@keyframes popIn {
+    from { opacity: 0; transform: translate(-50%, -80%) scale(0.8); }
+    to { opacity: 1; transform: translate(-50%, -100%) scale(1); }
+}
+
+.magic-tooltip strong { display: block; color: #6a11cb; margin-bottom: 4px; font-size: 0.9rem; font-weight: 800; border-bottom: 1px solid #eee; padding-bottom: 4px; }
+.magic-tooltip p { font-size: 0.8rem; margin: 0; line-height: 1.4; color: #555; }
 
 /* Button */
-.restart-btn {
-    align-self: flex-end;
-    margin-top: auto;
-    background: #333;
-    color: white;
-    padding: 14px 35px;
-    border-radius: 30px;
-    font-size: 1rem;
-    font-weight: 700;
-    border: none;
-    cursor: pointer;
-    transition: 0.3s;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+.restart-btn { 
+    align-self: flex-end; 
+    margin-top: auto; 
+    background: #333; 
+    color: white; 
+    padding: 12px 25px; 
+    border-radius: 25px; 
+    font-size: 0.9rem; 
+    font-weight: 700; 
+    border: none; 
+    cursor: pointer; 
+    transition: 0.3s; 
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1); 
 }
-
-.restart-btn:hover {
-    background: #000;
-    transform: scale(1.05);
-    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-}
+.restart-btn:hover { background: #000; transform: scale(1.05); }
 
 /* Mobile */
 @media (max-width: 900px) {
-    .reveal-container { height: auto; overflow-y: auto; padding: 20px 10px; display: block;}
+    .reveal-container { height: auto; overflow-y: auto; padding: 20px 10px; display: block; }
     .magic-scroll { flex-direction: column; height: auto; width: 100%; margin-top: 20px; }
     .left-panel { width: 100%; border-right: none; border-bottom: 1px solid #eee; }
     .right-panel { width: 100%; }
+    .magic-tooltip { position: fixed; bottom: 20px; top: auto !important; left: 50% !important; transform: translateX(-50%) !important; width: 90%; }
 }

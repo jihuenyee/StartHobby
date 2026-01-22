@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap');
 
 .snake-game-container {
-  height: 100dvh; /* Dynamic height for mobile */
+  height: 100dvh;
   width: 100vw;
   background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url('/public/backgrounds/forest-map.png'); 
   background-size: cover;
@@ -10,12 +10,10 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center; /* Centers the board */
+  justify-content: center;
   
-  overflow: hidden; /* Locks screen */
+  overflow: hidden;
   position: relative;
-  
-  /* IMPORTANT: Adds space at bottom so board isn't covered by the fixed button */
   padding-bottom: 80px; 
 }
 
@@ -23,20 +21,20 @@
 .game-header {
   position: absolute;
   top: 15px;
-  background: rgba(0, 0, 0, 0.7); /* Darker for readability */
+  background: rgba(0, 0, 0, 0.7);
   backdrop-filter: blur(5px);
   padding: 8px 20px;
   border-radius: 20px;
   text-align: center;
-  width: 85%;
-  max-width: 350px;
+  width: 90%;
+  max-width: 400px;
   border: 1px solid rgba(255, 255, 255, 0.3);
   z-index: 20;
 }
 
 .progress-bar {
   background: rgba(255, 255, 255, 0.2);
-  height: 6px;
+  height: 8px;
   border-radius: 4px;
   margin-bottom: 5px;
   overflow: hidden;
@@ -50,17 +48,19 @@
 
 .status-text {
   margin: 0;
-  font-size: 0.9rem;
+  font-size: 1rem;
   font-weight: bold;
   color: #fff;
 }
 
-/* BOARD WRAPPER */
+/* --- BOARD WRAPPER (BIGGER SIZE) --- */
 .board-wrapper {
   position: relative;
-  width: 310px;
-  height: 310px;
-  /* Ensure board is visible */
+  /* Use vmin to ensure it scales with screen but is max size possible */
+  width: 90vmin;
+  height: 90vmin;
+  max-width: 500px; /* Increased from 310px */
+  max-height: 500px;
   z-index: 10; 
 }
 
@@ -72,38 +72,38 @@
   width: 100%;
   height: 100%;
   background: rgba(255, 255, 255, 0.9);
-  border-radius: 12px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.6);
-  padding: 5px;
-  gap: 4px;
+  border-radius: 15px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.7);
+  padding: 8px;
+  gap: 6px;
 }
 
 .tile {
   background: #fdfdfd;
-  border-radius: 6px;
+  border-radius: 8px;
   position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
   font-weight: 900;
   color: #888;
-  font-size: 10px;
+  font-size: 14px; /* Larger font */
   border: 1px solid #ddd;
 }
 
 .tile-num {
   position: absolute;
-  top: 1px;
-  left: 3px;
-  font-size: 8px;
+  top: 2px;
+  left: 4px;
+  font-size: 10px;
   opacity: 0.6;
 }
 
-.marker { font-size: 16px; }
+.marker { font-size: 24px; } /* Larger Icons */
 
 /* SPECIAL TILES */
-.snake-tile { background-color: #ffcccc; border: 1px solid #ff4d4d; color: #d00; }
-.ladder-tile { background-color: #d4edda; border: 1px solid #28a745; color: #060; }
+.snake-tile { background-color: #ffcccc; border: 2px solid #ff4d4d; color: #d00; }
+.ladder-tile { background-color: #d4edda; border: 2px solid #28a745; color: #060; }
 
 .finish-tile {
   background-color: transparent;
@@ -113,7 +113,7 @@
 }
 
 .castle-icon {
-  font-size: 55px; /* Big Castle */
+  font-size: 65px; /* Huge Castle */
   position: absolute;
   bottom: 0px;
   z-index: 10;
@@ -134,31 +134,23 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 36px;
+  font-size: 45px; /* Bigger Squirrel */
   z-index: 15;
   transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
   pointer-events: none;
   filter: drop-shadow(0 5px 6px rgba(0,0,0,0.5));
 }
 
-/* ============================
-   CONTROLS (THE FIX IS HERE)
-   ============================ */
+/* CONTROLS */
 .controls-area {
-  /* Locks the button to the screen glass */
   position: fixed; 
   bottom: 30px; 
   left: 50%;
-  transform: translateX(-50%); /* Keeps it perfectly centered */
-  
+  transform: translateX(-50%);
   display: flex;
   gap: 15px;
   align-items: center;
-  
-  /* Ensures it sits ON TOP of everything else */
   z-index: 100; 
-  
-  /* Adds a subtle background glow so it pops against the forest */
   background: rgba(0,0,0,0.3);
   padding: 10px 20px;
   border-radius: 50px;
@@ -166,14 +158,14 @@
 }
 
 .dice-display {
-  width: 55px;
-  height: 55px;
+  width: 60px;
+  height: 60px;
   background: white;
   border-radius: 14px;
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 28px;
+  font-size: 32px;
   font-weight: 900;
   color: #333;
   box-shadow: 0 4px 0 #bbb;
@@ -185,11 +177,11 @@
 .roll-btn {
   background: linear-gradient(to bottom, #ff9f1c, #e67e22);
   border: none;
-  padding: 15px 40px;
+  padding: 16px 45px;
   color: white;
   border-radius: 40px;
   font-weight: 800;
-  font-size: 18px;
+  font-size: 20px;
   cursor: pointer;
   box-shadow: 0 5px 0 #d35400;
   text-transform: uppercase;
@@ -207,7 +199,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 200; /* Highest layer */
+  z-index: 200;
   padding: 20px;
   animation: fadeIn 0.3s;
 }
@@ -217,7 +209,7 @@
   padding: 25px;
   border-radius: 20px;
   width: 100%;
-  max-width: 320px;
+  max-width: 350px;
   text-align: center;
   box-shadow: 0 10px 30px rgba(0,0,0,0.5);
   color: #333;
@@ -227,7 +219,7 @@
   width: 100%;
   background: #f0f2f5;
   border: 1px solid #ddd;
-  padding: 12px;
+  padding: 14px;
   border-radius: 10px;
   margin-bottom: 8px;
   font-weight: bold;

@@ -5,48 +5,48 @@ function AdminQuiz() {
   const [quizzes, setQuizzes] = useState([]);
   const [selectedQuiz, setSelectedQuiz] = useState(null);
 
-  // load all quizzes
   useEffect(() => {
     apiRequest("/quizzes").then(setQuizzes);
   }, []);
 
-  // load quiz by id
-  const loadQuiz = async (id) => {
-    const data = await apiRequest(`/quizzes/${id}`);
+  const loadQuiz = async (gameType) => {
+    const data = await apiRequest(`/quizzes/${gameType}`);
     setSelectedQuiz(data);
   };
 
   return (
     <div style={{ display: "flex", gap: 20 }}>
-      {/* LEFT */}
       <div style={{ width: 250 }}>
         <h3>Quizzes</h3>
         <ul>
-          {quizzes.map(q => (
+          {quizzes.map((q) => (
             <li
-              key={q.id}
+              key={q.game_type}
               style={{ cursor: "pointer" }}
-              onClick={() => loadQuiz(q.id)}
+              onClick={() => loadQuiz(q.game_type)}
             >
-              Quiz ID: {q.id}
+              {q.game_type}
             </li>
           ))}
         </ul>
       </div>
 
-      {/* RIGHT */}
       <div style={{ flex: 1 }}>
         {!selectedQuiz ? (
           <p>Select a quiz</p>
         ) : (
           <>
-            <h3>Quiz {selectedQuiz.id}</h3>
-            <p>Game: {selectedQuiz.game_type}</p>
-            <p>A: {selectedQuiz.option_a}</p>
-            <p>B: {selectedQuiz.option_b}</p>
-            <p>C: {selectedQuiz.option_c}</p>
-            <p>D: {selectedQuiz.option_d}</p>
-            <small>{selectedQuiz.created_at}</small>
+            <h3>Quiz: {selectedQuiz.game_type}</h3>
+            {selectedQuiz.questions.map((q) => (
+              <div key={q.question_id}>
+                <p><b>{q.question}</b></p>
+                <p>A: {q.option_a}</p>
+                <p>B: {q.option_b}</p>
+                <p>C: {q.option_c}</p>
+                <p>D: {q.option_d}</p>
+                <hr />
+              </div>
+            ))}
           </>
         )}
       </div>

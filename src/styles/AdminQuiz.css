@@ -328,13 +328,3 @@
   }
 }
 
-.admin-quiz-editor {
-  min-height: 260px;
-  display: flex;
-  justify-content: center;
-}
-
-.editor-content {
-  width: 100%;
-  max-width: 640px;   /* controls card width */
-}

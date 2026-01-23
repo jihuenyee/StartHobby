@@ -184,6 +184,7 @@
   display: flex;
   flex-direction: column;
   gap: 0.6rem;
+  box-sizing: border-box;
 }
 
 .question-header {
@@ -354,25 +355,6 @@
 
 .editor-content::-webkit-scrollbar-track {
   background: transparent;
-}
-
-
-.editor-content {
-  width: 100%;
-  max-width: 640px;
-  box-sizing: border-box;
-  overflow-y: auto;
-  padding-right: 0.75rem; 
-}
-
-.question-card {
-  width: 100%;
-  max-width: 100%;
-  box-sizing: border-box;
-}
-
-.question-card * {
-  box-sizing: border-box;
 }
 
 .question-textarea {

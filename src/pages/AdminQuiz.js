@@ -41,7 +41,7 @@ function AdminQuiz() {
         ) : (
           <>
             <h3>Quiz {selectedQuiz.id}</h3>
-            <p>Game: {selectedQuiz.gameType}</p>
+            <p>Game: {selectedQuiz.game_type}</p>
             <p>A: {selectedQuiz.option_a}</p>
             <p>B: {selectedQuiz.option_b}</p>
             <p>C: {selectedQuiz.option_c}</p>

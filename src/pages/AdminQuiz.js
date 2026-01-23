@@ -5,22 +5,19 @@ import "../styles/AdminQuiz.css";
 
 function AdminQuiz() {
   const [quizzes, setQuizzes] = useState([]);
-  const [selectedQuizId, setSelectedQuizId] = useState(null);
-  const [quizDetails, setQuizDetails] = useState(null);
+  const [selectedQuiz, setSelectedQuiz] = useState(null);
   const [loadingList, setLoadingList] = useState(true);
-  const [loadingQuiz, setLoadingQuiz] = useState(false);
-  const [saving, setSaving] = useState(false);
   const [status, setStatus] = useState("");
 
-  // Load quizzes list on mount
+  // Load quizzes list
   useEffect(() => {
     const fetchQuizzes = async () => {
       try {
         const data = await apiRequest("/quizzes");
         setQuizzes(data || []);
       } catch (err) {
-        console.error("Load quizzes error:", err);
-        setStatus(err.message || "Failed to load quizzes");
+        console.error(err);
+        setStatus("Failed to load quizzes");
       } finally {
         setLoadingList(false);
       }
@@ -29,154 +26,10 @@ function AdminQuiz() {
     fetchQuizzes();
   }, []);
 
+  // Select quiz (NO API CALL)
   const handleSelectQuiz = (quiz) => {
-    setSelectedQuizId(quiz.quiz_id);
-    setQuizDetails({
-      quiz_id: quiz.quiz_id,
-      title: quiz.question, // or a better title later
-      questions: [] // you are NOT loading questions yet
-    });
-  };
-
-  const handleQuestionTextChange = (questionId, text) => {
-    setQuizDetails((prev) => {
-      if (!prev) return prev;
-      return {
-        ...prev,
-        questions: prev.questions.map((q) =>
-          q.question_id === questionId ? { ...q, question_text: text } : q
-        ),
-      };
-    });
-  };
-
-  const handleOptionTextChange = (questionId, optionId, text) => {
-    setQuizDetails((prev) => {
-      if (!prev) return prev;
-      return {
-        ...prev,
-        questions: prev.questions.map((q) =>
-          q.question_id === questionId
-            ? {
-                ...q,
-                options: q.options.map((o) =>
-                  o.option_id === optionId ? { ...o, option_text: text } : o
-                ),
-              }
-            : q
-        ),
-      };
-    });
-  };
-
-  const saveQuestion = async (questionId, questionText) => {
-    setSaving(true);
+    setSelectedQuiz(quiz);
     setStatus("");
-
-    try {
-      await apiRequest(`/quizzes/questions/${questionId}`, {
-        method: "PUT",
-        body: { question_text: questionText },
-      });
-      setStatus("Question saved ✓");
-    } catch (err) {
-      console.error("Save question error:", err);
-      setStatus(err.message || "Failed to save question");
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const saveOption = async (optionId, optionText) => {
-    setSaving(true);
-    setStatus("");
-
-    try {
-      await apiRequest(`/quizzes/options/${optionId}`, {
-        method: "PUT",
-        body: { option_text: optionText },
-      });
-      setStatus("Option saved ✓");
-    } catch (err) {
-      console.error("Save option error:", err);
-      setStatus(err.message || "Failed to save option");
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const deleteQuestion = async (questionId) => {
-    if (!window.confirm("Delete this question and all its options?")) return;
-
-    setSaving(true);
-    setStatus("");
-
-    try {
-      await apiRequest(`/quizzes/questions/${questionId}`, {
-        method: "DELETE",
-      });
-
-      // Remove from local state
-      setQuizDetails((prev) => {
-        if (!prev) return prev;
-        return {
-          ...prev,
-          questions: prev.questions.filter(
-            (q) => q.question_id !== questionId
-          ),
-        };
-      });
-
-      setStatus("Question deleted ✓");
-    } catch (err) {
-      console.error("Delete question error:", err);
-      setStatus(err.message || "Failed to delete question");
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const addQuestion = async () => {
-    if (!selectedQuizId) return;
-    const text = window.prompt("Enter new question text:");
-    if (!text) return;
-
-    // simple demo options (you can change this UI later)
-    const opt1 = window.prompt("Option 1:");
-    const opt2 = window.prompt("Option 2:");
-    const options = [opt1, opt2].filter(Boolean);
-    if (options.length < 2) {
-      alert("You need at least 2 options.");
-      return;
-    }
-
-    setSaving(true);
-    setStatus("");
-
-    try {
-      const newQuestion = await apiRequest(
-        `/quizzes/${selectedQuizId}/questions`,
-        {
-          method: "POST",
-          body: { question_text: text, options },
-        }
-      );
-
-      setQuizDetails((prev) => {
-        if (!prev) return prev;
-        return {
-          ...prev,
-          questions: [...prev.questions, newQuestion],
-        };
-      });
-
-      setStatus("Question added ✓");
-    } catch (err) {
-      console.error("Add question error:", err);
-      setStatus(err.message || "Failed to add question");
-    } finally {
-      setSaving(false);
-    }
   };
 
   return (
@@ -187,9 +40,6 @@ function AdminQuiz() {
             <h1>Quiz Management</h1>
             <p>View, edit, add and delete quiz questions & options.</p>
           </div>
-          <button className="admin-quiz-add-btn" onClick={addQuestion} disabled={!selectedQuizId || saving}>
-            + Add Question
-          </button>
         </header>
 
         {status && <p className="admin-quiz-status">{status}</p>}
@@ -207,115 +57,54 @@ function AdminQuiz() {
               <ul className="quiz-list">
                 {quizzes.map((q) => (
                   <li
-                    key={q.quiz_id}
+                    key={q.id}
                     className={
-                      q.quiz_id === selectedQuizId
+                      selectedQuiz?.id === q.id
                         ? "quiz-list-item active"
                         : "quiz-list-item"
                     }
                     onClick={() => handleSelectQuiz(q)}
                   >
-                    <span className="quiz-list-title">{q.title}</span>
-                    <span className="quiz-list-sub">
-                      ID: {q.quiz_id}
-                    </span>
+                    <span className="quiz-list-title">{q.question}</span>
+                    <span className="quiz-list-sub">ID: {q.id}</span>
                   </li>
                 ))}
               </ul>
             )}
           </aside>
 
-          {/* RIGHT: EDITOR */}
+          {/* RIGHT: DETAILS */}
           <section className="admin-quiz-editor">
-            {!selectedQuizId && (
+            {!selectedQuiz && (
               <div className="editor-placeholder">
-                <p>Select a quiz from the left to manage questions.</p>
+                <p>Select a quiz from the left.</p>
               </div>
             )}
 
-            {selectedQuizId && loadingQuiz && (
-              <div className="editor-placeholder">
-                <p>Loading quiz details…</p>
-              </div>
-            )}
-
-            {selectedQuizId && !loadingQuiz && quizDetails && (
+            {selectedQuiz && (
               <div className="editor-content">
                 <h2 className="editor-title">
-                  {quizDetails.title}{" "}
-                  <span className="editor-subtitle">
-                    (ID: {quizDetails.quiz_id})
-                  </span>
+                  Quiz ID: {selectedQuiz.id}
                 </h2>
 
-                {quizDetails.questions.map((q) => (
-                  <div key={q.question_id} className="question-card">
-                    <div className="question-header">
-                      <span className="question-label">
-                        Question #{q.question_id}
-                      </span>
-                      <div className="question-actions">
-                        <button
-                          className="btn-outline"
-                          onClick={() =>
-                            saveQuestion(q.question_id, q.question_text)
-                          }
-                          disabled={saving}
-                        >
-                          Save
-                        </button>
-                        <button
-                          className="btn-danger"
-                          onClick={() => deleteQuestion(q.question_id)}
-                          disabled={saving}
-                        >
-                          Delete
-                        </button>
-                      </div>
-                    </div>
+                <p><strong>Game Type:</strong> {selectedQuiz.game_type}</p>
+                <p><strong>Question:</strong></p>
 
-                    <textarea
-                      className="question-textarea"
-                      value={q.question_text}
-                      onChange={(e) =>
-                        handleQuestionTextChange(
-                          q.question_id,
-                          e.target.value
-                        )
-                      }
-                    />
+                <textarea
+                  className="question-textarea"
+                  value={selectedQuiz.question}
+                  readOnly
+                />
 
-                    <div className="options-grid">
-                      {q.options.map((opt) => (
-                        <div key={opt.option_id} className="option-row">
-                          <span className="option-label">
-                            Option #{opt.option_id}
-                          </span>
-                          <input
-                            className="option-input"
-                            value={opt.option_text}
-                            onChange={(e) =>
-                              handleOptionTextChange(
-                                q.question_id,
-                                opt.option_id,
-                                e.target.value
-                              )
-                            }
-                          />
-                          <button
-                            className="btn-outline-sm"
-                            onClick={() =>
-                              saveOption(opt.option_id, opt.option_text)
-                            }
-                            disabled={saving}
-                          >
-                            Save
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ))}
+                <div className="options-grid">
+                  <p>Options:</p>
+                  <ul>
+                    <li>A: {selectedQuiz.option_a}</li>
+                    <li>B: {selectedQuiz.option_b}</li>
+                    <li>C: {selectedQuiz.option_c}</li>
+                    <li>D: {selectedQuiz.option_d}</li>
+                  </ul>
+                </div>
               </div>
             )}
           </section>
@@ -324,6 +113,5 @@ function AdminQuiz() {
     </div>
   );
 }
-
 
 export default AdminQuiz;

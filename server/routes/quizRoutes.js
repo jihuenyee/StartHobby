@@ -2,6 +2,30 @@ const express = require("express");
 const router = express.Router();
 const { getDB } = require("../db");
 
+// ✅ Admin: get all quizzes
+router.get("/", async (req, res) => {
+  try {
+    const db = await getDB();
+    const [rows] = await db.query(
+      `SELECT 
+        id,
+        question,
+        option_a,
+        option_b,
+        option_c,
+        option_d,
+        correct_option,
+        game_type
+       FROM quiz_questions`
+    );
+
+    res.json(rows);
+  } catch (err) {
+    console.error("🔥 ADMIN QUIZ FETCH ERROR:", err);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
 /**
  * GET quiz questions by game type
  * /api/quizzes/claw

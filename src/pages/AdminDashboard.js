@@ -5,127 +5,91 @@ import "../styles/AdminDashboard.css";
 
 function AdminDashboard() {
   const { user, isAdmin } = useAuth();
-  const [users, setUsers] = useState([]); // Default to empty array
+  const [users, setUsers] = useState([]);
+  const [quizList, setQuizList] = useState([]);
+  const [selectedGame, setSelectedGame] = useState(null);
   const [quiz, setQuiz] = useState(null);
-  const [saving, setSaving] = useState(false);
-  const [status, setStatus] = useState("");
 
   useEffect(() => {
     if (!isAdmin) return;
     fetchUsers();
-    fetchQuiz();
+    fetchQuizList();
   }, [isAdmin]);
 
   const fetchUsers = async () => {
-    try {
-      const res = await fetch(`${API_BASE_URL}/users`);
-      const data = await res.json();
-      // FIX: Ensure data is an array before setting state
-      setUsers(Array.isArray(data) ? data : []);
-    } catch (err) {
-      console.error("Load users error:", err);
-      setUsers([]);
-    }
+    const res = await fetch(`${API_BASE_URL}/users`);
+    const data = await res.json();
+    setUsers(Array.isArray(data) ? data : []);
   };
 
-  const fetchQuiz = async () => {
-    try {
-      const res = await fetch(`${API_BASE_URL}/quizzes/1`);
-      const data = await res.json();
-      setQuiz(data);
-    } catch (err) {
-      console.error("Load quiz error:", err);
-    }
+  const fetchQuizList = async () => {
+    const res = await fetch(`${API_BASE_URL}/quizzes`);
+    const data = await res.json();
+    setQuizList(data);
   };
 
-  const handleQuestionChange = (questionId, text) => {
-    setQuiz((prev) => ({
-      ...prev,
-      questions: prev?.questions?.map((q) =>
-        q.question_id === questionId ? { ...q, question_text: text } : q
-      ),
-    }));
-  };
-
-  const saveQuestion = async (questionId, text) => {
-    setSaving(true);
-    setStatus("");
-    try {
-      const res = await fetch(`${API_BASE_URL}/quizzes/questions/${questionId}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ question_text: text }),
-      });
-      if (!res.ok) throw new Error("Failed to update question");
-      setStatus("Question updated ✅");
-    } catch (err) {
-      setStatus(err.message || "Failed to save");
-    } finally {
-      setSaving(false);
-    }
+  const loadQuiz = async (gameType) => {
+    setSelectedGame(gameType);
+    const res = await fetch(`${API_BASE_URL}/quizzes/${gameType}`);
+    const data = await res.json();
+    setQuiz(data);
   };
 
   if (!user) return <div className="admin-page">Please log in.</div>;
-  if (!isAdmin) return <div className="admin-page">Access denied. Admins only.</div>;
+  if (!isAdmin) return <div className="admin-page">Access denied.</div>;
 
   return (
     <div className="admin-page">
-      <h1 className="admin-title">Admin Dashboard</h1>
-      {status && <p className="admin-status">{status}</p>}
+      <h1>Admin Dashboard</h1>
 
       <div className="admin-grid">
+        {/* USERS */}
         <section className="admin-card">
           <h2>Users</h2>
           <table className="admin-table">
-            <thead>
-              <tr><th>ID</th><th>Username</th><th>Email</th><th>Type</th></tr>
-            </thead>
             <tbody>
-              {/* FIX: Added optional chaining */}
-              {users?.map((u) => (
+              {users.map(u => (
                 <tr key={u.user_id}>
-                  <td>{u.user_id}</td>
                   <td>{u.username}</td>
                   <td>{u.email}</td>
-                  <td>{u.type_id}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         </section>
 
+        {/* QUIZZES */}
         <section className="admin-card">
-          <h2>Quiz #1 – Questions</h2>
-          {!quiz ? (
-            <p>Loading quiz…</p>
-          ) : (
-            <div className="admin-questions">
-              {/* FIX: Added optional chaining and empty array fallback */}
-              {(quiz.questions || []).map((q) => (
-                <div key={q.question_id} className="admin-question-block">
-                  <label>Question #{q.question_id}</label>
-                  <textarea
-                    value={q.question_text}
-                    onChange={(e) => handleQuestionChange(q.question_id, e.target.value)}
-                  />
-                  <button
-                    disabled={saving}
-                    onClick={() => saveQuestion(q.question_id, q.question_text)}
-                  >
-                    {saving ? "Saving..." : "Save"}
-                  </button>
+          <h2>Quizzes</h2>
 
-                  <ul className="admin-options">
-                    {/* FIX: Added optional chaining */}
-                    {q.options?.map((opt) => (
-                      <li key={opt.option_id}>
-                        #{opt.option_id}: {opt.option_text}
-                      </li>
-                    ))}
-                  </ul>
+          <ul>
+            {quizList.map(q => (
+              <li
+                key={q.game_type}
+                style={{ cursor: "pointer" }}
+                onClick={() => loadQuiz(q.game_type)}
+              >
+                {q.game_type}
+              </li>
+            ))}
+          </ul>
+
+          {!quiz ? (
+            <p>Select a quiz</p>
+          ) : (
+            <>
+              <h3>Quiz: {selectedGame}</h3>
+              {quiz.questions.map(q => (
+                <div key={q.question_id}>
+                  <p><b>{q.question}</b></p>
+                  <p>A: {q.option_a}</p>
+                  <p>B: {q.option_b}</p>
+                  <p>C: {q.option_c}</p>
+                  <p>D: {q.option_d}</p>
+                  <hr />
                 </div>
               ))}
-            </div>
+            </>
           )}
         </section>
       </div>

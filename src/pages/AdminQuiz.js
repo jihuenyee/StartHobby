@@ -56,22 +56,31 @@ function AdminQuiz() {
     }));
   };
 
-  const saveQuestion = async (questionId, text) => {
-    setSaving(true);
-    setStatus("");
+ const saveQuestion = async (q) => {
+  setSaving(true);
+  setStatus("");
 
-    try {
-      await apiRequest(`/quizzes/questions/${questionId}`, {
-        method: "PUT",
-        body: { question: text },
-      });
-      setStatus("Question saved ✓");
-    } catch {
-      setStatus("Failed to save question");
-    } finally {
-      setSaving(false);
-    }
-  };
+  try {
+    await apiRequest(`/quizzes/question/${q.question_id}`, {
+      method: "PUT",
+      body: {
+        question: q.question,
+        option_a: q.option_a,
+        option_b: q.option_b,
+        option_c: q.option_c,
+        option_d: q.option_d,
+      },
+    });
+
+    setStatus("Question saved ✓");
+  } catch (err) {
+    console.error("Save question error:", err);
+    setStatus("Failed to save question");
+  } finally {
+    setSaving(false);
+  }
+};
+
 
   const deleteQuestion = async (questionId) => {
     if (!window.confirm("Delete this question?")) return;

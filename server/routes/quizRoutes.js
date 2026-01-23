@@ -27,7 +27,7 @@ router.get("/:id", async (req, res) => {
       `
       SELECT
         id,
-        gameType,
+        game_type,
         option_a,
         option_b,
         option_c,

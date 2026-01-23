@@ -41,3 +41,4 @@ router.get("/game/:gameType", async (req, res) => {
   }
 });
 
+module.exports = router;

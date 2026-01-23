@@ -1,95 +1,55 @@
 import React, { useEffect, useState } from "react";
 import { apiRequest } from "../api";
-import "../styles/AdminQuiz.css";
 
 function AdminQuiz() {
+  const [gameTypes, setGameTypes] = useState([]);
+  const [selectedGameType, setSelectedGameType] = useState(null);
   const [quizzes, setQuizzes] = useState([]);
-  const [selectedQuiz, setSelectedQuiz] = useState(null);
-  const [loadingList, setLoadingList] = useState(true);
-  const [status, setStatus] = useState("");
 
+  // load game types
   useEffect(() => {
-    const fetchQuizzes = async () => {
-      try {
-        const data = await apiRequest("/quizzes");
-        setQuizzes(data || []);
-      } catch (err) {
-        console.error(err);
-        setStatus("Failed to load quizzes");
-      } finally {
-        setLoadingList(false);
-      }
-    };
-
-    fetchQuizzes();
+    apiRequest("/quizzes/games").then(setGameTypes);
   }, []);
 
-  const handleSelectQuiz = (quiz) => {
-    setSelectedQuiz(quiz);
-    setStatus("");
+  // load quizzes when gameType clicked
+  const loadQuizzes = async (gameType) => {
+    setSelectedGameType(gameType);
+    const data = await apiRequest(`/quizzes/game/${gameType}`);
+    setQuizzes(data);
   };
 
   return (
-    <div className="admin-quiz-page">
-      <div className="admin-quiz-shell">
-        <header className="admin-quiz-header">
-          <h1>Quiz Management</h1>
-        </header>
+    <div style={{ display: "flex", gap: "20px" }}>
+      {/* LEFT: GAME TYPES */}
+      <div style={{ width: "200px" }}>
+        <h3>Game Types</h3>
+        <ul>
+          {gameTypes.map(gt => (
+            <li
+              key={gt}
+              style={{ cursor: "pointer" }}
+              onClick={() => loadQuizzes(gt)}
+            >
+              {gt}
+            </li>
+          ))}
+        </ul>
+      </div>
 
-        {status && <p className="admin-quiz-status">{status}</p>}
+      {/* RIGHT: QUIZZES */}
+      <div style={{ flex: 1 }}>
+        <h3>Quizzes {selectedGameType && `(${selectedGameType})`}</h3>
 
-        <div className="admin-quiz-main">
-          <aside className="admin-quiz-sidebar">
-            <h2>Quizzes</h2>
-
-            {loadingList ? (
-              <p>Loading quizzes…</p>
-            ) : quizzes.length === 0 ? (
-              <p>No quizzes found.</p>
-            ) : (
-              <ul className="quiz-list">
-                {quizzes.map((q) => (
-                  <li
-                    key={q.id}
-                    className={
-                      selectedQuiz?.id === q.id
-                        ? "quiz-list-item active"
-                        : "quiz-list-item"
-                    }
-                    onClick={() => handleSelectQuiz(q)}
-                  >
-                    <span>{q.question}</span>
-                    <small>ID: {q.id}</small>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </aside>
-
-          <section className="admin-quiz-editor">
-            {!selectedQuiz ? (
-              <p>Select a quiz from the left.</p>
-            ) : (
-              <div>
-                <h2>Quiz ID: {selectedQuiz.id}</h2>
-                <p><b>Game Type:</b> {selectedQuiz.game_type}</p>
-                <p><b>Question:</b></p>
-
-                <textarea
-                  value={selectedQuiz.question}
-                  readOnly
-                />
-
-                <ul>
-                  <li>A: {selectedQuiz.option_a}</li>
-                  <li>B: {selectedQuiz.option_b}</li>
-                  <li>C: {selectedQuiz.option_c}</li>
-                  <li>D: {selectedQuiz.option_d}</li>
-                </ul>
-              </div>
-            )}
-          </section>
-        </div>
+        {quizzes.map(q => (
+          <div key={q.id} style={{ borderBottom: "1px solid #ccc", marginBottom: 10 }}>
+            <p>ID: {q.id}</p>
+            <p>A: {q.option_a}</p>
+            <p>B: {q.option_b}</p>
+            <p>C: {q.option_c}</p>
+            <p>D: {q.option_d}</p>
+            <small>Created: {q.created_at}</small>
+          </div>
+        ))}
       </div>
     </div>
   );

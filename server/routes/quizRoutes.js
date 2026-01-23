@@ -3,72 +3,47 @@ const router = express.Router();
 const { getDB } = require("../db");
 
 /**
- * =====================================================
- * ADMIN: Get ALL quiz questions
- * GET /api/quizzes
- * =====================================================
+ * GET all gameTypes (Admin sidebar)
+ * /api/quizzes/games
  */
-router.get("/", async (req, res) => {
+router.get("/games", async (req, res) => {
   try {
     const db = await getDB();
-    const [rows] = await db.query("SELECT * FROM quiz_questions");
-    res.json(rows);
+    const [rows] = await db.query(
+      "SELECT DISTINCT gameType FROM quiz_questions"
+    );
+    res.json(rows.map(r => r.gameType));
   } catch (err) {
-    console.error("🔥 ADMIN QUIZ FETCH ERROR:", err);
     res.status(500).json({ error: err.message });
   }
 });
 
 /**
- * =====================================================
- * GAME: Get quiz questions by game type
- * GET /api/quizzes/game/:gameType
- * Example:
- *   /api/quizzes/game/claw
- *   /api/quizzes/game/snake
- *   /api/quizzes/game/castle
- * =====================================================
+ * GET quizzes by gameType
+ * /api/quizzes/game/:gameType
  */
 router.get("/game/:gameType", async (req, res) => {
-  const { gameType } = req.params;
-
   try {
     const db = await getDB();
-
     const [rows] = await db.query(
       `
-      SELECT 
+      SELECT
         id,
-        question,
+        gameType,
         option_a,
         option_b,
         option_c,
-        option_d
+        option_d,
+        created_at
       FROM quiz_questions
-      WHERE game_type = ?
+      WHERE gameType = ?
       `,
-      [gameType]
+      [req.params.gameType]
     );
 
-    if (rows.length === 0) {
-      return res.status(404).json({ error: "Quiz not found" });
-    }
-
-    const formatted = rows.map((q) => ({
-      id: q.id,
-      text: q.question,
-      options: [
-        q.option_a,
-        q.option_b,
-        q.option_c,
-        q.option_d,
-      ],
-    }));
-
-    res.json(formatted);
+    res.json(rows);
   } catch (err) {
-    console.error("🔥 QUIZ ROUTE ERROR:", err);
-    res.status(500).json({ error: "Server error" });
+    res.status(500).json({ error: err.message });
   }
 });
 

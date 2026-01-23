@@ -335,7 +335,6 @@
   justify-content: center;
 }
 
-/* Scroll ONLY inside editor content */
 .editor-content {
   width: 100%;
   max-width: 640px;          

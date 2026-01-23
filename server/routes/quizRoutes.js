@@ -54,4 +54,65 @@ router.get("/:gameType", async (req, res) => {
   }
 });
 
+/**
+ * ADD new question
+ * POST /api/quizzes/question
+ */
+router.post("/question", async (req, res) => {
+  try {
+    const db = await getDB();
+    const {
+      game_type,
+      question,
+      option_a,
+      option_b,
+      option_c,
+      option_d
+    } = req.body;
+
+    await db.query(
+      `
+      INSERT INTO quiz_questions
+      (game_type, question, option_a, option_b, option_c, option_d)
+      VALUES (?, ?, ?, ?, ?, ?)
+      `,
+      [game_type, question, option_a, option_b, option_c, option_d]
+    );
+
+    res.json({ message: "Question added" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * UPDATE question
+ * PUT /api/quizzes/question/:id
+ */
+router.put("/question/:id", async (req, res) => {
+  try {
+    const db = await getDB();
+    const {
+      question,
+      option_a,
+      option_b,
+      option_c,
+      option_d
+    } = req.body;
+
+    await db.query(
+      `
+      UPDATE quiz_questions
+      SET question = ?, option_a = ?, option_b = ?, option_c = ?, option_d = ?
+      WHERE id = ?
+      `,
+      [question, option_a, option_b, option_c, option_d, req.params.id]
+    );
+
+    res.json({ message: "Question updated" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 module.exports = router;

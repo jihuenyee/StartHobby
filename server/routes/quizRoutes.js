@@ -2,10 +2,6 @@ const express = require("express");
 const router = express.Router();
 const { getDB } = require("../db");
 
-/**
- * GET all quizzes (list by game_type)
- * /api/quizzes
- */
 router.get("/", async (req, res) => {
   try {
     const db = await getDB();
@@ -18,10 +14,6 @@ router.get("/", async (req, res) => {
   }
 });
 
-/**
- * GET quiz by game_type
- * /api/quizzes/:gameType
- */
 router.get("/:gameType", async (req, res) => {
   try {
     const db = await getDB();
@@ -54,10 +46,7 @@ router.get("/:gameType", async (req, res) => {
   }
 });
 
-/**
- * ADD new question
- * POST /api/quizzes/question
- */
+
 router.post("/question", async (req, res) => {
   try {
     const db = await getDB();
@@ -85,10 +74,6 @@ router.post("/question", async (req, res) => {
   }
 });
 
-/**
- * UPDATE question
- * PUT /api/quizzes/question/:id
- */
 router.put("/question/:id", async (req, res) => {
   try {
     const db = await getDB();
@@ -111,6 +96,22 @@ router.put("/question/:id", async (req, res) => {
 
     res.json({ message: "Question updated" });
   } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.delete("/question/:id", async (req, res) => {
+  try {
+    const db = await getDB();
+
+    await db.query(
+      "DELETE FROM quiz_questions WHERE id = ?",
+      [req.params.id]
+    );
+
+    res.json({ message: "Question deleted" });
+  } catch (err) {
+    console.error(err);
     res.status(500).json({ error: err.message });
   }
 });

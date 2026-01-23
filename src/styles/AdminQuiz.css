@@ -328,3 +328,36 @@
   }
 }
 
+/* ===============================
+   MAKE QUIZ EDITOR SCROLLABLE
+   =============================== */
+
+/* Limit overall editor height */
+.admin-quiz-editor {
+  height: calc(100vh - 260px); /* below header + padding */
+  overflow: hidden;           /* prevent double scroll */
+  display: flex;
+  justify-content: center;
+}
+
+/* Scroll ONLY inside editor content */
+.editor-content {
+  width: 100%;
+  max-width: 640px;           /* keeps card size correct */
+  overflow-y: auto;           /* 🔥 enable scrolling */
+  padding-right: 0.5rem;      /* space for scrollbar */
+}
+
+/* Optional: nicer scrollbar (Chrome / Edge) */
+.editor-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.editor-content::-webkit-scrollbar-thumb {
+  background: #c7d2fe;
+  border-radius: 999px;
+}
+
+.editor-content::-webkit-scrollbar-track {
+  background: transparent;
+}

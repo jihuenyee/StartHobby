@@ -16,28 +16,30 @@ function AdminQuiz() {
     option_d: ""
   });
 
-  // load quizzes (game_type)
+  // load quiz list
   useEffect(() => {
-    apiRequest("/quizzes").then(setQuizList);
+    apiRequest("/quizzes").then((data) => {
+      setQuizList(Array.isArray(data) ? data : []);
+    });
   }, []);
 
-  // load quiz questions
+  // load questions by game_type
   const loadQuiz = async (gameType) => {
     setSelectedGame(gameType);
     const data = await apiRequest(`/quizzes/${gameType}`);
-    setQuestions(data.questions);
+    setQuestions(data.questions || []);
   };
 
   // update local state
   const updateField = (id, field, value) => {
-    setQuestions(qs =>
-      qs.map(q =>
+    setQuestions((prev) =>
+      prev.map((q) =>
         q.question_id === id ? { ...q, [field]: value } : q
       )
     );
   };
 
-  // save question
+  // save existing question
   const saveQuestion = async (q) => {
     await apiRequest(`/quizzes/question/${q.question_id}`, {
       method: "PUT",
@@ -47,7 +49,7 @@ function AdminQuiz() {
     setTimeout(() => setStatus(""), 2000);
   };
 
-  // add question
+  // add new question
   const addQuestion = async () => {
     if (!selectedGame) return;
 
@@ -100,7 +102,7 @@ function AdminQuiz() {
             <div className="sidebar-title">Quizzes</div>
 
             <ul className="quiz-list">
-              {quizList.map(q => (
+              {quizList.map((q) => (
                 <li
                   key={q.game_type}
                   className={`quiz-list-item ${
@@ -108,8 +110,12 @@ function AdminQuiz() {
                   }`}
                   onClick={() => loadQuiz(q.game_type)}
                 >
-                  <span className="quiz-list-title">ID:</span>
-                  <span className="quiz-list-sub">{q.game_type}</span>
+                  <span className="quiz-list-title">
+                    {q.game_type}
+                  </span>
+                  <span className="quiz-list-sub">
+                    Game type
+                  </span>
                 </li>
               ))}
             </ul>
@@ -124,14 +130,16 @@ function AdminQuiz() {
             ) : (
               <div className="editor-content">
                 <div>
-                  <div className="editor-title">Quiz: {selectedGame}</div>
+                  <div className="editor-title">
+                    Quiz: {selectedGame}
+                  </div>
                   <div className="editor-subtitle">
                     Edit questions and options below
                   </div>
                 </div>
 
                 {/* QUESTIONS */}
-                {questions.map(q => (
+                {questions.map((q) => (
                   <div key={q.question_id} className="question-card">
                     <div className="question-header">
                       <span className="question-label">
@@ -150,13 +158,17 @@ function AdminQuiz() {
                     <textarea
                       className="question-textarea"
                       value={q.question}
-                      onChange={e =>
-                        updateField(q.question_id, "question", e.target.value)
+                      onChange={(e) =>
+                        updateField(
+                          q.question_id,
+                          "question",
+                          e.target.value
+                        )
                       }
                     />
 
                     <div className="options-grid">
-                      {["a", "b", "c", "d"].map(letter => (
+                      {["a", "b", "c", "d"].map((letter) => (
                         <div key={letter} className="option-row">
                           <span className="option-label">
                             Option {letter.toUpperCase()}
@@ -164,7 +176,7 @@ function AdminQuiz() {
                           <input
                             className="option-input"
                             value={q[`option_${letter}`]}
-                            onChange={e =>
+                            onChange={(e) =>
                               updateField(
                                 q.question_id,
                                 `option_${letter}`,
@@ -178,21 +190,26 @@ function AdminQuiz() {
                   </div>
                 ))}
 
-                {/* ADD QUESTION FORM */}
+                {/* ADD QUESTION CARD */}
                 <div className="question-card">
-                  <span className="question-label">Add New Question</span>
+                  <span className="question-label">
+                    Add New Question
+                  </span>
 
                   <textarea
                     className="question-textarea"
                     placeholder="Question"
                     value={newQuestion.question}
-                    onChange={e =>
-                      setNewQuestion({ ...newQuestion, question: e.target.value })
+                    onChange={(e) =>
+                      setNewQuestion({
+                        ...newQuestion,
+                        question: e.target.value
+                      })
                     }
                   />
 
                   <div className="options-grid">
-                    {["a", "b", "c", "d"].map(letter => (
+                    {["a", "b", "c", "d"].map((letter) => (
                       <div key={letter} className="option-row">
                         <span className="option-label">
                           Option {letter.toUpperCase()}
@@ -200,7 +217,7 @@ function AdminQuiz() {
                         <input
                           className="option-input"
                           value={newQuestion[`option_${letter}`]}
-                          onChange={e =>
+                          onChange={(e) =>
                             setNewQuestion({
                               ...newQuestion,
                               [`option_${letter}`]: e.target.value

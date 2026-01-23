@@ -333,4 +333,6 @@ function AdminQuiz() {
   );
 }
 
+console.log(quizzes[0]);
+
 export default AdminQuiz;

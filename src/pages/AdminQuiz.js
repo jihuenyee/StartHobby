@@ -5,14 +5,12 @@ function AdminQuiz() {
   const [quizList, setQuizList] = useState([]);
   const [selectedQuiz, setSelectedQuiz] = useState(null);
 
-  // load quiz list (game_type only)
   useEffect(() => {
     apiRequest("/quizzes").then((data) => {
       setQuizList(Array.isArray(data) ? data : []);
     });
   }, []);
 
-  // load quiz by game_type
   const loadQuiz = async (gameType) => {
     if (!gameType) return;
     const data = await apiRequest(`/quizzes/${gameType}`);
@@ -21,31 +19,30 @@ function AdminQuiz() {
 
   return (
     <div style={{ display: "flex", gap: 20 }}>
-      {/* LEFT PANEL */}
+      {/* LEFT */}
       <div style={{ width: 250 }}>
         <h3>Quizzes</h3>
 
         {quizList.map((q) => (
-          <div
+          <button
             key={q.game_type}
             style={{
-              border: "1px solid #6c63ff",
-              padding: "10px",
-              marginBottom: "8px",
-              cursor: "pointer",
-              borderRadius: "8px"
+              width: "100%",
+              marginBottom: 8,
+              padding: 10,
+              cursor: "pointer"
             }}
             onClick={() => loadQuiz(q.game_type)}
           >
             {q.game_type}
-          </div>
+          </button>
         ))}
       </div>
 
-      {/* RIGHT PANEL */}
+      {/* RIGHT */}
       <div style={{ flex: 1 }}>
         {!selectedQuiz ? (
-          <p>Select a quiz from the left</p>
+          <p>Select a quiz</p>
         ) : (
           <>
             <h3>Quiz: {selectedQuiz.game_type}</h3>

@@ -2,12 +2,14 @@ import React, { useEffect, useState } from "react";
 import { apiRequest } from "../api";
 
 function AdminQuiz() {
-  const [quizzes, setQuizzes] = useState([]);
+  const [quizList, setQuizList] = useState([]);
   const [selectedQuiz, setSelectedQuiz] = useState(null);
 
-  // load quiz list
+  // load quiz list (game_type only)
   useEffect(() => {
-    apiRequest("/quizzes").then(setQuizzes);
+    apiRequest("/quizzes").then((data) => {
+      setQuizList(Array.isArray(data) ? data : []);
+    });
   }, []);
 
   // load quiz by game_type
@@ -19,29 +21,35 @@ function AdminQuiz() {
 
   return (
     <div style={{ display: "flex", gap: 20 }}>
-      {/* LEFT */}
+      {/* LEFT PANEL */}
       <div style={{ width: 250 }}>
         <h3>Quizzes</h3>
-        <ul>
-          {quizzes.map((q) => (
-            <li
-              key={q.game_type}
-              style={{ cursor: "pointer" }}
-              onClick={() => loadQuiz(q.game_type)}
-            >
-              {q.game_type}
-            </li>
-          ))}
-        </ul>
+
+        {quizList.map((q) => (
+          <div
+            key={q.game_type}
+            style={{
+              border: "1px solid #6c63ff",
+              padding: "10px",
+              marginBottom: "8px",
+              cursor: "pointer",
+              borderRadius: "8px"
+            }}
+            onClick={() => loadQuiz(q.game_type)}
+          >
+            {q.game_type}
+          </div>
+        ))}
       </div>
 
-      {/* RIGHT */}
+      {/* RIGHT PANEL */}
       <div style={{ flex: 1 }}>
         {!selectedQuiz ? (
-          <p>Select a quiz</p>
+          <p>Select a quiz from the left</p>
         ) : (
           <>
             <h3>Quiz: {selectedQuiz.game_type}</h3>
+
             {selectedQuiz.questions.map((q) => (
               <div key={q.question_id}>
                 <p><b>{q.question}</b></p>

@@ -92,8 +92,7 @@ function AdminQuiz() {
         method: "DELETE",
       });
 
-      await loadQuiz(selectedGameType);
-      setStatus("Question deleted ✓");
+      window.location.reload();
     } catch {
       setStatus("Failed to delete question");
     } finally {
@@ -128,8 +127,7 @@ function AdminQuiz() {
         },
       });
 
-      await loadQuiz(selectedGameType);
-      setStatus("Question added ✓");
+      window.location.reload();
     } catch {
       setStatus("Failed to add question");
     } finally {

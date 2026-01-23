@@ -17,22 +17,34 @@ function AdminDashboard() {
   }, [isAdmin]);
 
   const fetchUsers = async () => {
-    const res = await fetch(`${API_BASE_URL}/users`);
-    const data = await res.json();
-    setUsers(Array.isArray(data) ? data : []);
+    try {
+      const res = await fetch(`${API_BASE_URL}/users`);
+      const data = await res.json();
+      setUsers(Array.isArray(data) ? data : []);
+    } catch {
+      setUsers([]);
+    }
   };
 
   const fetchQuizList = async () => {
-    const res = await fetch(`${API_BASE_URL}/quizzes`);
-    const data = await res.json();
-    setQuizList(data);
+    try {
+      const res = await fetch(`${API_BASE_URL}/quizzes`);
+      const data = await res.json();
+      setQuizList(Array.isArray(data) ? data : []);
+    } catch {
+      setQuizList([]);
+    }
   };
 
   const loadQuiz = async (gameType) => {
-    setSelectedGame(gameType);
-    const res = await fetch(`${API_BASE_URL}/quizzes/${gameType}`);
-    const data = await res.json();
-    setQuiz(data);
+    try {
+      setSelectedGame(gameType);
+      const res = await fetch(`${API_BASE_URL}/quizzes/${gameType}`);
+      const data = await res.json();
+      setQuiz(data);
+    } catch {
+      setQuiz(null);
+    }
   };
 
   if (!user) return <div className="admin-page">Please log in.</div>;
@@ -43,12 +55,11 @@ function AdminDashboard() {
       <h1>Admin Dashboard</h1>
 
       <div className="admin-grid">
-        {/* USERS */}
         <section className="admin-card">
           <h2>Users</h2>
           <table className="admin-table">
             <tbody>
-              {users.map(u => (
+              {users.map((u) => (
                 <tr key={u.user_id}>
                   <td>{u.username}</td>
                   <td>{u.email}</td>
@@ -58,12 +69,11 @@ function AdminDashboard() {
           </table>
         </section>
 
-        {/* QUIZZES */}
         <section className="admin-card">
           <h2>Quizzes</h2>
 
           <ul>
-            {quizList.map(q => (
+            {quizList.map((q) => (
               <li
                 key={q.game_type}
                 style={{ cursor: "pointer" }}
@@ -79,7 +89,8 @@ function AdminDashboard() {
           ) : (
             <>
               <h3>Quiz: {selectedGame}</h3>
-              {quiz.questions.map(q => (
+
+              {quiz.questions.map((q) => (
                 <div key={q.question_id}>
                   <p><b>{q.question}</b></p>
                   <p>A: {q.option_a}</p>

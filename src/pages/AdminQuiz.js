@@ -2,54 +2,53 @@ import React, { useEffect, useState } from "react";
 import { apiRequest } from "../api";
 
 function AdminQuiz() {
-  const [gameTypes, setGameTypes] = useState([]);
-  const [selectedGameType, setSelectedGameType] = useState(null);
   const [quizzes, setQuizzes] = useState([]);
+  const [selectedQuiz, setSelectedQuiz] = useState(null);
 
-  // load game types
+  // load all quizzes
   useEffect(() => {
-    apiRequest("/quizzes/games").then(setGameTypes);
+    apiRequest("/quizzes").then(setQuizzes);
   }, []);
 
-  // load quizzes when gameType clicked
-  const loadQuizzes = async (gameType) => {
-    setSelectedGameType(gameType);
-    const data = await apiRequest(`/quizzes/game/${gameType}`);
-    setQuizzes(data);
+  // load quiz by id
+  const loadQuiz = async (id) => {
+    const data = await apiRequest(`/quizzes/${id}`);
+    setSelectedQuiz(data);
   };
 
   return (
-    <div style={{ display: "flex", gap: "20px" }}>
-      {/* LEFT: GAME TYPES */}
-      <div style={{ width: "200px" }}>
-        <h3>Game Types</h3>
+    <div style={{ display: "flex", gap: 20 }}>
+      {/* LEFT */}
+      <div style={{ width: 250 }}>
+        <h3>Quizzes</h3>
         <ul>
-          {gameTypes.map(gt => (
+          {quizzes.map(q => (
             <li
-              key={gt}
+              key={q.id}
               style={{ cursor: "pointer" }}
-              onClick={() => loadQuizzes(gt)}
+              onClick={() => loadQuiz(q.id)}
             >
-              {gt}
+              Quiz ID: {q.id}
             </li>
           ))}
         </ul>
       </div>
 
-      {/* RIGHT: QUIZZES */}
+      {/* RIGHT */}
       <div style={{ flex: 1 }}>
-        <h3>Quizzes {selectedGameType && `(${selectedGameType})`}</h3>
-
-        {quizzes.map(q => (
-          <div key={q.id} style={{ borderBottom: "1px solid #ccc", marginBottom: 10 }}>
-            <p>ID: {q.id}</p>
-            <p>A: {q.option_a}</p>
-            <p>B: {q.option_b}</p>
-            <p>C: {q.option_c}</p>
-            <p>D: {q.option_d}</p>
-            <small>Created: {q.created_at}</small>
-          </div>
-        ))}
+        {!selectedQuiz ? (
+          <p>Select a quiz</p>
+        ) : (
+          <>
+            <h3>Quiz {selectedQuiz.id}</h3>
+            <p>Game: {selectedQuiz.gameType}</p>
+            <p>A: {selectedQuiz.option_a}</p>
+            <p>B: {selectedQuiz.option_b}</p>
+            <p>C: {selectedQuiz.option_c}</p>
+            <p>D: {selectedQuiz.option_d}</p>
+            <small>{selectedQuiz.created_at}</small>
+          </>
+        )}
       </div>
     </div>
   );

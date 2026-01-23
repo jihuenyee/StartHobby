@@ -226,12 +226,12 @@ export default function ClawQuizGame() {
 
             {showEnding && (
               <div className="ending-message">
-                <button
-                  className="start-btn"
+                <div
+                  className="portal-button"
                   onClick={() => navigate("/game-map")}
                 >
-                  Continue Journey
-                </button>
+                  <span>Continue Journey</span>
+                </div>
               </div>
             )}
           </div>

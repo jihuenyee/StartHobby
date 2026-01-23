@@ -2,26 +2,20 @@ const express = require("express");
 const router = express.Router();
 const { getDB } = require("../db");
 
-/**
- * GET all gameTypes (Admin sidebar)
- * /api/quizzes/games
- */
+// GET game types
 router.get("/games", async (req, res) => {
   try {
     const db = await getDB();
     const [rows] = await db.query(
-      "SELECT DISTINCT gameType FROM quiz_questions"
+      "SELECT DISTINCT game_type FROM quiz_questions"
     );
-    res.json(rows.map(r => r.gameType));
+    res.json(rows.map(r => r.game_type));
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-/**
- * GET quizzes by gameType
- * /api/quizzes/game/:gameType
- */
+// GET quizzes by game type
 router.get("/game/:gameType", async (req, res) => {
   try {
     const db = await getDB();
@@ -29,14 +23,14 @@ router.get("/game/:gameType", async (req, res) => {
       `
       SELECT
         id,
-        gameType,
+        game_type,
         option_a,
         option_b,
         option_c,
         option_d,
         created_at
       FROM quiz_questions
-      WHERE gameType = ?
+      WHERE game_type = ?
       `,
       [req.params.gameType]
     );
@@ -47,4 +41,3 @@ router.get("/game/:gameType", async (req, res) => {
   }
 });
 
-module.exports = router;

@@ -60,6 +60,7 @@ app.use("/api/notifications", notificationRoutes);
 app.use("/api/follows", followRoutes);
 app.use("/api/auth", authRoutes);
 
+
 // ✅ Test database connection
 app.get("/test-db", async (req, res) => {
   try {

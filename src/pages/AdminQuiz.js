@@ -1,4 +1,3 @@
-// src/pages/AdminQuiz.js
 import React, { useEffect, useState } from "react";
 import { apiRequest } from "../api";
 import "../styles/AdminQuiz.css";
@@ -12,9 +11,6 @@ function AdminQuiz() {
   const [saving, setSaving] = useState(false);
   const [status, setStatus] = useState("");
 
-  // =========================
-  // LOAD QUIZ LIST
-  // =========================
   useEffect(() => {
     const fetchQuizzes = async () => {
       try {
@@ -29,9 +25,6 @@ function AdminQuiz() {
     fetchQuizzes();
   }, []);
 
-  // =========================
-  // LOAD QUESTIONS
-  // =========================
   const loadQuiz = async (gameType) => {
     setSelectedGameType(gameType);
     setQuestions([]);
@@ -48,9 +41,6 @@ function AdminQuiz() {
     }
   };
 
-  // =========================
-  // EDIT QUESTION
-  // =========================
   const updateQuestionText = (id, value) => {
     setQuestions((prev) =>
       prev.map((q) =>
@@ -59,9 +49,6 @@ function AdminQuiz() {
     );
   };
 
-  // =========================
-  // EDIT OPTION
-  // =========================
   const updateOption = (id, key, value) => {
     setQuestions((prev) =>
       prev.map((q) =>
@@ -70,9 +57,6 @@ function AdminQuiz() {
     );
   };
 
-  // =========================
-  // SAVE QUESTION
-  // =========================
   const saveQuestion = async (q) => {
     setSaving(true);
     setStatus("");
@@ -97,9 +81,6 @@ function AdminQuiz() {
     }
   };
 
-  // =========================
-  // DELETE QUESTION
-  // =========================
   const deleteQuestion = async (id) => {
     if (!window.confirm("Delete this question?")) return;
 
@@ -111,10 +92,7 @@ function AdminQuiz() {
         method: "DELETE",
       });
 
-      setQuestions((prev) =>
-        prev.filter((q) => q.question_id !== id)
-      );
-
+      await loadQuiz(selectedGameType);
       setStatus("Question deleted ✓");
     } catch {
       setStatus("Failed to delete question");
@@ -123,9 +101,6 @@ function AdminQuiz() {
     }
   };
 
-  // =========================
-  // ADD QUESTION
-  // =========================
   const addQuestion = async () => {
     if (!selectedGameType) return;
 
@@ -153,7 +128,7 @@ function AdminQuiz() {
         },
       });
 
-      loadQuiz(selectedGameType);
+      await loadQuiz(selectedGameType);
       setStatus("Question added ✓");
     } catch {
       setStatus("Failed to add question");
@@ -183,7 +158,6 @@ function AdminQuiz() {
         {status && <p className="admin-quiz-status">{status}</p>}
 
         <div className="admin-quiz-main">
-          {/* LEFT */}
           <aside className="admin-quiz-sidebar">
             <h2 className="sidebar-title">Quizzes</h2>
 
@@ -209,7 +183,6 @@ function AdminQuiz() {
             )}
           </aside>
 
-          {/* RIGHT */}
           <section className="admin-quiz-editor">
             {!selectedGameType && (
               <div className="editor-placeholder">
@@ -225,11 +198,11 @@ function AdminQuiz() {
               <div className="editor-content">
                 <h2 className="editor-title">Quiz: {selectedGameType}</h2>
 
-                {questions.map((q) => (
+                {questions.map((q, index) => (
                   <div key={q.question_id} className="question-card">
                     <div className="question-header">
                       <span className="question-label">
-                        Question #{q.question_id}
+                        Question #{index + 1}
                       </span>
 
                       <div className="question-actions">

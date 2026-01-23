@@ -29,21 +29,13 @@ function AdminQuiz() {
     fetchQuizzes();
   }, []);
 
-  const handleSelectQuiz = async (quizId) => {
-    setSelectedQuizId(quizId);
-    setQuizDetails(null);
-    setLoadingQuiz(true);
-    setStatus("");
-
-    try {
-      const data = await apiRequest(`/quizzes/${quizId}`);
-      setQuizDetails(data);
-    } catch (err) {
-      console.error("Load quiz details error:", err);
-      setStatus(err.message || "Failed to load quiz details");
-    } finally {
-      setLoadingQuiz(false);
-    }
+  const handleSelectQuiz = (quiz) => {
+    setSelectedQuizId(quiz.quiz_id);
+    setQuizDetails({
+      quiz_id: quiz.quiz_id,
+      title: quiz.question, // or a better title later
+      questions: [] // you are NOT loading questions yet
+    });
   };
 
   const handleQuestionTextChange = (questionId, text) => {
@@ -221,7 +213,7 @@ function AdminQuiz() {
                         ? "quiz-list-item active"
                         : "quiz-list-item"
                     }
-                    onClick={() => handleSelectQuiz(q.quiz_id)}
+                    onClick={() => handleSelectQuiz(q)}
                   >
                     <span className="quiz-list-title">{q.title}</span>
                     <span className="quiz-list-sub">
@@ -333,6 +325,5 @@ function AdminQuiz() {
   );
 }
 
-console.log(quizzes[0]);
 
 export default AdminQuiz;

@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { apiRequest } from "../api";
-import "../styles/AdminQuiz.css"; // your EXISTING old CSS
+import "../styles/AdminQuiz.css";
 
 function AdminQuiz() {
   const [quizList, setQuizList] = useState([]);
-  const [selectedQuiz, setSelectedQuiz] = useState(null);
   const [selectedGame, setSelectedGame] = useState(null);
+  const [questions, setQuestions] = useState([]);
+  const [status, setStatus] = useState("");
 
   const [newQuestion, setNewQuestion] = useState({
     question: "",
@@ -15,18 +16,35 @@ function AdminQuiz() {
     option_d: ""
   });
 
-  // load quiz list (claw / snake / castle)
+  // load quizzes (game_type)
   useEffect(() => {
-    apiRequest("/quizzes").then((data) => {
-      setQuizList(Array.isArray(data) ? data : []);
-    });
+    apiRequest("/quizzes").then(setQuizList);
   }, []);
 
-  // load quiz by game_type
+  // load quiz questions
   const loadQuiz = async (gameType) => {
     setSelectedGame(gameType);
     const data = await apiRequest(`/quizzes/${gameType}`);
-    setSelectedQuiz(data);
+    setQuestions(data.questions);
+  };
+
+  // update local state
+  const updateField = (id, field, value) => {
+    setQuestions(qs =>
+      qs.map(q =>
+        q.question_id === id ? { ...q, [field]: value } : q
+      )
+    );
+  };
+
+  // save question
+  const saveQuestion = async (q) => {
+    await apiRequest(`/quizzes/question/${q.question_id}`, {
+      method: "PUT",
+      body: JSON.stringify(q)
+    });
+    setStatus("Question saved ✅");
+    setTimeout(() => setStatus(""), 2000);
   };
 
   // add question
@@ -50,91 +68,155 @@ function AdminQuiz() {
     });
 
     loadQuiz(selectedGame);
+    setStatus("Question added ✅");
+    setTimeout(() => setStatus(""), 2000);
   };
 
   return (
-    <div style={{ display: "flex", gap: 20 }}>
-      {/* LEFT — OLD UI (ID PILLS) */}
-      <div style={{ width: 250 }}>
-        <h3>Quizzes</h3>
+    <div className="admin-quiz-page">
+      <div className="admin-quiz-shell">
 
-        {quizList.map((q, index) => (
-          <div
-            key={q.game_type}
-            className="quiz-id-pill"   // 🔥 SAME OLD CLASS
-            onClick={() => loadQuiz(q.game_type)}
-          >
-            ID:
+        {/* HEADER */}
+        <div className="admin-quiz-header">
+          <div>
+            <h1>Quiz Management</h1>
+            <p>View, edit, add and delete quiz questions & options.</p>
           </div>
-        ))}
-      </div>
+          <button
+            className="admin-quiz-add-btn"
+            disabled={!selectedGame}
+            onClick={addQuestion}
+          >
+            + Add Question
+          </button>
+        </div>
 
-      {/* RIGHT — OLD CONTENT */}
-      <div style={{ flex: 1 }}>
-        {!selectedQuiz ? (
-          <p>Select a quiz from the left to manage questions.</p>
-        ) : (
-          <>
-            <h3>Quiz</h3>
+        {status && <div className="admin-quiz-status">{status}</div>}
 
-            {/* EXISTING QUESTIONS */}
-            {selectedQuiz.questions.map((q) => (
-              <div key={q.question_id} className="quiz-question-block">
-                <p className="quiz-question-text">{q.question}</p>
-                <p>A: {q.option_a}</p>
-                <p>B: {q.option_b}</p>
-                <p>C: {q.option_c}</p>
-                <p>D: {q.option_d}</p>
+        <div className="admin-quiz-main">
+
+          {/* SIDEBAR */}
+          <div className="admin-quiz-sidebar">
+            <div className="sidebar-title">Quizzes</div>
+
+            <ul className="quiz-list">
+              {quizList.map(q => (
+                <li
+                  key={q.game_type}
+                  className={`quiz-list-item ${
+                    selectedGame === q.game_type ? "active" : ""
+                  }`}
+                  onClick={() => loadQuiz(q.game_type)}
+                >
+                  <span className="quiz-list-title">ID:</span>
+                  <span className="quiz-list-sub">{q.game_type}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* EDITOR */}
+          <div className="admin-quiz-editor">
+            {!selectedGame ? (
+              <div className="editor-placeholder">
+                Select a quiz from the left to manage questions.
               </div>
-            ))}
+            ) : (
+              <div className="editor-content">
+                <div>
+                  <div className="editor-title">Quiz: {selectedGame}</div>
+                  <div className="editor-subtitle">
+                    Edit questions and options below
+                  </div>
+                </div>
 
-            <hr />
+                {/* QUESTIONS */}
+                {questions.map(q => (
+                  <div key={q.question_id} className="question-card">
+                    <div className="question-header">
+                      <span className="question-label">
+                        Question #{q.question_id}
+                      </span>
+                      <div className="question-actions">
+                        <button
+                          className="btn-outline-sm"
+                          onClick={() => saveQuestion(q)}
+                        >
+                          Save
+                        </button>
+                      </div>
+                    </div>
 
-            {/* ADD QUESTION — SAME UI STYLE */}
-            <div className="quiz-question-block">
-              <p className="quiz-question-text">Add New Question</p>
+                    <textarea
+                      className="question-textarea"
+                      value={q.question}
+                      onChange={e =>
+                        updateField(q.question_id, "question", e.target.value)
+                      }
+                    />
 
-              <textarea
-                placeholder="Question"
-                value={newQuestion.question}
-                onChange={(e) =>
-                  setNewQuestion({ ...newQuestion, question: e.target.value })
-                }
-              />
+                    <div className="options-grid">
+                      {["a", "b", "c", "d"].map(letter => (
+                        <div key={letter} className="option-row">
+                          <span className="option-label">
+                            Option {letter.toUpperCase()}
+                          </span>
+                          <input
+                            className="option-input"
+                            value={q[`option_${letter}`]}
+                            onChange={e =>
+                              updateField(
+                                q.question_id,
+                                `option_${letter}`,
+                                e.target.value
+                              )
+                            }
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
 
-              <input
-                placeholder="Option A"
-                value={newQuestion.option_a}
-                onChange={(e) =>
-                  setNewQuestion({ ...newQuestion, option_a: e.target.value })
-                }
-              />
-              <input
-                placeholder="Option B"
-                value={newQuestion.option_b}
-                onChange={(e) =>
-                  setNewQuestion({ ...newQuestion, option_b: e.target.value })
-                }
-              />
-              <input
-                placeholder="Option C"
-                value={newQuestion.option_c}
-                onChange={(e) =>
-                  setNewQuestion({ ...newQuestion, option_c: e.target.value })
-                }
-              />
-              <input
-                placeholder="Option D"
-                value={newQuestion.option_d}
-                onChange={(e) =>
-                  setNewQuestion({ ...newQuestion, option_d: e.target.value })
-                }
-              />
+                {/* ADD QUESTION FORM */}
+                <div className="question-card">
+                  <span className="question-label">Add New Question</span>
 
-              <button onClick={addQuestion}>Add Question</button>
-            </div>
-          </>
-        )}
+                  <textarea
+                    className="question-textarea"
+                    placeholder="Question"
+                    value={newQuestion.question}
+                    onChange={e =>
+                      setNewQuestion({ ...newQuestion, question: e.target.value })
+                    }
+                  />
+
+                  <div className="options-grid">
+                    {["a", "b", "c", "d"].map(letter => (
+                      <div key={letter} className="option-row">
+                        <span className="option-label">
+                          Option {letter.toUpperCase()}
+                        </span>
+                        <input
+                          className="option-input"
+                          value={newQuestion[`option_${letter}`]}
+                          onChange={e =>
+                            setNewQuestion({
+                              ...newQuestion,
+                              [`option_${letter}`]: e.target.value
+                            })
+                          }
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+              </div>
+            )}
+          </div>
+
+        </div>
       </div>
     </div>
   );

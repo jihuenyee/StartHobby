@@ -361,8 +361,6 @@
   font-size: 0.85rem;
 }
 
-/* ===== Modal styling for quiz editor ===== */
-
 .admin-modal-overlay {
   position: fixed;
   inset: 0;
@@ -435,4 +433,13 @@
 
 .admin-modal-actions button:not(.secondary):hover {
   background: #5950f0;
+}
+
+.admin-grid {
+  align-items: stretch;
+}
+
+.admin-card {
+  max-height: calc(100vh - 160px);
+  overflow-y: auto;
 }

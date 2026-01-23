@@ -11,43 +11,22 @@ const INSPIRATION_TEXTS = [
 
 const STORY_STEPS = [
   "🏰 You've reached the Ancient Castle, but a giant dragon blocks the way!",
-  "🐲 We need a distraction... Let's make a cake!",
+  "🐲 We need a distraction... Let's make a custom cake!",
   "🧁 Let's head to the pantry to find ingredients!"
 ];
 
-const INGREDIENTS = [
-  { 
-    name: 'Milk', 
-    target: { x: '14%', y: '13%' },
-    bgAfter: '/pantry/milk_gone.jpg', 
-    question: "What kind of energy should the base of this cake have?",
-    options: ["Pure & Traditional", "Wild & Magical", "Sweet & Gentle", "Bold & Rich"],
-  },
-  { 
-    name: 'Eggs', 
-    target: { x: '26%', y: '39%' }, 
-    bgAfter: '/pantry/egg_gone.jpeg', 
-    question: "How do you usually approach a big challenge?",
-    options: ["Crack right into it!", "Handle with extreme care", "Look for the golden opportunity", "Ask for a friend's help"],
-  },
-  { 
-    name: 'Frosting', 
-    target: { x: '54%', y: '51%' }, 
-    bgAfter: '/pantry/frosting_gone.jpeg', 
-    question: "What's the 'flavor' of your personality?",
-    options: ["Classic & Reliable", "Sparkly & Dramatic", "Dark & Mysterious", "Zesty & Adventurous"],
-  },
-  { 
-    name: 'Flour', 
-    target: { x: '88%', y: '51%' }, 
-    bgAfter: '/pantry/flour_gone.jpeg', 
-    question: "When you create something, what is most important?",
-    options: ["The final result", "The fun of the process", "Making others happy", "Learning something new"],
-  }
+const INGREDIENT_VISUALS = [
+  { name: 'Milk', target: { x: '14%', y: '13%' }, bgAfter: '/pantry/milk_gone.jpg', image: '/pantry/milk.png' },
+  { name: 'Eggs', target: { x: '26%', y: '39%' }, bgAfter: '/pantry/egg_gone.jpeg', image: '/pantry/egg.png' },
+  { name: 'Frosting', target: { x: '54%', y: '51%' }, bgAfter: '/pantry/frosting_gone.jpeg', image: '/pantry/frosting.png' },
+  { name: 'Flour', target: { x: '88%', y: '51%' }, bgAfter: '/pantry/flour_gone.jpeg', image: '/pantry/flour.png' },
+  { name: 'Sugar', target: { x: '70%', y: '20%' }, bgAfter: '/pantry/sugar_gone.jpg', image: '/pantry/sugar.png' } 
 ];
 
 const CastleGame = () => {
   const navigate = useNavigate();
+  const [questions, setQuestions] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [scene, setScene] = useState('narrative'); 
   const [narrativeStep, setNarrativeStep] = useState(0);
   const [itemIndex, setItemIndex] = useState(0);
@@ -59,63 +38,78 @@ const CastleGame = () => {
   const [isExiting, setIsExiting] = useState(false);
   const [typedText, setTypedText] = useState("");
   const [userChoices, setUserChoices] = useState([]);
+  const [miniInsight, setMiniInsight] = useState(null);
 
   const clickSound = useRef(null);
-
-  // --- SAFE AUDIO HELPER ---
-  const createAudio = (path) => {
-    const audio = new Audio(path);
-    audio.onerror = () => console.warn(`Missing audio: ${path}`);
-    return audio;
-  };
-
-  const safePlay = (audioRef) => {
-    if (audioRef.current) audioRef.current.play().catch(() => {});
-  };
+  const typingTimeoutRef = useRef(null);
 
   useEffect(() => {
-    clickSound.current = createAudio("/sounds/click.mp3");
+    fetch("http://localhost:5000/api/quizzes/castle")
+      .then((res) => res.json())
+      .then((data) => {
+        const actualData = Array.isArray(data) ? data : (data.questions || data.data || []);
+        if (actualData.length > 0) {
+          const formatted = actualData.map((q, index) => ({
+            ...(INGREDIENT_VISUALS[index] || { name: 'Extra', target: {x:'50%', y:'50%'} }),
+            question: q.question,
+            options: [q.option_a, q.option_b, q.option_c, q.option_d]
+          }));
+          setQuestions(formatted);
+        }
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Fetch error:", err);
+        setLoading(false);
+      });
+
+    return () => {
+      if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+    };
   }, []);
 
+  useEffect(() => {
+    clickSound.current = new Audio("/sounds/click.mp3");
+  }, []);
+
+  const playSound = (filename) => {
+    try {
+      const audio = new Audio(`/sounds/${filename}`);
+      audio.play().catch(() => {});
+    } catch (e) {}
+  };
+
   const handleNextNarrative = () => {
-    safePlay(clickSound);
-    if (narrativeStep < STORY_STEPS.length - 1) {
+    playSound('click.mp3');
+    if (narrativeStep < 2) {
       setNarrativeStep(prev => prev + 1);
     } else {
-      setScene('pantry');
-      setCurrentBg('/pantry/stocked.jpeg'); 
-      setSquirrelPos({ x: '45%', y: '85%' });
+      if (questions.length > 0) {
+        setScene('pantry');
+        setCurrentBg('/pantry/stocked.jpeg'); 
+        setSquirrelPos({ x: '50%', y: '73%' });
+      }
     }
   };
 
   const handleIngredientCollection = (optionIdx) => {
-    safePlay(clickSound);
-    const currentItem = INGREDIENTS[itemIndex];
-    
-    // Collect choice (Personality Logic)
-    const choice = currentItem.options[optionIdx];
-    setUserChoices(prev => [...prev, choice]);
+    playSound('click.mp3');
+    const currentItem = questions[itemIndex];
+    if (!currentItem) return;
 
+    setUserChoices(prev => [...prev, optionIdx]);
     setShowQuiz(false);
     setIsMoving(true); 
     setSquirrelPos(currentItem.target);
     
     setTimeout(() => {
-      // Keep current BG if the specific 'gone' image is missing/placeholder
-      if (currentItem.bgAfter) {
-          // Optional: Add check or just try to set it
-          setCurrentBg(currentItem.bgAfter);
-      }
+      if (currentItem.bgAfter) setCurrentBg(currentItem.bgAfter);
       
       setTimeout(() => {
-        if (itemIndex < INGREDIENTS.length - 1) {
+        if (itemIndex < questions.length - 1) {
           setItemIndex(itemIndex + 1);
-          setSquirrelPos({ x: '45%', y: '85%' }); 
-          
-          setTimeout(() => {
-            setIsMoving(false); 
-          }, 1200);
-          
+          setSquirrelPos({ x: '50%', y: '73%' }); 
+          setTimeout(() => setIsMoving(false), 1200);
         } else {
           setScene('baking');
           setTimeout(() => {
@@ -130,44 +124,61 @@ const CastleGame = () => {
     }, 1000);
   };
 
-  const handleSneakPast = () => {
-    safePlay(clickSound);
-    setIsMoving(true);
-    setSquirrelPos({ x: '115%', y: '75%' });
-    setTimeout(() => triggerEndingSequence(), 1500);
+  const calculateMiniInsight = () => {
+    const counts = [0, 0, 0, 0];
+    userChoices.forEach(idx => counts[idx]++);
+    const maxIdx = counts.indexOf(Math.max(...counts));
+
+    const messages = [
+      "You have a vividly Creative mind! 🎨",
+      "You seem like an energetic Doer! 🏃",
+      "I see a sharp, Strategic thinker! 🧠",
+      "You are a true People Person! 🤝"
+    ];
+    setMiniInsight(messages[maxIdx]);
   };
 
-  const triggerEndingSequence = () => {
+  const handleSneakPast = () => {
+    playSound('click.mp3');
+    setIsMoving(true);
+    setSquirrelPos({ x: '115%', y: '75%' });
+    setTimeout(() => {
+        calculateMiniInsight();
+    }, 1500);
+  };
+
+  const finalizeGame = () => {
+    setMiniInsight(null);
     setScene('end');
     const raw = localStorage.getItem("gameResults");
     const gameResults = raw ? JSON.parse(raw) : {};
-    
-    gameResults.castleGame = { 
-        completed: true, 
-        answers: userChoices, // Saving personality answers
-        completedAt: Date.now() 
-    };
-    
+    gameResults.castleGame = { completed: true, choices: userChoices, completedAt: Date.now() };
     localStorage.setItem("gameResults", JSON.stringify(gameResults));
+    
     const message = INSPIRATION_TEXTS[Math.floor(Math.random() * INSPIRATION_TEXTS.length)];
     typeEndingText(message);
   };
 
   const typeEndingText = (text) => {
-    let i = 0;
+    if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
     setTypedText("");
-    const interval = setInterval(() => {
-      setTypedText(prev => prev + text[i]);
-      i++;
-      if (i >= text.length) {
-        clearInterval(interval);
+    let i = 0;
+    const type = () => {
+      if (i < text.length) {
+        setTypedText(text.substring(0, i + 1));
+        i++;
+        typingTimeoutRef.current = setTimeout(type, 50);
+      } else {
         setTimeout(() => {
           setIsExiting(true);
           setTimeout(() => navigate("/game-map"), 800);
         }, 2000);
       }
-    }, 45);
+    };
+    type();
   };
+
+  if (loading) return <div className="castle-scene">Loading...</div>;
 
   return (
     <div className={`castle-scene ${isExiting ? "exit" : ""}`} style={{ backgroundImage: `url(${process.env.PUBLIC_URL + currentBg})` }}>
@@ -189,30 +200,39 @@ const CastleGame = () => {
         </div>
       )}
 
-      {scene === 'narrative' && (
-        <div className="story-box">
-          <p>{STORY_STEPS[narrativeStep]}</p>
-          <button className="story-btn" onClick={handleNextNarrative}>
-            {narrativeStep < STORY_STEPS.length - 1 ? "Next" : "Go to Pantry"}
-          </button>
-        </div>
-      )}
+      {(scene === 'narrative' || (scene === 'pantry' && !showQuiz && !isMoving) || scene === 'finale') && (
+        <div className="story-chat">
+          <div className="chat-bubble">
+            
+            {/* Conditional Icon Rendering */}
+            {scene === 'pantry' && (
+              <div className="icon-container">
+                {questions[itemIndex]?.image ? (
+                  <img src={process.env.PUBLIC_URL + questions[itemIndex].image} alt="item" className="bubble-item-img" />
+                ) : (
+                  <span className="squirrel-icon">🐿️</span>
+                )}
+              </div>
+            )}
 
-      {scene === 'pantry' && !showQuiz && !isMoving && (
-        <div className="story-box">
-          <p>Help Bibble find the <b>{INGREDIENTS[itemIndex].name}</b></p>
-          <button className="story-btn" onClick={() => setShowQuiz(true)}>
-            Get {INGREDIENTS[itemIndex].name}
+            <p>
+                {scene === 'narrative' && STORY_STEPS[narrativeStep]}
+                {scene === 'pantry' && `Help Bibble find the ${questions[itemIndex]?.name}`}
+                {scene === 'finale' && "The Dragon loves your cake and fell asleep! Time to sneak past."}
+            </p>
+          </div>
+          <button className="story-btn" onClick={scene === 'finale' ? handleSneakPast : (scene === 'pantry' ? () => setShowQuiz(true) : handleNextNarrative)}>
+            {scene === 'finale' ? "Sneak Past" : (scene === 'pantry' ? `Get ${questions[itemIndex]?.name}` : "Next")}
           </button>
         </div>
       )}
 
       {showQuiz && (
         <div className="quiz-card">
-          <h3>Selecting {INGREDIENTS[itemIndex].name}</h3>
-          <p>{INGREDIENTS[itemIndex].question}</p>
+          <h3>Getting {questions[itemIndex]?.name}</h3>
+          <p>{questions[itemIndex]?.question}</p>
           <div className="options-grid">
-            {INGREDIENTS[itemIndex].options.map((opt, idx) => (
+            {questions[itemIndex]?.options.map((opt, idx) => (
               <button key={idx} className="option-btn" onClick={() => handleIngredientCollection(idx)}>{opt}</button>
             ))}
           </div>
@@ -221,20 +241,29 @@ const CastleGame = () => {
 
       {scene === 'baking' && (
         <div className="overlay-baking">
-          <div className="baking-loader">🧁 Baking...</div>
-        </div>
-      )}
-
-      {scene === 'finale' && (
-        <div className="story-box">
-          <p>The Dragon loves your cake and fell asleep! Time to sneak past.</p>
-          <button className="story-btn" onClick={handleSneakPast}>Continue Journey</button>
+          <div className="baking-loader">🧁 Baking your cake...</div>
         </div>
       )}
 
       {scene === 'end' && (
-        <div className="story-box">
-          <p>{typedText}</p>
+        <div className="story-chat">
+          <div className="chat-bubble">
+            {/* Removed squirrel span here too for a clean ending */}
+            <p>{typedText}</p>
+          </div>
+        </div>
+      )}
+
+      {miniInsight && (
+        <div className="modal-overlay">
+          <div className="insight-card">
+            <h1>Adventure Complete!</h1>
+            <div className="insight-icon">🏰</div>
+            <h2>{miniInsight}</h2>
+            <button className="final-btn" onClick={finalizeGame}>
+              Continue Adventure
+            </button>
+          </div>
         </div>
       )}
     </div>

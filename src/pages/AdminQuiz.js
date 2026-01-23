@@ -5,17 +5,21 @@ function AdminQuiz() {
   const [quizzes, setQuizzes] = useState([]);
   const [selectedQuiz, setSelectedQuiz] = useState(null);
 
+  // load quiz list
   useEffect(() => {
     apiRequest("/quizzes").then(setQuizzes);
   }, []);
 
+  // load quiz by game_type
   const loadQuiz = async (gameType) => {
+    if (!gameType) return;
     const data = await apiRequest(`/quizzes/${gameType}`);
     setSelectedQuiz(data);
   };
 
   return (
     <div style={{ display: "flex", gap: 20 }}>
+      {/* LEFT */}
       <div style={{ width: 250 }}>
         <h3>Quizzes</h3>
         <ul>
@@ -31,6 +35,7 @@ function AdminQuiz() {
         </ul>
       </div>
 
+      {/* RIGHT */}
       <div style={{ flex: 1 }}>
         {!selectedQuiz ? (
           <p>Select a quiz</p>

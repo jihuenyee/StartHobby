@@ -5,9 +5,6 @@ import "../styles/ClawQuizGame.css";
 export default function ClawQuizGame() {
   const navigate = useNavigate();
 
-  /* =====================
-     STATE
-  ===================== */
   const [QUESTIONS, setQUESTIONS] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -24,9 +21,6 @@ export default function ClawQuizGame() {
   const optionRefs = useRef([]);
   const clawRef = useRef(null);
 
-  /* =====================
-     AUDIO
-  ===================== */
   const bgSound = useRef(null);
   const motorSound = useRef(null);
   const grabSound = useRef(null);
@@ -51,14 +45,17 @@ export default function ClawQuizGame() {
     }
   };
 
-  /* =====================
-     FETCH QUESTIONS FROM DB
-  ===================== */
   useEffect(() => {
     fetch("http://localhost:5000/api/quizzes/claw")
       .then((res) => res.json())
       .then((data) => {
-        setQUESTIONS(data);
+        const formatted = (data.questions || []).map((q) => ({
+          id: q.question_id,
+          text: q.question,
+          options: [q.option_a, q.option_b, q.option_c, q.option_d].filter(Boolean),
+        }));
+
+        setQUESTIONS(formatted);
         setLoading(false);
       })
       .catch((err) => {
@@ -67,9 +64,6 @@ export default function ClawQuizGame() {
       });
   }, []);
 
-  /* =====================
-     AUDIO INIT
-  ===================== */
   useEffect(() => {
     bgSound.current = createAudio("/sounds/ClawMachineBackground.mp3", true, 0.3);
     motorSound.current = createAudio("/sounds/clawdrop.mp3", false, 0.4);
@@ -80,11 +74,6 @@ export default function ClawQuizGame() {
     return () => safePause(bgSound);
   }, []);
 
-
-
-  /* =====================
-     GRAB LOGIC
-  ===================== */
   const grabOption = async (index) => {
     if (grabbing || showEnding || miniInsight) return;
     setGrabbing(true);
@@ -141,9 +130,6 @@ export default function ClawQuizGame() {
     }
   };
 
-  /* =====================
-     FINISH QUIZ
-  ===================== */
   const finishQuiz = (finalAnswers) => {
     const raw = localStorage.getItem("gameResults");
     const gameResults = raw ? JSON.parse(raw) : {};
@@ -157,36 +143,26 @@ export default function ClawQuizGame() {
     localStorage.setItem("gameResults", JSON.stringify(gameResults));
 
     safePlay(winSound);
-    setMiniInsight("Claw Machine Cleared! 🎉");
+    setMiniInsight("Claw Machine Cleared!");
   };
 
   const handleCloseInsight = () => {
     setMiniInsight(null);
     setShowEnding(true);
-
   };
 
-  /* =====================
-     LOADING GUARD
-  ===================== */
-  if (loading) {
-    return <div className="claw-page">Loading game...</div>;
-  }
+  if (loading) return <div className="claw-page">Loading game...</div>;
+  if (!QUESTIONS.length) return <div className="claw-page">No questions found.</div>;
 
-  if (!QUESTIONS.length) {
-    return <div className="claw-page">No questions found.</div>;
-  }
-
-  /* =====================
-     RENDER
-  ===================== */
   return (
     <div className="claw-page">
       <div className="machine-area">
         <div className="question-squirrel">
           🐿️
           <div className="speech-bubble">
-            {showEnding ? "Great job! Let's head to the Castle next..." : QUESTIONS[questionIndex]?.text}
+            {showEnding
+              ? "Great job! Let's head to the Castle next..."
+              : QUESTIONS[questionIndex].text}
           </div>
         </div>
 
@@ -212,9 +188,7 @@ export default function ClawQuizGame() {
                   <button
                     key={i}
                     ref={(el) => (optionRefs.current[i] = el)}
-                    className={`option ${
-                      grabbedIndex === i ? "grabbed" : ""
-                    }`}
+                    className={`option ${grabbedIndex === i ? "grabbed" : ""}`}
                     onClick={() => grabOption(i)}
                     disabled={grabbing}
                   >
@@ -234,25 +208,6 @@ export default function ClawQuizGame() {
                 </div>
               </div>
             )}
-          </div>
-
-          {/* Corner Bolts */}
-          <div className="corner-bolt top-left" />
-          <div className="corner-bolt top-right" />
-          <div className="corner-bolt bottom-left" />
-          <div className="corner-bolt bottom-right" />
-
-          {/* Control Panel */}
-          <div className="control-panel">
-            <div className="coin-slot">
-              <div className="coin-label">INSERT COIN</div>
-              <div className="slot" />
-            </div>
-            <div className="joystick-indicator">🕹️</div>
-            <div className="prize-chute">
-              <div className="chute-label">PRIZE</div>
-              <div className="chute-door" />
-            </div>
           </div>
         </div>
       </div>

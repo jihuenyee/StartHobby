@@ -100,14 +100,30 @@ function AdminDashboard() {
                 <>
                   <h3>Quiz: {selectedGame}</h3>
 
-                  {quiz.questions.map((q) => (
-                    <div key={q.question_id}>
-                      <p><b>{q.question}</b></p>
-                      <p>A: {q.option_a}</p>
-                      <p>B: {q.option_b}</p>
-                      <p>C: {q.option_c}</p>
-                      <p>D: {q.option_d}</p>
-                      <hr />
+                  {quiz.questions.map((q, index) => (
+                    <div key={q.question_id} className="question-card">
+                      <div className="question-header">
+                        <span className="question-label">
+                          Question #{index + 1}
+                        </span>
+                      </div>
+
+                      <div className="question-textarea" style={{border: 'none', background: 'transparent', padding: '0'}}>
+                        {q.question}
+                      </div>
+
+                      <div className="options-grid">
+                        {["a", "b", "c", "d"].map((opt) => (
+                          <div className="option-row" key={opt}>
+                            <span className="option-label">
+                              Option {opt.toUpperCase()}
+                            </span>
+                            <div className="option-input" style={{border: 'none', background: 'transparent', padding: '0'}}>
+                              {q[`option_${opt}`]}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   ))}
                 </>

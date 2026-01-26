@@ -10,7 +10,7 @@ const INSPIRATION_TEXTS = [
 ];
 
 const STORY_STEPS = [
-  "🏰 You've reached the Ancient Castle, but a giant dragon blocks the way!",
+  "🏰 You've reached the Castle, but a giant dragon blocks the way!",
   "🐲 We need a distraction... Let's make a custom cake!",
   "🧁 Let's head to the pantry to find ingredients!"
 ];
@@ -30,7 +30,7 @@ const CastleGame = () => {
   const [scene, setScene] = useState('narrative'); 
   const [narrativeStep, setNarrativeStep] = useState(0);
   const [itemIndex, setItemIndex] = useState(0);
-  const [currentBg, setCurrentBg] = useState('/castle.jpg'); 
+  const [currentBg, setCurrentBg] = useState('/backgrounds/castle.jpg'); 
   const [squirrelPos, setSquirrelPos] = useState({ x: '50%', y: '70%' });
   const [showQuiz, setShowQuiz] = useState(false);
   const [isMoving, setIsMoving] = useState(false); 
@@ -40,10 +40,41 @@ const CastleGame = () => {
   const [userChoices, setUserChoices] = useState([]);
   const [miniInsight, setMiniInsight] = useState(null);
 
+  // --- 🛡️ AUDIO REFS & HELPERS (Same as StoryIntro) ---
+  const bgSound = useRef(null);
   const clickSound = useRef(null);
   const typingTimeoutRef = useRef(null);
 
+  const createAudio = (path, loop = false, volume = 1.0) => {
+    const audio = new Audio(path);
+    audio.loop = loop;
+    audio.volume = volume;
+    audio.onerror = () => console.warn(`Audio missing: ${path}`);
+    return audio;
+  };
+
+  const safePlay = (audioRef) => {
+    if (audioRef.current) {
+      const playPromise = audioRef.current.play();
+      if (playPromise !== undefined) {
+        playPromise.catch((error) => {
+          console.warn("Audio play blocked or missing:", error);
+        });
+      }
+    }
+  };
+
+  const safePause = (audioRef) => {
+    if (audioRef.current) {
+      try {
+        audioRef.current.pause();
+      } catch (e) {}
+    }
+  };
+
+  // --- INITIALIZATION ---
   useEffect(() => {
+    // 1. Fetch Quiz Data
     fetch("http://localhost:5000/api/quizzes/castle")
       .then((res) => res.json())
       .then((data) => {
@@ -63,29 +94,41 @@ const CastleGame = () => {
         setLoading(false);
       });
 
+    // 2. Setup Audio
+    bgSound.current = createAudio("/sounds/castle.mp3", true, 0.4);
+    clickSound.current = createAudio("/sounds/click.mp3", false, 0.5);
+    
+    // Attempt auto-play
+    safePlay(bgSound);
+
     return () => {
       if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+      safePause(bgSound);
     };
   }, []);
 
+  // --- MUSIC SWAPPING LOGIC ---
   useEffect(() => {
-    clickSound.current = new Audio("/sounds/click.mp3");
-  }, []);
+    if (!bgSound.current) return;
 
-  const playSound = (filename) => {
-    try {
-      const audio = new Audio(`/sounds/${filename}`);
-      audio.play().catch(() => {});
-    } catch (e) {}
-  };
+    // Determine which track should play
+    const targetTrack = scene === 'pantry' ? "/sounds/pantry.mp3" : "/sounds/castle.mp3";
+    
+    // Only change if the source is different
+    if (!bgSound.current.src.includes(targetTrack)) {
+        bgSound.current.src = targetTrack;
+        bgSound.current.load(); // Reload the new track
+        safePlay(bgSound);
+    }
+  }, [scene]);
 
   const handleNextNarrative = () => {
-    playSound('click.mp3');
+    safePlay(clickSound);
     if (narrativeStep < 2) {
       setNarrativeStep(prev => prev + 1);
     } else {
       if (questions.length > 0) {
-        setScene('pantry');
+        setScene('pantry'); // Music switches here
         setCurrentBg('/pantry/stocked.jpeg'); 
         setSquirrelPos({ x: '50%', y: '73%' });
       }
@@ -93,7 +136,7 @@ const CastleGame = () => {
   };
 
   const handleIngredientCollection = (optionIdx) => {
-    playSound('click.mp3');
+    safePlay(clickSound);
     const currentItem = questions[itemIndex];
     if (!currentItem) return;
 
@@ -114,8 +157,8 @@ const CastleGame = () => {
           setScene('baking');
           setTimeout(() => {
             setHasCake(true);
-            setScene('finale');
-            setCurrentBg('/castle.jpg');
+            setScene('finale'); // Music switches back to castle here
+            setCurrentBg('/backgrounds/castle.jpg');
             setSquirrelPos({ x: '10%', y: '75%' });
             setIsMoving(false);
           }, 3000);
@@ -128,7 +171,6 @@ const CastleGame = () => {
     const counts = [0, 0, 0, 0];
     userChoices.forEach(idx => counts[idx]++);
     const maxIdx = counts.indexOf(Math.max(...counts));
-
     const messages = [
       "You have a vividly Creative mind! 🎨",
       "You seem like an energetic Doer! 🏃",
@@ -139,7 +181,7 @@ const CastleGame = () => {
   };
 
   const handleSneakPast = () => {
-    playSound('click.mp3');
+    safePlay(clickSound);
     setIsMoving(true);
     setSquirrelPos({ x: '115%', y: '75%' });
     setTimeout(() => {
@@ -181,7 +223,11 @@ const CastleGame = () => {
   if (loading) return <div className="castle-scene">Loading...</div>;
 
   return (
-    <div className={`castle-scene ${isExiting ? "exit" : ""}`} style={{ backgroundImage: `url(${process.env.PUBLIC_URL + currentBg})` }}>
+    <div 
+      className={`castle-scene ${isExiting ? "exit" : ""}`} 
+      style={{ backgroundImage: `url(${process.env.PUBLIC_URL + currentBg})` }}
+      onClick={() => safePlay(bgSound)} // Nudge play on any click
+    >
       
       {scene !== 'end' && (
         <div 
@@ -189,7 +235,7 @@ const CastleGame = () => {
           style={(scene === 'pantry' || scene === 'finale' || scene === 'baking') ? 
             { left: squirrelPos.x, top: squirrelPos.y, transform: 'none' } : {}}
         >
-          {hasCake ? '🐿️' : '🐿️'}
+          🐿️
         </div>
       )}
 
@@ -203,8 +249,6 @@ const CastleGame = () => {
       {(scene === 'narrative' || (scene === 'pantry' && !showQuiz && !isMoving) || scene === 'finale') && (
         <div className="story-chat">
           <div className="chat-bubble">
-            
-            {/* Conditional Icon Rendering */}
             {scene === 'pantry' && (
               <div className="icon-container">
                 {questions[itemIndex]?.image ? (
@@ -214,7 +258,6 @@ const CastleGame = () => {
                 )}
               </div>
             )}
-
             <p>
                 {scene === 'narrative' && STORY_STEPS[narrativeStep]}
                 {scene === 'pantry' && `Help Bibble find the ${questions[itemIndex]?.name}`}
@@ -248,7 +291,6 @@ const CastleGame = () => {
       {scene === 'end' && (
         <div className="story-chat">
           <div className="chat-bubble">
-            {/* Removed squirrel span here too for a clean ending */}
             <p>{typedText}</p>
           </div>
         </div>

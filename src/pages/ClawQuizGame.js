@@ -2,6 +2,11 @@ import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/ClawQuizGame.css";
 
+const API_BASE =
+  process.env.NODE_ENV === "production"
+    ? "https://starthobbybackend-production.up.railway.app"
+    : "http://localhost:5000";
+
 export default function ClawQuizGame() {
   const navigate = useNavigate();
 
@@ -44,11 +49,6 @@ export default function ClawQuizGame() {
       audioRef.current.currentTime = 0;
     }
   };
-
-const API_BASE =
-  process.env.NODE_ENV === "production"
-    ? "https://starthobbybackend-production.up.railway.app"
-    : "http://localhost:5000";
 
   useEffect(() => {
     fetch(`${API_BASE}/api/quizzes/claw`)

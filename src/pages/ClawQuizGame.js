@@ -45,14 +45,24 @@ export default function ClawQuizGame() {
     }
   };
 
+const API_BASE =
+  process.env.NODE_ENV === "production"
+    ? "https://starthobbybackend-production.up.railway.app"
+    : "http://localhost:5000";
+
   useEffect(() => {
-    fetch("http://localhost:5000/api/quizzes/claw")
+    fetch(`${API_BASE}/api/quizzes/claw`)
       .then((res) => res.json())
       .then((data) => {
         const formatted = (data.questions || []).map((q) => ({
           id: q.question_id,
           text: q.question,
-          options: [q.option_a, q.option_b, q.option_c, q.option_d].filter(Boolean),
+          options: [
+            q.option_a,
+            q.option_b,
+            q.option_c,
+            q.option_d
+          ].filter(Boolean),
         }));
 
         setQUESTIONS(formatted);
@@ -63,6 +73,7 @@ export default function ClawQuizGame() {
         setLoading(false);
       });
   }, []);
+
 
   useEffect(() => {
     bgSound.current = createAudio("/sounds/ClawMachineBackground.mp3", true, 0.3);

@@ -10,6 +10,14 @@ function AdminQuiz() {
   const [loadingQuiz, setLoadingQuiz] = useState(false);
   const [saving, setSaving] = useState(false);
   const [status, setStatus] = useState("");
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [newQuestion, setNewQuestion] = useState({
+    question: "",
+    option_a: "",
+    option_b: "",
+    option_c: "",
+    option_d: "",
+  });
 
   useEffect(() => {
     const fetchQuizzes = async () => {
@@ -92,7 +100,8 @@ function AdminQuiz() {
         method: "DELETE",
       });
 
-      window.location.reload();
+      setStatus("Question deleted ✓");
+      loadQuiz(selectedGameType);
     } catch {
       setStatus("Failed to delete question");
     } finally {
@@ -100,16 +109,39 @@ function AdminQuiz() {
     }
   };
 
+  const openAddModal = () => {
+    if (!selectedGameType) return;
+    setShowAddModal(true);
+    setNewQuestion({
+      question: "",
+      option_a: "",
+      option_b: "",
+      option_c: "",
+      option_d: "",
+    });
+  };
+
+  const closeAddModal = () => {
+    setShowAddModal(false);
+    setNewQuestion({
+      question: "",
+      option_a: "",
+      option_b: "",
+      option_c: "",
+      option_d: "",
+    });
+  };
+
+  const handleNewQuestionChange = (field, value) => {
+    setNewQuestion((prev) => ({ ...prev, [field]: value }));
+  };
+
   const addQuestion = async () => {
     if (!selectedGameType) return;
-
-    const question = window.prompt("Enter question text");
-    if (!question) return;
-
-    const option_a = window.prompt("Option A");
-    const option_b = window.prompt("Option B");
-    const option_c = window.prompt("Option C");
-    const option_d = window.prompt("Option D");
+    if (!newQuestion.question.trim()) {
+      setStatus("Please enter a question");
+      return;
+    }
 
     setSaving(true);
     setStatus("");
@@ -119,15 +151,17 @@ function AdminQuiz() {
         method: "POST",
         body: {
           game_type: selectedGameType,
-          question,
-          option_a,
-          option_b,
-          option_c,
-          option_d,
+          question: newQuestion.question,
+          option_a: newQuestion.option_a,
+          option_b: newQuestion.option_b,
+          option_c: newQuestion.option_c,
+          option_d: newQuestion.option_d,
         },
       });
 
-      window.location.reload();
+      setStatus("Question added successfully ✓");
+      closeAddModal();
+      loadQuiz(selectedGameType);
     } catch {
       setStatus("Failed to add question");
     } finally {
@@ -146,12 +180,76 @@ function AdminQuiz() {
 
           <button
             className="admin-quiz-add-btn"
-            onClick={addQuestion}
+            onClick={openAddModal}
             disabled={!selectedGameType || saving}
           >
             + Add Question
           </button>
         </header>
+
+        {showAddModal && (
+          <div className="modal-overlay" onClick={closeAddModal}>
+            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+              <div className="modal-header">
+                <h3>Add New Question</h3>
+                <button className="modal-close" onClick={closeAddModal}>
+                  ✕
+                </button>
+              </div>
+
+              <div className="modal-body">
+                <div className="form-group">
+                  <label className="form-label">Question Text</label>
+                  <textarea
+                    className="form-textarea"
+                    placeholder="Enter your question here..."
+                    value={newQuestion.question}
+                    onChange={(e) =>
+                      handleNewQuestionChange("question", e.target.value)
+                    }
+                    rows={4}
+                  />
+                </div>
+
+                <div className="form-grid">
+                  {["a", "b", "c", "d"].map((opt) => (
+                    <div className="form-group" key={opt}>
+                      <label className="form-label">
+                        Option {opt.toUpperCase()}
+                      </label>
+                      <input
+                        type="text"
+                        className="form-input"
+                        placeholder={`Enter option ${opt.toUpperCase()}`}
+                        value={newQuestion[`option_${opt}`]}
+                        onChange={(e) =>
+                          handleNewQuestionChange(`option_${opt}`, e.target.value)
+                        }
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="modal-footer">
+                <button
+                  className="btn-cancel"
+                  onClick={closeAddModal}
+                  disabled={saving}
+                >
+                  Cancel
+                </button>
+                <button
+                  className="btn-submit"
+                  onClick={addQuestion}
+                  disabled={saving || !newQuestion.question.trim()}
+                >
+                  {saving ? "Adding..." : "Add Question"}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {status && <p className="admin-quiz-status">{status}</p>}
 
@@ -223,6 +321,7 @@ function AdminQuiz() {
 
                     <textarea
                       className="question-textarea"
+                      placeholder="Enter question text..."
                       value={q.question || ""}
                       onChange={(e) =>
                         updateQuestionText(q.question_id, e.target.value)
@@ -237,6 +336,7 @@ function AdminQuiz() {
                           </span>
                           <input
                             className="option-input"
+                            placeholder={`Enter option ${k.toUpperCase()}`}
                             value={q[`option_${k}`] || ""}
                             onChange={(e) =>
                               updateOption(

@@ -804,11 +804,259 @@
 }
 
 /* =====================
-   MOBILE SAFETY FIX
+   RESPONSIVE FOR ALL DEVICES
 ===================== */
-@media (max-width: 480px) {
+
+/* Large tablets and small desktops */
+@media (max-width: 1024px) {
+  .machine-frame {
+    width: min(85vw, 420px);
+    height: min(70vh, 600px);
+  }
+  
+  .machine-area {
+    flex-direction: column;
+    gap: 20px;
+  }
+}
+
+/* Tablets and large phones (landscape) */
+@media (max-width: 768px) {
+  .claw-page {
+    padding: 1rem 0.5rem;
+  }
+
+  .machine-frame {
+    width: min(90vw, 380px);
+    height: min(65vh, 550px);
+  }
+
+  .machine-frame::before {
+    font-size: 14px;
+    height: 40px;
+  }
+
+  .question-squirrel {
+    font-size: 55px;
+  }
+
+  .speech-bubble {
+    font-size: 13px;
+    max-width: 220px;
+    padding: 14px 18px;
+  }
+
+  .option {
+    font-size: 13px;
+    padding: 13px 11px;
+  }
+}
+
+/* Mobile phones (portrait) */
+@media (max-width: 600px) {
+  .claw-page {
+    padding: 0.5rem;
+    min-height: 100dvh;
+  }
+
+  .machine-area {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .machine-frame {
+    width: 96vw;
+    max-width: 380px;
+    height: auto;
+    min-height: 550px;
+    max-height: 75vh;
+  }
+
+  .machine-frame::before {
+    font-size: 12px;
+    height: 36px;
+  }
+
+  .machine-inner {
+    margin: 50px 12px 12px;
+    height: calc(100% - 120px);
+    min-height: 400px;
+  }
+
+  .question-squirrel {
+    font-size: 50px;
+  }
+
+  .speech-bubble {
+    font-size: 12px;
+    max-width: 200px;
+    min-width: 160px;
+    padding: 12px 16px;
+  }
+
   .options {
-    gap: 14px;
-    width: calc(100% - 32px);
+    width: calc(100% - 24px);
+    gap: 10px;
+    bottom: 18%;
+    position: absolute;
+  }
+
+  .option {
+    font-size: 12px;
+    padding: 12px 10px;
+    border-radius: 14px;
+    min-height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .control-panel {
+    height: 55px;
+  }
+
+  .joystick-indicator {
+    font-size: 26px;
+  }
+}
+
+/* Small phones */
+@media (max-width: 480px) {
+  .machine-frame {
+    width: 98vw;
+    max-width: 360px;
+    min-height: 520px;
+    max-height: 75vh;
+  }
+
+  .machine-frame::before {
+    font-size: 11px;
+    height: 32px;
+  }
+
+  .machine-inner {
+    margin: 45px 10px 10px;
+    min-height: 380px;
+  }
+
+  .question-squirrel {
+    font-size: 45px;
+  }
+
+  .speech-bubble {
+    font-size: 11px;
+    max-width: 180px;
+    padding: 10px 14px;
+  }
+
+  .options {
+    gap: 8px;
+    width: calc(100% - 20px);
+    bottom: 20%;
+  }
+
+  .option {
+    font-size: 11px;
+    padding: 11px 9px;
+    min-height: 48px;
+  }
+
+  .control-panel {
+    height: 50px;
+    padding: 0 10px;
+  }
+
+  .coin-label,
+  .chute-label {
+    font-size: 8px;
+  }
+
+  .corner-bolt {
+    width: 12px;
+    height: 12px;
+  }
+
+  .portal-button {
+    width: 150px;
+    height: 150px;
+  }
+
+  .portal-button span {
+    font-size: 15px;
+  }
+}
+
+/* Extra small phones */
+@media (max-width: 375px) {
+  .machine-frame {
+    width: 99vw;
+    max-width: 340px;
+    min-height: 500px;
+  }
+
+  .machine-frame::before {
+    font-size: 10px;
+    height: 28px;
+  }
+
+  .machine-inner {
+    min-height: 360px;
+  }
+
+  .question-squirrel {
+    font-size: 40px;
+  }
+
+  .speech-bubble {
+    font-size: 10px;
+    max-width: 160px;
+    padding: 8px 12px;
+  }
+
+  .options {
+    gap: 6px;
+    bottom: 22%;
+  }
+
+  .option {
+    font-size: 10px;
+    padding: 10px 7px;
+    min-height: 45px;
+  }
+
+  .portal-button {
+    width: 130px;
+    height: 130px;
+  }
+
+  .portal-button span {
+    font-size: 13px;
+  }
+}
+
+/* Landscape mode for phones */
+@media (max-height: 600px) and (orientation: landscape) {
+  .claw-page {
+    padding: 0.5rem;
+  }
+
+  .machine-area {
+    flex-direction: row;
+    gap: 15px;
+  }
+
+  .machine-frame {
+    width: auto;
+    height: 90vh;
+    max-width: 320px;
+  }
+
+  .question-squirrel {
+    font-size: 35px;
+  }
+
+  .speech-bubble {
+    font-size: 10px;
+    max-width: 140px;
   }
 }

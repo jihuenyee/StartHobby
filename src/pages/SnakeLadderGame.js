@@ -10,62 +10,18 @@ const REQUIRED_QUESTIONS = 5;
 const SNAKES = { 14: 4, 19: 8, 22: 20, 24: 16 };
 const LADDERS = { 3: 11, 6: 17, 9: 18, 10: 12 };
 
-// ❓ QUESTION BANK (From your SQL)
-const QUESTIONS_DB = [
-  { 
-    id: 1, 
-    q: "You land near a ladder. What do you do?", 
-    options: [
-      { text: "Take the risk and climb 🪜", type: "Active" },
-      { text: "Check the odds carefully 🤔", type: "Strategic" },
-      { text: "Wait for the right moment ⏳", type: "Creative" },
-      { text: "Ask others for advice 🗣", type: "Social" }
-    ] 
-  },
-  { 
-    id: 2, 
-    q: "You hit a snake and slide down!", 
-    options: [
-      { text: "Laugh it off 😄", type: "Creative" },
-      { text: "Get competitive 💪", type: "Active" },
-      { text: "Analyze what went wrong 📊", type: "Strategic" },
-      { text: "Encourage others anyway ❤️", type: "Social" }
-    ] 
-  },
-  { 
-    id: 3, 
-    q: "How do you usually handle setbacks?", 
-    options: [
-      { text: "Turn it into inspiration ✨", type: "Creative" },
-      { text: "Push harder next time 🔥", type: "Active" },
-      { text: "Reflect and improve 🧠", type: "Strategic" },
-      { text: "Seek support 🤝", type: "Social" }
-    ] 
-  },
-  { 
-    id: 4, 
-    q: "Which reward motivates you most?", 
-    options: [
-      { text: "Personal achievement 🏆", type: "Active" },
-      { text: "Mastery of skills 📚", type: "Strategic" },
-      { text: "Shared success 🎊", type: "Social" },
-      { text: "Recognition 🎖", type: "Creative" }
-    ] 
-  },
-  { 
-    id: 5, 
-    q: "What keeps you going in long games?", 
-    options: [
-      { text: "Imagination 🌈", type: "Creative" },
-      { text: "Energy & movement ⚡️", type: "Active" },
-      { text: "Clear goals 🎯", type: "Strategic" },
-      { text: "Team spirit 🤜🤛", type: "Social" }
-    ] 
-  }
-];
+// 🌍 API BASE URL
+const API_BASE =
+  process.env.NODE_ENV === "production"
+    ? "https://starthobbybackend-production.up.railway.app"
+    : "http://localhost:5000";
 
-export default function SnakeLadderGame() {
+const SnakeLadderGame = () => {
   const navigate = useNavigate();
+  
+  // --- STATE ---
+  const [questions, setQuestions] = useState([]); 
+  const [loading, setLoading] = useState(true);
   
   const [position, setPosition] = useState(1);
   const [isRolling, setIsRolling] = useState(false);
@@ -78,33 +34,88 @@ export default function SnakeLadderGame() {
   const [askedQuestionIds, setAskedQuestionIds] = useState([]); 
   const [miniInsight, setMiniInsight] = useState(null); 
 
-  // Tracks requirements
   const [hasHitSnake, setHasHitSnake] = useState(false);
   const [hasHitLadder, setHasHitLadder] = useState(false);
 
+  // --- AUDIO ---
   const clickSound = useRef(null);
   const slideSound = useRef(null);
   const winSound = useRef(null);
 
-  // --- SAFE AUDIO FUNCTIONS ---
-  const createAudio = (path) => {
+  const createAudio = (path, loop = false, volume = 1.0) => {
     const audio = new Audio(path);
+    audio.loop = loop;
+    audio.volume = volume;
     audio.onerror = () => console.warn(`Audio missing: ${path}`);
     return audio;
   };
 
   const safePlay = (audioRef) => {
-    if (audioRef.current) audioRef.current.play().catch(() => {});
+    if (audioRef.current) {
+      const playPromise = audioRef.current.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(() => {}); 
+      }
+    }
   };
 
+  const safePause = (audioRef) => {
+    if (audioRef.current) {
+      try {
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+      } catch (e) {}
+    }
+  };
+
+  // --- INITIALIZATION ---
   useEffect(() => {
+    // 1. Fetch Quiz Data (With Fallback)
+    fetch(`${API_BASE}/api/quizzes/snake`)
+      .then((res) => {
+        if (!res.ok) throw new Error("Server Error");
+        return res.json();
+      })
+      .then((data) => {
+        const actualData = Array.isArray(data) ? data : (data.questions || data.data || []);
+        
+        if (actualData.length > 0) {
+          // Format API data
+          const formatted = actualData.map((q) => ({
+            id: q.id,
+            q: q.question,
+            options: [
+              { text: q.option_a, type: "Active" },
+              { text: q.option_b, type: "Strategic" },
+              { text: q.option_c, type: "Creative" },
+              { text: q.option_d, type: "Social" }
+            ]
+          }));
+          setQuestions(formatted);}
+        setLoading(false);
+      })
+      .catch((err) => {
+        // API failed? Use fallback
+        console.error("Fetch error, using backup questions:", err);
+        setLoading(false);
+      });
+
+    // 2. Setup Audio
     clickSound.current = createAudio("/sounds/click.mp3");
     slideSound.current = createAudio("/sounds/slide.mp3");
     winSound.current = createAudio("/sounds/win.mp3");
+
+    return () => {
+      safePause(clickSound);
+      safePause(slideSound);
+      safePause(winSound);
+    };
   }, []);
 
+  // --- GAME LOGIC ---
+
   const handleRollDice = () => {
-    if (isRolling || modalData || miniInsight) return;
+    if (isRolling || modalData || miniInsight || loading) return;
 
     safePlay(clickSound);
     setIsRolling(true);
@@ -117,25 +128,17 @@ export default function SnakeLadderGame() {
     setTimeout(() => {
       clearInterval(rollInterval);
 
-      // --- 🧠 RIGGED LOGIC FOR PROGRESSION ---
       let calculatedRoll = Math.floor(Math.random() * 6) + 1;
 
-      // 1. If nearing end but haven't finished questions, prevent winning
+      // Force mechanics
       if (answers.length < REQUIRED_QUESTIONS) {
-          // Force hit ladder/snake if available
           if (!hasHitLadder) {
              for(let i=1; i<=6; i++) if(LADDERS[position+i]) { calculatedRoll = i; break; }
           } else if (!hasHitSnake) {
              for(let i=1; i<=6; i++) if(SNAKES[position+i]) { calculatedRoll = i; break; }
           }
-          
-          // Prevent hitting 25
-          if (position + calculatedRoll >= BOARD_SIZE) {
-              calculatedRoll = 1; // Just nudge forward slowly
-          }
-      } 
-      // 2. If questions are DONE, force land on 25
-      else {
+          if (position + calculatedRoll >= BOARD_SIZE) calculatedRoll = 1; 
+      } else {
           calculatedRoll = BOARD_SIZE - position;
       }
 
@@ -146,13 +149,11 @@ export default function SnakeLadderGame() {
       setPosition(nextPos);
       setIsRolling(false);
 
-      // Wait for squirrel move animation before checking tile
       setTimeout(() => checkTile(nextPos), 800);
     }, 800);
   };
 
   const checkTile = (currentPos) => {
-    // 1. SNAKE
     if (SNAKES[currentPos]) {
       setHasHitSnake(true);
       setStatusMsg("🐍 Oh no! Snake!");
@@ -165,7 +166,6 @@ export default function SnakeLadderGame() {
       return;
     }
 
-    // 2. LADDER
     if (LADDERS[currentPos]) {
       setHasHitLadder(true);
       setStatusMsg("🪜 Awesome! Ladder!");
@@ -178,32 +178,30 @@ export default function SnakeLadderGame() {
       return;
     }
 
-    // 3. FINAL TILE (Home)
     if (currentPos === BOARD_SIZE) {
-        // If we are here, we MUST have answered 5 questions due to logic above.
-        // Wait a moment for player to see squirrel on the castle
-        setTimeout(() => {
-            calculateMiniInsight();
-        }, 1500);
+        setTimeout(() => calculateMiniInsight(), 1500);
         return;
     }
 
-    // 4. NORMAL TILE
     triggerQuestion();
   };
 
   const triggerQuestion = () => {
-    // If we've already answered 5, DO NOT ask more. Just keep rolling.
     if (answers.length >= REQUIRED_QUESTIONS) {
       setStatusMsg("Head to the Castle!");
       return;
     }
 
-    const availableQuestions = QUESTIONS_DB.filter(q => !askedQuestionIds.includes(q.id));
-    if (availableQuestions.length === 0) return;
+    // Ensure we don't ask duplicates
+    const availableQuestions = questions.filter(q => !askedQuestionIds.includes(q.id));
+    
+    // If we run out (or fetch failed completely), use anything available
+    const pool = availableQuestions.length > 0 ? availableQuestions : questions;
+    
+    if (pool.length === 0) return; // Should be impossible with fallback
 
-    const randomIdx = Math.floor(Math.random() * availableQuestions.length);
-    setModalData(availableQuestions[randomIdx]);
+    const randomIdx = Math.floor(Math.random() * pool.length);
+    setModalData(pool[randomIdx]);
     setStatusMsg("❓ Quick Question!");
   };
 
@@ -217,7 +215,6 @@ export default function SnakeLadderGame() {
     
     setModalData(null);
 
-    // Update status
     if (newAnswers.length >= REQUIRED_QUESTIONS) {
       setStatusMsg("All questions done! Race to the Castle! 🏰");
     } else {
@@ -259,7 +256,7 @@ export default function SnakeLadderGame() {
         completed: true,
         answers: answers,
         types: answerTypes,
-        completedAt: new Date().toISOString()
+        completedAt: Date.now()
       },
     };
     localStorage.setItem("gameResults", JSON.stringify(finalData));
@@ -295,6 +292,8 @@ export default function SnakeLadderGame() {
     const col = gridIndex % 5;
     return { top: `${row * 20}%`, left: `${col * 20}%` };
   };
+
+  if (loading) return <div className="snake-game-container"><h1 style={{color:'white'}}>Loading...</h1></div>;
 
   return (
     <div className="snake-game-container">
@@ -374,4 +373,6 @@ export default function SnakeLadderGame() {
       )}
     </div>
   );
-}
+};
+
+export default SnakeLadderGame;

@@ -81,8 +81,6 @@ router.post("/finalize", async (req, res) => {
   }
 });
 
-<<<<<<< HEAD
-// GET user answers by email (for testing)
 router.get('/email/:email', async (req, res) => {
   const { email } = req.params;
   try {
@@ -100,6 +98,3 @@ router.get('/email/:email', async (req, res) => {
 });
 
 module.exports = router;
-=======
-module.exports = router;
->>>>>>> bce4d6f72d739528cdf46413c47589be25b21d4c

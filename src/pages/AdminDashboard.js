@@ -193,8 +193,8 @@ function AdminDashboard() {
                               <ul style={{paddingLeft:'1em'}}>
                                 {snake.answers.map((a, i) => (
                                   <li key={i} style={{marginBottom:'0.5em'}}>
-                                    <span style={{fontWeight:'bold'}}>Q:</span> {a.q}<br/>
-                                    <span style={{fontWeight:'bold'}}>A:</span> {a.a}
+                                    <span style={{fontWeight:'bold'}}>Q:</span> {a.q || a.question || ''}<br/>
+                                    <span style={{fontWeight:'bold'}}>A:</span> {a.a || a.answer || ''}
                                   </li>
                                 ))}
                               </ul>

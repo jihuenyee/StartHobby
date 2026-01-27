@@ -33,7 +33,7 @@ const SnakeLadderGame = () => {
   const [answerTypes, setAnswerTypes] = useState([]);
   const [askedQuestionIds, setAskedQuestionIds] = useState([]); 
   const [miniInsight, setMiniInsight] = useState(null); 
-  const [isFinished, setIsFinished] = useState(false); // New state to lock the game at the end
+  const [isFinished, setIsFinished] = useState(false); 
 
   const [hasHitSnake, setHasHitSnake] = useState(false);
   const [hasHitLadder, setHasHitLadder] = useState(false);
@@ -71,7 +71,10 @@ const SnakeLadderGame = () => {
               { text: q.option_d, type: "Social" }
             ]
           }));
-          setQuestions(formatted);
+          
+          // FIX: Shuffle questions ONCE at the start
+          const shuffled = formatted.sort(() => Math.random() - 0.5);
+          setQuestions(shuffled);
         }
         setLoading(false);
       })
@@ -99,7 +102,6 @@ const SnakeLadderGame = () => {
 
   // --- GAME LOGIC ---
   const handleRollDice = () => {
-    // 🛡️ Added isFinished and position check to the guard clause
     if (isRolling || modalData || miniInsight || loading || isFinished || position === BOARD_SIZE) return;
 
     safePlay(clickSound);
@@ -124,7 +126,6 @@ const SnakeLadderGame = () => {
           if (position + calculatedRoll >= BOARD_SIZE) calculatedRoll = 1; 
       } else {
           calculatedRoll = BOARD_SIZE - position;
-          // 🏁 Mark as finished immediately so the button disables forever
           setIsFinished(true); 
       }
 
@@ -178,13 +179,16 @@ const SnakeLadderGame = () => {
       setStatusMsg("Head to the Castle!");
       return;
     }
-    const availableQuestions = questions.filter(q => !askedQuestionIds.includes(q.id));
-    const pool = availableQuestions.length > 0 ? availableQuestions : questions;
-    if (pool.length === 0) return;
 
-    const randomIdx = Math.floor(Math.random() * pool.length);
-    setModalData(pool[randomIdx]);
-    setStatusMsg("❓ Quick Question!");
+    // FIX: Instead of random picking, take the question at the index of your progress.
+    // If you have 0 answers, it picks questions[0]. If you have 1, it picks questions[1].
+    // Since we shuffled the array once at the start, this is perfectly random AND unique.
+    const nextQuestion = questions[answers.length];
+
+    if (nextQuestion) {
+      setModalData(nextQuestion);
+      setStatusMsg("❓ Quick Question!");
+    }
   };
 
   const handleAnswer = (option, questionId) => {
@@ -304,7 +308,6 @@ const SnakeLadderGame = () => {
       </div>
 
       <div className="controls-area">
-        {/* 🛡️ Button is now disabled if isFinished is true OR if the squirrel reached 25 */}
         <div className={`dice-display ${isRolling ? "animate-roll" : ""}`}>{diceNum}</div>
         <button 
           className="roll-btn" 

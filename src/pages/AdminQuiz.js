@@ -24,6 +24,9 @@ function AdminQuiz() {
       try {
         const data = await apiRequest("/quizzes");
         setQuizzes(data || []);
+        if (data && data.length > 0 && !selectedGameType) {
+          loadQuiz(data[0].game_type);
+        }
       } catch {
         setStatus("Failed to load quizzes");
       } finally {
@@ -110,7 +113,11 @@ function AdminQuiz() {
   };
 
   const openAddModal = () => {
-    if (!selectedGameType) return;
+    console.log("Open add modal called, selectedGameType:", selectedGameType);
+    if (!selectedGameType) {
+      setStatus("Please select a quiz first to add questions");
+      return;
+    }
     setShowAddModal(true);
     setNewQuestion({
       question: "",
@@ -181,8 +188,8 @@ function AdminQuiz() {
           <button
             className="admin-quiz-add-btn"
             onClick={openAddModal}
-            disabled={!selectedGameType || saving}
           >
+            {console.log("Button render, saving:", saving, "selectedGameType:", selectedGameType)}
             + Add Question
           </button>
         </header>

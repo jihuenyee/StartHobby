@@ -45,14 +45,12 @@ const CastleGame = () => {
   const [userChoices, setUserChoices] = useState([]);
   const [miniInsight, setMiniInsight] = useState(null);
 
-  // --- 🛡️ AUDIO REFS & HELPERS ---
   const bgSound = useRef(null);
   const clickSound = useRef(null);
   const typingTimeoutRef = useRef(null);
 
   const PANTRY_DEFAULT = '/pantry/stocked.jpeg';
 
-  // Helper to change background safely (Prevents white screens if images are missing)
   const changeBgSafely = (targetPath, fallbackPath = PANTRY_DEFAULT) => {
     const img = new Image();
     img.src = process.env.PUBLIC_URL + targetPath;
@@ -90,7 +88,6 @@ const CastleGame = () => {
     }
   };
 
-  // --- INITIALIZATION ---
   useEffect(() => {
     fetch(`${API_BASE}/api/quizzes/castle`)
       .then((res) => res.json())
@@ -122,7 +119,6 @@ const CastleGame = () => {
     };
   }, []);
 
-  // --- MUSIC SWAPPING LOGIC ---
   useEffect(() => {
     if (!bgSound.current) return;
     const targetTrack = scene === 'pantry' ? "/sounds/pantry.mp3" : "/sounds/castle.mp3";
@@ -140,7 +136,6 @@ const CastleGame = () => {
     } else {
       if (questions.length > 0) {
         setScene('pantry');
-        // Safely set initial pantry background
         changeBgSafely(PANTRY_DEFAULT, '/backgrounds/castle.jpg');
         setSquirrelPos({ x: '50%', y: '73%' });
       }
@@ -165,7 +160,6 @@ const CastleGame = () => {
     setSquirrelPos(currentItem.target);
     
     setTimeout(() => {
-      // Safely check if bgAfter exists, if not, default to stocked.jpeg
       if (currentItem.bgAfter) {
           changeBgSafely(currentItem.bgAfter, PANTRY_DEFAULT);
       }
@@ -189,11 +183,7 @@ const CastleGame = () => {
     }, 1000);
   };
 
-  // Note: Added userChoices logic fix to prevent crash in calculation
   const calculateMiniInsight = () => {
-    // Basic logic to find most common option index if we were tracking by index,
-    // otherwise mapping current answer objects. Since your current userChoices 
-    // tracks objects, we find the most picked category based on logic.
     setMiniInsight("You have a vividly Creative mind! 🎨"); 
   };
 
@@ -268,7 +258,8 @@ const CastleGame = () => {
         </div>
       )}
 
-      {(scene === 'narrative' || (scene === 'pantry' && !showQuiz && !isMoving) || scene === 'finale') && (
+      {/* FIXED: Added !miniInsight to this condition to hide narration when modal is visible */}
+      {(scene === 'narrative' || (scene === 'pantry' && !showQuiz && !isMoving) || scene === 'finale') && !miniInsight && (
         <div className="story-chat">
           <div className="chat-bubble">
             {scene === 'pantry' && (

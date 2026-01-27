@@ -317,7 +317,7 @@ const SnakeLadderGame = () => {
 
       {modalData && (
         <div className="modal-overlay">
-          <div className="question-card">
+          <div className="sl-question-card">
             <h3>{modalData.q}</h3>
             <div className="options-list">
               {modalData.options.map((opt, idx) => (

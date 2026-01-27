@@ -204,7 +204,7 @@
   animation: fadeIn 0.3s;
 }
 
-.question-card, .insight-card {
+.sl-question-card, .insight-card {
   background: #fff;
   padding: 25px;
   border-radius: 20px;

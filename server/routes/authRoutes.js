@@ -25,6 +25,9 @@ router.post("/signup", async (req, res) => {
     res.json({
       success: true,
       user_id: result.insertId,
+      username: username,
+      email: email,
+      type_id: 'normal',
       message: "Account created!"
     });
   } catch (err) {
@@ -69,6 +72,46 @@ router.post("/login", async (req, res) => {
     });
   } catch (err) {
     console.error("Login error:", err);
+    res.status(500).json({ error: "DB error" });
+  }
+});
+
+/* =========================
+   CHANGE PASSWORD (NO HASHING)
+========================= */
+router.post("/change-password", async (req, res) => {
+  const { user_id, currentPassword, newPassword } = req.body;
+
+  if (!user_id || !currentPassword || !newPassword) {
+    return res.status(400).json({ error: "Missing fields" });
+  }
+
+  try {
+    const db = await getDB();
+
+    // Verify current password
+    const [rows] = await db.query(
+      "SELECT password FROM users WHERE user_id = ?",
+      [user_id]
+    );
+
+    if (rows.length === 0) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    if (rows[0].password !== currentPassword) {
+      return res.status(400).json({ error: "Current password is incorrect" });
+    }
+
+    // Update to new password
+    await db.query(
+      "UPDATE users SET password = ? WHERE user_id = ?",
+      [newPassword, user_id]
+    );
+
+    res.json({ success: true, message: "Password changed successfully" });
+  } catch (err) {
+    console.error("Change password error:", err);
     res.status(500).json({ error: "DB error" });
   }
 });

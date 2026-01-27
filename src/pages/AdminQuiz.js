@@ -301,63 +301,90 @@ function AdminQuiz() {
               <div className="editor-content">
                 <h2 className="editor-title">Quiz: {selectedGameType}</h2>
 
-                {questions.map((q, index) => (
-                  <div key={q.question_id} className="question-card">
-                    <div className="question-header">
-                      <span className="question-label">
-                        Question #{index + 1}
-                      </span>
-
-                      <div className="question-actions">
-                        <button
-                          className="btn-outline"
-                          onClick={() => saveQuestion(q)}
-                          disabled={saving}
-                        >
-                          Save
-                        </button>
-                        <button
-                          className="btn-danger"
-                          onClick={() => deleteQuestion(q.question_id)}
-                          disabled={saving}
-                        >
-                          Delete
-                        </button>
-                      </div>
-                    </div>
-
-                    <textarea
-                      className="question-textarea"
-                      placeholder="Enter question text..."
-                      value={q.question || ""}
-                      onChange={(e) =>
-                        updateQuestionText(q.question_id, e.target.value)
-                      }
-                    />
-
-                    <div className="options-grid">
-                      {["a", "b", "c", "d"].map((k) => (
-                        <div className="option-row" key={k}>
-                          <span className="option-label">
-                            Option {k.toUpperCase()}
-                          </span>
-                          <input
-                            className="option-input"
-                            placeholder={`Enter option ${k.toUpperCase()}`}
-                            value={q[`option_${k}`] || ""}
+                <table className="questions-table">
+                  <thead>
+                    <tr>
+                      <th>Question</th>
+                      <th>Option A</th>
+                      <th>Option B</th>
+                      <th>Option C</th>
+                      <th>Option D</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {questions.map((q) => (
+                      <tr key={q.question_id}>
+                        <td>
+                          <textarea
+                            className="question-textarea"
+                            placeholder="Enter question text..."
+                            value={q.question || ""}
                             onChange={(e) =>
-                              updateOption(
-                                q.question_id,
-                                `option_${k}`,
-                                e.target.value
-                              )
+                              updateQuestionText(q.question_id, e.target.value)
                             }
                           />
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ))}
+                        </td>
+                        <td>
+                          <input
+                            className="option-input"
+                            placeholder="Enter option A"
+                            value={q.option_a || ""}
+                            onChange={(e) =>
+                              updateOption(q.question_id, "option_a", e.target.value)
+                            }
+                          />
+                        </td>
+                        <td>
+                          <input
+                            className="option-input"
+                            placeholder="Enter option B"
+                            value={q.option_b || ""}
+                            onChange={(e) =>
+                              updateOption(q.question_id, "option_b", e.target.value)
+                            }
+                          />
+                        </td>
+                        <td>
+                          <input
+                            className="option-input"
+                            placeholder="Enter option C"
+                            value={q.option_c || ""}
+                            onChange={(e) =>
+                              updateOption(q.question_id, "option_c", e.target.value)
+                            }
+                          />
+                        </td>
+                        <td>
+                          <input
+                            className="option-input"
+                            placeholder="Enter option D"
+                            value={q.option_d || ""}
+                            onChange={(e) =>
+                              updateOption(q.question_id, "option_d", e.target.value)
+                            }
+                          />
+                        </td>
+                        <td>
+                          <button
+                            className="btn-outline"
+                            onClick={() => saveQuestion(q)}
+                            disabled={saving}
+                          >
+                            Save
+                          </button>
+                          <button
+                            className="btn-danger"
+                            onClick={() => deleteQuestion(q.question_id)}
+                            disabled={saving}
+                          >
+                            Delete
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             )}
           </section>

@@ -168,6 +168,11 @@ function AdminDashboard() {
                     try { castle = ans.castle_data ? JSON.parse(ans.castle_data) : null; } catch { castle = ans.castle_data; }
                     return (
                       <li key={idx} style={{marginBottom:'2em', listStyle:'none'}}>
+                        {ans.ai_personality && (
+                          <div style={{marginBottom:'0.5em'}}>
+                            <b>AI Personality:</b> {ans.ai_personality}
+                          </div>
+                        )}
                         {claw && (
                           <div style={{marginBottom:'1em'}}>
                             <b>Claw Game:</b>

@@ -38,18 +38,24 @@ function AdminUsers() {
 
   if (!user) {
     return (
-      <div className="admin-page">
-        <h1 className="admin-title">Manage Users</h1>
-        <p>You must be logged in to view this page.</p>
+      <div className="admin-dashboard-page">
+        <div className="admin-dashboard-shell">
+          <div className="editor-placeholder">
+            You must be logged in to view this page.
+          </div>
+        </div>
       </div>
     );
   }
 
   if (!isAdmin) {
     return (
-      <div className="admin-page">
-        <h1 className="admin-title">Manage Users</h1>
-        <p>⛔ You do not have permission to view this page.</p>
+      <div className="admin-dashboard-page">
+        <div className="admin-dashboard-shell">
+          <div className="editor-placeholder">
+            ⛔ You do not have permission to view this page.
+          </div>
+        </div>
       </div>
     );
   }
@@ -116,114 +122,139 @@ function AdminUsers() {
   };
 
   return (
-    <div className="admin-page">
-      <h1 className="admin-title">Manage Users</h1>
-      {status && <p className="admin-status">{status}</p>}
-      {loading && <p>Loading users...</p>}
-      {error && <p style={{ color: "red" }}>{error}</p>}
+    <div className="admin-dashboard-page">
+      <div className="admin-dashboard-shell">
+        <header className="admin-dashboard-header">
+          <div>
+            <h1>Manage Users</h1>
+            <p>View and edit user information and permissions.</p>
+          </div>
+        </header>
 
-      {!loading && !error && users.length === 0 && <p>No users found.</p>}
+        {status && <p className="admin-quiz-status">{status}</p>}
 
-      {!loading && !error && users.length > 0 && (
-        <div className="admin-table-wrapper">
-          <table className="admin-table">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Username</th>
-                <th>Email</th>
-                <th>Type</th>
-                <th style={{ width: "130px" }}>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {users.map((u) => {
-                const isEditing = editingId === u.user_id;
-                return (
-                  <tr key={u.user_id}>
-                    <td>{u.user_id}</td>
+        <div className="admin-dashboard-main">
+          <section className="admin-dashboard-editor" style={{width: '100%'}}>
+            <div className="editor-content">
+              {loading && (
+                <div className="editor-placeholder">Loading users...</div>
+              )}
 
-                    <td>
-                      {isEditing ? (
-                        <input
-                          className="admin-inline-input"
-                          value={editData.username}
-                          onChange={(e) =>
-                            handleChange("username", e.target.value)
-                          }
-                        />
-                      ) : (
-                        u.username
-                      )}
-                    </td>
+              {error && (
+                <div className="editor-placeholder" style={{color: 'red'}}>
+                  ❌ {error}
+                </div>
+              )}
 
-                    <td>
-                      {isEditing ? (
-                        <input
-                          className="admin-inline-input"
-                          value={editData.email}
-                          onChange={(e) =>
-                            handleChange("email", e.target.value)
-                          }
-                        />
-                      ) : (
-                        u.email
-                      )}
-                    </td>
+              {!loading && !error && users.length === 0 && (
+                <div className="editor-placeholder">No users found.</div>
+              )}
 
-                    <td>
-                      {isEditing ? (
-                        <select
-                          className="admin-inline-input"
-                          value={editData.type_id}
-                          onChange={(e) =>
-                            handleChange("type_id", e.target.value)
-                          }
-                        >
-                          <option value="normal">normal</option>
-                          <option value="admin">admin</option>
-                        </select>
-                      ) : (
-                        u.type_id
-                      )}
-                    </td>
+              {!loading && !error && users.length > 0 && (
+                <div className="admin-table-wrapper">
+                  <table className="admin-table">
+                    <thead style={{background: 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)'}}>
+                      <tr>
+                        <th style={{color: '#ffffff'}}>ID</th>
+                        <th style={{color: '#ffffff'}}>Username</th>
+                        <th style={{color: '#ffffff'}}>Email</th>
+                        <th style={{color: '#ffffff'}}>Type</th>
+                        <th style={{ width: "180px", color: '#ffffff' }}>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {users.map((u, index) => {
+                        const isEditing = editingId === u.user_id;
+                        return (
+                          <tr key={u.user_id}>
+                            <td>{index + 1}</td>
 
-                    <td>
-                      {isEditing ? (
-                        <div className="admin-inline-actions">
-                          <button
-                            type="button"
-                            disabled={saving}
-                            onClick={saveEdit}
-                          >
-                            {saving ? "Saving..." : "Save"}
-                          </button>
-                          <button
-                            type="button"
-                            className="secondary"
-                            onClick={cancelEdit}
-                            disabled={saving}
-                          >
-                            Cancel
-                          </button>
-                        </div>
-                      ) : (
-                        <button
-                          type="button"
-                          onClick={() => startEdit(u)}
-                          className="admin-small-btn"
-                        >
-                          Edit
-                        </button>
-                      )}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+                            <td>
+                              {isEditing ? (
+                                <input
+                                  className="admin-inline-input"
+                                  value={editData.username}
+                                  onChange={(e) =>
+                                    handleChange("username", e.target.value)
+                                  }
+                                />
+                              ) : (
+                                u.username
+                              )}
+                            </td>
+
+                            <td>
+                              {isEditing ? (
+                                <input
+                                  className="admin-inline-input"
+                                  value={editData.email}
+                                  onChange={(e) =>
+                                    handleChange("email", e.target.value)
+                                  }
+                                />
+                              ) : (
+                                u.email
+                              )}
+                            </td>
+
+                            <td>
+                              {isEditing ? (
+                                <select
+                                  className="admin-inline-input"
+                                  value={editData.type_id}
+                                  onChange={(e) =>
+                                    handleChange("type_id", e.target.value)
+                                  }
+                                >
+                                  <option value="normal">normal</option>
+                                  <option value="admin">admin</option>
+                                </select>
+                              ) : (
+                                u.type_id
+                              )}
+                            </td>
+
+                            <td>
+                              {isEditing ? (
+                                <div className="admin-inline-actions">
+                                  <button
+                                    type="button"
+                                    className="btn-outline"
+                                    disabled={saving}
+                                    onClick={saveEdit}
+                                  >
+                                    {saving ? "Saving..." : "Save"}
+                                  </button>
+                                  <button
+                                    type="button"
+                                    className="btn-cancel"
+                                    onClick={cancelEdit}
+                                    disabled={saving}
+                                  >
+                                    Cancel
+                                  </button>
+                                </div>
+                              ) : (
+                                <button
+                                  type="button"
+                                  onClick={() => startEdit(u)}
+                                  className="btn-outline"
+                                >
+                                  Edit
+                                </button>
+                              )}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          </section>
         </div>
-      )}
+      </div>
     </div>
   );
 }

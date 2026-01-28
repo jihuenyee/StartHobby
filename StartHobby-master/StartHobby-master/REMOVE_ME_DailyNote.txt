@@ -1,0 +1,3 @@
+Deleted files:
+- src/pages/DailyNote.js
+- src/styles/DailyNote.css

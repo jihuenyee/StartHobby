@@ -9,6 +9,9 @@ function AdminResults() {
   const [loading, setLoading] = useState(true);
   const [selectedResult, setSelectedResult] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [aiProfile, setAiProfile] = useState(null);
+  const [showAiModal, setShowAiModal] = useState(false);
+  const [aiLoading, setAiLoading] = useState(false);
 
   useEffect(() => {
     if (!isAdmin) return;
@@ -18,6 +21,11 @@ function AdminResults() {
   const fetchAllResults = async () => {
     try {
       const res = await fetch(`${API_BASE_URL}/results/all`);
+      if (!res.ok) {
+        const errorData = await res.json();
+        console.error('Server error:', errorData);
+        throw new Error(`Server error: ${errorData.error || res.statusText}`);
+      }
       const data = await res.json();
       console.log('API returned data:', data);
       setResults(Array.isArray(data) ? data : []);
@@ -38,6 +46,30 @@ function AdminResults() {
   const closeModal = () => {
     setShowModal(false);
     setSelectedResult(null);
+  };
+
+  const viewAiProfile = async (email) => {
+    setAiLoading(true);
+    setShowAiModal(true);
+    try {
+      const res = await fetch(`${API_BASE_URL}/results/ai-profile/${encodeURIComponent(email)}`);
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || 'Failed to fetch AI profile');
+      }
+      const data = await res.json();
+      setAiProfile(data);
+    } catch (err) {
+      console.error('Error fetching AI profile:', err);
+      setAiProfile({ error: err.message });
+    } finally {
+      setAiLoading(false);
+    }
+  };
+
+  const closeAiModal = () => {
+    setShowAiModal(false);
+    setAiProfile(null);
   };
 
   if (!user) {
@@ -93,7 +125,7 @@ function AdminResults() {
                         <th style={{color: '#ffffff'}}>#</th>
                         <th style={{color: '#ffffff'}}>Email</th>
                         <th style={{color: '#ffffff'}}>Submitted At</th>
-                        <th style={{color: '#ffffff', width: '150px'}}>Actions</th>
+                        <th style={{color: '#ffffff', width: '200px'}}>Actions</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -107,8 +139,16 @@ function AdminResults() {
                               type="button"
                               className="btn-outline"
                               onClick={() => viewDetails(result)}
+                              style={{marginRight: '0.5rem'}}
                             >
                               View Answers
+                            </button>
+                            <button
+                              type="button"
+                              className="btn-outline"
+                              onClick={() => viewAiProfile(result.email)}
+                            >
+                              AI Profile
                             </button>
                           </td>
                         </tr>
@@ -120,6 +160,88 @@ function AdminResults() {
             </div>
           </section>
         </div>
+
+        {/* Modal for viewing AI Profile */}
+        {showAiModal && (
+          <div style={{position:'fixed',top:0,left:0,width:'100vw',height:'100vh',background:'rgba(0,0,0,0.5)',display:'flex',alignItems:'center',justifyContent:'center',zIndex:1000}}>
+            <div style={{background:'#fff',padding:'2rem',borderRadius:'8px',minWidth:'500px',maxWidth:'90vw',maxHeight:'90vh',overflowY:'auto'}}>
+              <h3>AI Profile Result</h3>
+              
+              {aiLoading && <p>Loading AI profile...</p>}
+              
+              {!aiLoading && aiProfile && aiProfile.error && (
+                <div style={{color:'red'}}>
+                  <p>Error: {aiProfile.error}</p>
+                </div>
+              )}
+              
+              {!aiLoading && aiProfile && !aiProfile.error && (
+                <div>
+                  <p><b>Email:</b> {aiProfile.email}</p>
+                  <p><b>Generated:</b> {aiProfile.created_at ? new Date(aiProfile.created_at).toLocaleString() : 'N/A'}</p>
+                  
+                  <div style={{marginTop:'1.5rem'}}>
+                    <h4>Personality Summary:</h4>
+                    <p style={{whiteSpace:'pre-wrap',background:'#f5f5f5',padding:'1rem',borderRadius:'4px'}}>
+                      {aiProfile.personality_summary || 'No summary available'}
+                    </p>
+                  </div>
+                  
+                  {(() => {
+                    try {
+                      const traits = typeof aiProfile.traits === 'string' 
+                        ? JSON.parse(aiProfile.traits) 
+                        : aiProfile.traits;
+                      
+                      return traits && Array.isArray(traits) && traits.length > 0 && (
+                        <div style={{marginTop:'1.5rem'}}>
+                          <h4>Personality Traits:</h4>
+                          <ul style={{paddingLeft:'1.5em'}}>
+                            {traits.map((trait, i) => (
+                              <li key={i} style={{marginBottom:'0.5em'}}>
+                                <b>{trait.trait}:</b> {trait.score}/10
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      );
+                    } catch (e) {
+                      console.error('Traits parse error:', e);
+                      return null;
+                    }
+                  })()}
+                  
+                  {(() => {
+                    try {
+                      const hobbies = typeof aiProfile.hobbies === 'string' 
+                        ? JSON.parse(aiProfile.hobbies) 
+                        : aiProfile.hobbies;
+                      
+                      return hobbies && Array.isArray(hobbies) && hobbies.length > 0 && (
+                        <div style={{marginTop:'1.5rem'}}>
+                          <h4>Recommended Hobbies:</h4>
+                          {hobbies.map((hobby, i) => (
+                            <div key={i} style={{marginBottom:'1em',background:'#f0f9ff',padding:'1rem',borderRadius:'4px',borderLeft:'3px solid #38ef7d'}}>
+                              <h5 style={{margin:'0 0 0.5em 0',color:'#11998e'}}>{hobby.name}</h5>
+                              <p style={{margin:'0.25em 0'}}><b>Why:</b> {hobby.why}</p>
+                              <p style={{margin:'0.25em 0'}}><b>Category:</b> {hobby.category}</p>
+                              <p style={{margin:'0.25em 0'}}><b>Social:</b> {hobby.social ? 'Yes' : 'No'}</p>
+                            </div>
+                          ))}
+                        </div>
+                      );
+                    } catch (e) {
+                      console.error('Hobbies parse error:', e);
+                      return null;
+                    }
+                  })()}
+                </div>
+              )}
+              
+              <button onClick={closeAiModal} className="btn-outline" style={{marginTop:'1rem'}}>Close</button>
+            </div>
+          </div>
+        )}
 
         {/* Modal for viewing answers */}
         {showModal && selectedResult && (

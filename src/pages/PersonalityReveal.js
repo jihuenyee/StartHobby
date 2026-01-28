@@ -1,26 +1,75 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/PersonalityReveal.css";
 
+const API_BASE =
+  process.env.NODE_ENV === "production"
+    ? "https://starthobbybackend-production.up.railway.app"
+    : "http://localhost:5000";
+
 const PersonalityReveal = () => {
   const navigate = useNavigate();
+  const hasSavedRef = useRef(false);
+
   const [profile, setProfile] = useState(null);
-  const [tooltip, setTooltip] = useState({ visible: false, content: "", x: 0, y: 0 });
+  const [tooltip, setTooltip] = useState({
+    visible: false,
+    content: "",
+    x: 0,
+    y: 0,
+  });
   const [animateStats, setAnimateStats] = useState(false);
 
+  /* =========================
+     LOAD AI PROFILE
+  ========================= */
   useEffect(() => {
-    const raw = localStorage.getItem("aiProfile");
-    if (!raw) return navigate("/");
+    const rawProfile = localStorage.getItem("aiProfile");
+    const email = localStorage.getItem("userEmail");
+
+    if (!rawProfile || !email) {
+      navigate("/");
+      return;
+    }
 
     try {
-      setProfile(JSON.parse(raw));
-      // Trigger stat animations after mount
+      const parsedProfile = JSON.parse(rawProfile);
+      setProfile(parsedProfile);
+
       setTimeout(() => setAnimateStats(true), 500);
-    } catch {
+
+      // Save to DB only once
+      if (!hasSavedRef.current) {
+        hasSavedRef.current = true;
+        saveAIProfile(email, parsedProfile);
+      }
+    } catch (err) {
+      console.error("Invalid AI profile:", err);
       navigate("/");
     }
   }, [navigate]);
 
+  /* =========================
+     SAVE AI PROFILE TO DB
+  ========================= */
+  const saveAIProfile = async (email, profile) => {
+    try {
+      await fetch(`${API_BASE}/api/ai-profile/save`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email,
+          profile,
+        }),
+      });
+    } catch (err) {
+      console.error("Failed to save AI profile:", err);
+    }
+  };
+
+  /* =========================
+     TOOLTIP HANDLERS
+  ========================= */
   const handleTagHover = (e, tag) => {
     const rect = e.target.getBoundingClientRect();
     setTooltip({
@@ -32,9 +81,12 @@ const PersonalityReveal = () => {
   };
 
   const handleTagLeave = () => {
-    setTooltip({ ...tooltip, visible: false });
+    setTooltip((prev) => ({ ...prev, visible: false }));
   };
 
+  /* =========================
+     HELPERS
+  ========================= */
   const getTagDescription = (tag) => {
     const descriptions = {
       Creative: "Express yourself through art and imagination",
@@ -51,10 +103,11 @@ const PersonalityReveal = () => {
   };
 
   const getPersonalityIcon = (summary) => {
-    if (summary.toLowerCase().includes("creative")) return "🎨";
-    if (summary.toLowerCase().includes("analytical")) return "🧠";
-    if (summary.toLowerCase().includes("adventurous")) return "🌟";
-    if (summary.toLowerCase().includes("social")) return "🤝";
+    const s = summary.toLowerCase();
+    if (s.includes("creative")) return "🎨";
+    if (s.includes("analytical")) return "🧠";
+    if (s.includes("adventurous")) return "🌟";
+    if (s.includes("social")) return "🤝";
     return "✨";
   };
 
@@ -74,17 +127,12 @@ const PersonalityReveal = () => {
     return emojiMap[trait] || "⭐";
   };
 
-  const getCategoryColor = (category) => {
-    const colors = {
-      Creative: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-      Physical: "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
-      Intellectual: "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)",
-      Relaxation: "linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)",
-      Social: "linear-gradient(135deg, #fa709a 0%, #fee140 100%)",
-    };
-    return colors[category] || "linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)";
-  };
+  const getCategoryColor = () =>
+    "linear-gradient(90deg, #6366f1, #8b5cf6, #d946ef)";
 
+  /* =========================
+     LOADING STATE
+  ========================= */
   if (!profile) {
     return (
       <div className="reveal-container">
@@ -96,36 +144,49 @@ const PersonalityReveal = () => {
     );
   }
 
+  /* =========================
+     UI
+  ========================= */
   return (
     <div className="reveal-container">
       <div className="magic-scroll">
         {/* LEFT PANEL */}
         <div className="left-panel">
-          <div className="profile-icon">{getPersonalityIcon(profile.personalitySummary)}</div>
+          <div className="profile-icon">
+            {getPersonalityIcon(profile.personalitySummary)}
+          </div>
+
           <div className="class-badge">Personality Profile</div>
           <h1 className="magic-title">Your Unique Identity</h1>
-          <p className="profile-subtitle">Personalized insights based on your activities</p>
+          <p className="profile-subtitle">
+            Personalized insights based on your activities
+          </p>
 
-          {/* Stats Box */}
+          {/* STATS */}
           <div className="stats-box">
             <h3 className="stats-header">Core Strengths</h3>
             {profile.traits.slice(0, 5).map((t) => (
               <div key={t.trait} className="stat-row">
                 <div className="stat-label">
                   <span className="trait-name">
-                    <span className="trait-emoji">{getTraitEmoji(t.trait)}</span>
+                    <span className="trait-emoji">
+                      {getTraitEmoji(t.trait)}
+                    </span>
                     {t.trait}
                   </span>
                   <span className="trait-score">{t.score}/10</span>
                 </div>
+
                 <div className="progress-bg">
                   <div
                     className="progress-fill"
                     style={{
-                      width: animateStats ? `${(t.score / 10) * 100}%` : "0%",
-                      background: getCategoryColor(t.trait),
+                      width: animateStats
+                        ? `${(t.score / 10) * 100}%`
+                        : "0%",
+                      background: getCategoryColor(),
                     }}
-                  ></div>
+                  />
                 </div>
               </div>
             ))}
@@ -134,53 +195,62 @@ const PersonalityReveal = () => {
 
         {/* RIGHT PANEL */}
         <div className="right-panel">
-          {/* Personality Summary */}
+          {/* SUMMARY */}
           <div className="summary-section">
             <div className="section-header">
               <span className="section-icon">💫</span>
               <h2 className="section-title">Personality Overview</h2>
             </div>
+
             <p className="summary-text">{profile.personalitySummary}</p>
-            
-            {/* Top Strength Badge */}
+
             {profile.traits.length > 0 && (
               <div className="strength-badge">
                 <span className="strength-label">Top Strength</span>
-                <span className="strength-value">{profile.traits[0].trait}</span>
+                <span className="strength-value">
+                  {profile.traits[0].trait}
+                </span>
               </div>
             )}
           </div>
 
-          {/* Hobbies Section */}
+          {/* HOBBIES */}
           <div className="hobbies-section">
             <div className="section-header">
               <span className="section-icon">🎯</span>
               <h2 className="section-title">Recommended Activities</h2>
             </div>
-            <p className="section-subtitle">Hobbies perfectly matched to your personality</p>
+            <p className="section-subtitle">
+              Hobbies perfectly matched to your personality
+            </p>
           </div>
+
           <div className="hobbies-grid">
             {profile.hobbies.map((h, i) => (
               <div
                 key={i}
                 className="hobby-card"
-                style={{
-                  animationDelay: `${i * 0.1}s`,
-                }}
+                style={{ animationDelay: `${i * 0.1}s` }}
               >
                 <h3 className="hobby-title">{h.name}</h3>
                 <p className="hobby-reason">{h.why}</p>
+
                 <div className="hobby-tags">
                   <span
-                    className="hobby-tag category-tag"
-                    onMouseEnter={(e) => handleTagHover(e, h.category)}
+                    className="hobby-tag"
+                    onMouseEnter={(e) =>
+                      handleTagHover(e, h.category)
+                    }
                     onMouseLeave={handleTagLeave}
                   >
                     {h.category}
                   </span>
+
                   <span
-                    className="hobby-tag social-tag"
-                    onMouseEnter={(e) => handleTagHover(e, h.social ? "Social" : "Solo")}
+                    className="hobby-tag"
+                    onMouseEnter={(e) =>
+                      handleTagHover(e, h.social ? "Social" : "Solo")
+                    }
                     onMouseLeave={handleTagLeave}
                   >
                     {h.social ? "👥 Social" : "🧘 Solo"}
@@ -190,15 +260,18 @@ const PersonalityReveal = () => {
             ))}
           </div>
 
-          {/* Action Button */}
-          <button className="action-btn" onClick={() => navigate("/signup")}>
+          {/* CTA */}
+          <button
+            className="action-btn"
+            onClick={() => navigate("/signup")}
+          >
             <span className="btn-icon">🚀</span>
             <span className="btn-text">Sign Up to Continue</span>
           </button>
         </div>
       </div>
 
-      {/* Tooltip */}
+      {/* TOOLTIP */}
       {tooltip.visible && (
         <div
           className="info-tooltip"
@@ -207,7 +280,7 @@ const PersonalityReveal = () => {
             top: `${tooltip.y}px`,
           }}
         >
-          <div className="tooltip-arrow"></div>
+          <div className="tooltip-arrow" />
           <p className="tooltip-text">{tooltip.content}</p>
         </div>
       )}

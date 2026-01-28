@@ -1,0 +1,346 @@
+/* ---------------- GLOBAL STYLING ---------------- */
+.quiz-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  font-family: "Inter", sans-serif;
+  background: linear-gradient(135deg, #fff7ea 0%, #fdece4 100%);
+  transition: background 0.4s ease;
+}
+
+.dark-mode .quiz-page {
+  background: #1a1a1a;
+  color: white;
+}
+
+/* ---------------- DARK MODE CARDS ---------------- */
+.dark-mode .quiz-card,
+.dark-mode .quiz-result-card {
+  background: #232323;
+  color: white;
+  border: 1px solid #444;
+}
+
+.dark-mode .quiz-option-btn {
+  background: #2c2c2c;
+  border-color: #555;
+  color: #fff;
+}
+
+.dark-mode .quiz-option-btn:hover {
+  background: #333;
+  border-color: #777;
+}
+
+.dark-mode .quiz-pill {
+  background: #ff6e52;
+}
+
+.dark-mode .quiz-progress-bar {
+  background: #444;
+}
+
+.dark-mode .quiz-progress-fill {
+  background: linear-gradient(90deg, #ff6e52, #ff3771);
+}
+
+/* ---------------- RESULT CARD ---------------- */
+.quiz-result-card {
+  background: #ffffff;
+  border-radius: 28px;
+  padding: 55px 45px;
+  max-width: 760px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 22px 45px rgba(0, 0, 0, 0.15);
+  animation: fadeIn .6s ease-out;
+}
+
+/* ---------------- TITLE & TEXT ---------------- */
+.quiz-result-title {
+  font-size: 44px;
+  font-weight: 800;
+  margin-bottom: 10px;
+  color: #222;
+}
+
+.dark-mode .quiz-result-title {
+  color: white;
+}
+
+.quiz-result-summary {
+  font-size: 20px;
+  margin-bottom: 30px;
+  line-height: 1.6;
+  padding: 0 12px;
+  color: #333;
+}
+
+.dark-mode .quiz-result-summary {
+  color: #eee;
+}
+
+/* ---------------- AI LABEL ---------------- */
+.ai-source-label {
+  font-size: 14px;
+  margin-top: 4px;
+  margin-bottom: 16px;
+  color: #666;
+  font-style: italic;
+}
+
+.dark-mode .ai-source-label {
+  color: #ccc;
+}
+
+/* ---------------- SECTION TITLES ---------------- */
+.quiz-section-heading {
+  font-size: 22px;
+  font-weight: 700;
+  margin-top: 30px;
+  margin-bottom: 12px;
+  color: #222;
+}
+
+.dark-mode .quiz-section-heading {
+  color: #f3f3f3;
+}
+
+/* ---------------- LIST ITEMS ---------------- */
+.quiz-hobby-list {
+  list-style: none;
+  padding-left: 0;
+  margin-bottom: 12px;
+}
+
+.quiz-hobby-item {
+  font-size: 18px;
+  color: #444;
+  margin: 6px 0;
+}
+
+.dark-mode .quiz-hobby-item {
+  color: #e6e6e6;
+}
+
+/* ---------------- BUTTONS ---------------- */
+.quiz-retake-button,
+.quiz-next-activity-button,
+.quiz-save-button,
+.quiz-share-button {
+  margin-top: 15px;
+  padding: 15px 34px;
+  border-radius: 50px;
+  border: none;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+
+.quiz-retake-button {
+  background: linear-gradient(135deg, #ff8c42, #ff3771);
+  color: white;
+}
+
+.quiz-retake-button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 18px rgba(255, 64, 96, .3);
+}
+
+.quiz-next-activity-button {
+  background: linear-gradient(135deg, #43e97b, #38f9d7);
+  color: white;
+}
+
+.quiz-next-activity-button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 18px rgba(67, 233, 123, .3);
+}
+
+.quiz-save-button {
+  background: #4c8fff;
+  color: white;
+}
+
+.quiz-save-button:hover {
+  background: #2e6bdd;
+  transform: translateY(-3px);
+}
+
+.quiz-share-button {
+  background: #ff4db2;
+  color: white;
+}
+
+.quiz-share-button:hover {
+  background: #d43092;
+  transform: translateY(-3px);
+}
+
+/* ---------------- DARK MODE TOGGLE ---------------- */
+.dark-mode-toggle {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  background: transparent;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+/* ---------------- QUESTION CARD ---------------- */
+.quiz-card {
+  background: #ffffff;
+  border-radius: 28px;
+  width: 620px;
+  padding: 40px 36px;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.12);
+  position: relative;
+}
+
+.quiz-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.quiz-pill {
+  padding: 6px 15px;
+  background: #ff8c42;
+  color: white;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.quiz-progress-bar {
+  width: 100%;
+  height: 10px;
+  background: #ffe3c6;
+  border-radius: 12px;
+  margin: 10px 0 20px;
+  overflow: hidden;
+}
+
+.quiz-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #ffbb55, #ff785c);
+}
+
+.quiz-question-text {
+  font-size: 26px;
+  font-weight: 700;
+  margin: 20px 0;
+  text-align: center;
+}
+
+.quiz-options {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.quiz-option-btn {
+  background: #ffffff;
+  border: 2px solid #ffe1c7;
+  border-radius: 18px;
+  padding: 16px;
+  font-size: 17px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all .25s ease;
+}
+
+.quiz-option-btn:hover {
+  border-color: #ff8c42;
+  background: #fff5eb;
+  transform: translateY(-2px);
+}
+
+/* ---------------- LOADING ---------------- */
+.quiz-status-text {
+  margin-top: 18px;
+  text-align: center;
+  font-size: 16px;
+  color: #666;
+}
+
+/* ---------------- ANIMATIONS ---------------- */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(15px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ---------------- RESPONSIVE ---------------- */
+@media (max-width: 680px) {
+  .quiz-card,
+  .quiz-result-card {
+    width: 95%;
+    padding: 25px;
+  }
+
+  .quiz-result-title {
+    font-size: 32px;
+  }
+}
+
+/* ===== Save Result Modal ===== */
+.quiz-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+}
+
+.quiz-modal {
+  background: #fffdf8;
+  border-radius: 18px;
+  padding: 24px 28px;
+  max-width: 360px;
+  width: 90%;
+  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.35);
+  text-align: center;
+}
+
+.quiz-modal-icon {
+  font-size: 36px;
+  margin-bottom: 8px;
+}
+
+.quiz-modal-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.quiz-modal-message {
+  font-size: 0.95rem;
+  color: #4b5563;
+  margin-bottom: 18px;
+}
+
+.quiz-modal-button {
+  background: linear-gradient(135deg, #f97316, #fb923c);
+  color: white;
+  border: none;
+  border-radius: 999px;
+  padding: 10px 22px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.quiz-modal-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(248, 113, 113, 0.35);
+}

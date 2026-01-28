@@ -1,0 +1,18 @@
+# Server files (backend is on Railway)
+server/
+
+# Dependencies
+node_modules/
+
+# Development files
+.git/
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Misc
+.DS_Store
+*.log
+README.md
+REMOVE_ME_DailyNote.txt

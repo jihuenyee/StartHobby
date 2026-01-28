@@ -1,0 +1,250 @@
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #F7ECE4;
+  padding: 1rem 2rem;
+  color: black;
+  height: 60px;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-left img {
+  width: 100px;
+  height: 100px;
+}
+
+.navbar-links {
+  list-style: none;
+  display: flex;
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+}
+
+.navbar a {
+  color: black;
+  text-decoration: none;
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+}
+
+.navbar a:hover {
+  background-color: #FFE6C5;
+}
+
+.logout-button {
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+}
+
+.logout-button:hover {
+  background-color: #FFE6C5;
+}
+
+/* Override hover effect for the logo link */
+.logo-link:hover {
+  background-color: transparent !important;
+}
+
+/* New and modified styles for the profile section */
+.navbar-profile {
+  display: flex;
+  align-items: center;
+}
+
+.profile-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem; /* space between icon and text */
+}
+
+/* Hamburger icon (hidden on desktop) */
+.hamburger {
+  display: none;
+  cursor: pointer;
+}
+
+/* ----------- MOBILE VIEW ----------- */
+@media (max-width: 768px) {
+  .hamburger {
+    display: block;
+  }
+
+  /* Hide nav links and profile by default */
+  .navbar-links,
+  .navbar-profile {
+    display: none;
+    flex-direction: column;
+    background-color: #F7ECE4;
+    position: absolute;
+    top: 60px;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    padding: 1rem 0;
+    gap: 1rem;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+  }
+
+  /* When open, display the menu */
+  .navbar-links.open,
+  .navbar-profile.open {
+    display: flex;
+  }
+
+  /* Add slight animation */
+  .navbar-links.open,
+  .navbar-profile.open {
+    animation: slideDown 0.3s ease;
+  }
+
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+
+/* ---------- DROPDOWN (desktop default) ---------- */
+.dropdown {
+  position: relative;
+}
+
+.dropbtn {
+  background: none;
+  border: 0;
+  font: inherit;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  color: black;
+  border-radius: 5px;
+}
+
+.dropbtn:hover {
+  background-color: #FFE6C5;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  min-width: 180px;
+  background: #fff;
+  box-shadow: 0 8px 18px rgba(0,0,0,0.12);
+  border-radius: 8px;
+  z-index: 200;
+}
+
+.dropdown-content a {
+  display: block;
+  padding: 0.6rem 1rem;
+  color: #333;
+  text-decoration: none;
+}
+
+.dropdown-content a:hover {
+  background: #f4f4f4;
+}
+
+/* show on hover (desktop) */
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
+/* ---------- MOBILE TWEAKS ---------- */
+@media (max-width: 768px) {
+  .navbar-links .dropdown {
+    width: 100%;
+  }
+
+  .dropdown.open .dropdown-content {
+    display: block;
+  }
+
+  .navbar-links .dropdown .dropdown-content {
+    position: static;
+    box-shadow: none;
+    background: transparent;
+    padding: 0;
+  }
+
+  .navbar-links .dropdown .dropdown-content a {
+    padding: 0.6rem 1rem;
+  }
+
+  .dropbtn {
+    width: 100%;
+    text-align: center;
+  }
+}
+/* --- Profile dropdown (same style as Explore dropdown) --- */
+
+.profile-dropdown {
+  position: relative;
+}
+
+/* Trigger looks like a normal nav item (with icon + text) */
+.profile-trigger {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: none;
+  border: 0;
+  font: inherit;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  color: black;
+  border-radius: 5px;
+}
+
+.profile-trigger:hover {
+  background-color: #ffe6c5; /* same hover as .navbar a / .dropbtn */
+}
+
+/* Menu box – basically the same as .dropdown-content */
+.profile-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  min-width: 180px;
+  background: #ffffff;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
+  border-radius: 8px;
+  z-index: 9999;
+  overflow: hidden; /* keep rounded corners clean */
+  padding: 0;
+}
+
+/* Menu items – same as .dropdown-content a */
+.profile-menu-item {
+  display: block;
+  width: 100%;
+  padding: 0.6rem 1rem;
+  box-sizing: border-box;
+  font-size: 0.95rem;
+  color: #333;
+  text-decoration: none;
+  background: #ffffff;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+}
+
+.profile-menu-item:hover {
+  background: #f4f4f4; /* same hover as dropdown links */
+}
+
+/* Optional separator between items */
+.profile-menu-item + .profile-menu-item {
+  border-top: 1px solid #e5e7eb;
+}

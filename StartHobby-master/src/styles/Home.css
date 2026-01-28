@@ -1,0 +1,575 @@
+/* =====================
+   PAGE WRAPPER
+===================== */
+.home-page {
+  position: relative;
+  min-height: 100vh;
+  background: 
+    radial-gradient(circle at 15% 20%, rgba(107, 203, 119, 0.3) 0%, transparent 50%),
+    radial-gradient(circle at 85% 80%, rgba(78, 205, 196, 0.25) 0%, transparent 50%),
+    radial-gradient(circle at 50% 50%, rgba(255, 217, 61, 0.2) 0%, transparent 40%),
+    linear-gradient(135deg, #1a2e1a 0%, #2d4a2d 25%, #1f3d1f 50%, #2d4a2d 75%, #1a2e1a 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 40px 20px;
+  animation: atmosphereShift 20s ease infinite;
+}
+
+@keyframes atmosphereShift {
+  0%, 100% {
+    background-position: 0% 0%, 0% 0%, 0% 0%, 0% 0%;
+    filter: brightness(1);
+  }
+  50% {
+    background-position: 100% 100%, -100% -100%, 50% 50%, 0% 0%;
+    filter: brightness(1.1);
+  }
+}
+
+/* =====================
+   MAGICAL BACKGROUND ELEMENTS
+===================== */
+.home-bg {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.home-bg::before,
+.home-bg::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(50px);
+  animation: magicFloat 15s ease-in-out infinite;
+}
+
+.home-bg::before {
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(255, 217, 61, 0.4) 0%, rgba(107, 203, 119, 0.25) 50%, transparent 70%);
+  top: 10%;
+  left: 5%;
+  animation: magicFloat 18s ease-in-out infinite;
+}
+
+.home-bg::after {
+  width: 350px;
+  height: 350px;
+  background: radial-gradient(circle, rgba(78, 205, 196, 0.4) 0%, rgba(102, 126, 234, 0.2) 50%, transparent 70%);
+  bottom: 10%;
+  right: 5%;
+  animation: magicFloat 22s ease-in-out infinite reverse;
+}
+
+/* Decorative forest elements */
+.home-page::before {
+  content: "🌲";
+  position: absolute;
+  top: 5%;
+  left: 10%;
+  font-size: 50px;
+  opacity: 0.3;
+  animation: treeFloat 20s ease-in-out infinite;
+  filter: drop-shadow(0 4px 12px rgba(107, 203, 119, 0.4));
+}
+
+.home-page::after {
+  content: "🍄";
+  position: absolute;
+  bottom: 8%;
+  right: 12%;
+  font-size: 40px;
+  opacity: 0.35;
+  animation: mushroomFloat 18s ease-in-out infinite 2s;
+  filter: drop-shadow(0 4px 12px rgba(255, 107, 107, 0.3));
+}
+
+@keyframes treeFloat {
+  0%, 100% {
+    transform: translateY(0px) rotate(-2deg);
+  }
+  50% {
+    transform: translateY(-15px) rotate(2deg);
+  }
+}
+
+@keyframes mushroomFloat {
+  0%, 100% {
+    transform: translateY(0px) scale(1);
+  }
+  50% {
+    transform: translateY(-12px) scale(1.05);
+  }
+}
+
+@keyframes magicFloat {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.6;
+  }
+  33% {
+    transform: translate(40px, -50px) scale(1.15);
+    opacity: 0.8;
+  }
+  66% {
+    transform: translate(-30px, -80px) scale(0.9);
+    opacity: 0.7;
+  }
+}
+
+/* =====================
+   MAIN CARD
+===================== */
+.home-card {
+  position: relative;
+  background: linear-gradient(180deg, rgba(255, 253, 245, 0.95) 0%, rgba(245, 250, 240, 0.92) 100%);
+  max-width: 520px;
+  width: 100%;
+  padding: 48px 40px;
+  border-radius: 32px;
+  text-align: center;
+  box-shadow:
+    0 30px 60px rgba(0, 0, 0, 0.4),
+    0 0 80px rgba(107, 203, 119, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  border: 3px solid rgba(107, 203, 119, 0.3);
+  backdrop-filter: blur(20px);
+  animation: floatIn 0.9s ease, cardFloat 6s ease-in-out infinite 1s;
+  z-index: 2;
+  overflow: visible;
+}
+
+.home-card::before {
+  content: "🌟";
+  position: absolute;
+  top: -30px;
+  left: 20px;
+  font-size: 32px;
+  animation: sparkleRotate 3s ease-in-out infinite;
+  filter: drop-shadow(0 0 10px rgba(255, 217, 61, 0.6));
+}
+
+.home-card::after {
+  content: "🏡";
+  position: absolute;
+  top: -25px;
+  right: 20px;
+  font-size: 32px;
+  animation: sparkleRotate 3s ease-in-out infinite 1.5s;
+  filter: drop-shadow(0 0 10px rgba(107, 203, 119, 0.6));
+}
+
+@keyframes floatIn {
+  from {
+    transform: translateY(30px) scale(0.94);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes cardFloat {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes sparkleRotate {
+  0%, 100% {
+    transform: rotate(0deg) scale(1);
+  }
+  25% {
+    transform: rotate(10deg) scale(1.15);
+  }
+  75% {
+    transform: rotate(-10deg) scale(1.15);
+  }
+}
+
+/* =====================
+   SQUIRREL HERO
+===================== */
+.squirrel-hero {
+  font-size: 80px;
+  margin-bottom: 16px;
+  animation: bob 2.6s ease-in-out infinite;
+  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.2));
+  position: relative;
+  display: inline-block;
+}
+
+.squirrel-hero::before {
+  content: "�";
+  position: absolute;
+  top: -10px;
+  left: -25px;
+  font-size: 24px;
+  animation: orbitLeft 4s linear infinite;
+}
+
+.squirrel-hero::after {
+  content: "✨";
+  position: absolute;
+  top: -10px;
+  right: -25px;
+  font-size: 24px;
+  animation: orbitRight 4s linear infinite;
+}
+
+@keyframes bob {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes orbitLeft {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.8;
+  }
+  25% {
+    transform: translate(-10px, -15px) scale(1.2);
+    opacity: 1;
+  }
+  50% {
+    transform: translate(0, -25px) scale(0.9);
+    opacity: 0.7;
+  }
+  75% {
+    transform: translate(10px, -15px) scale(1.1);
+    opacity: 0.9;
+  }
+}
+
+@keyframes orbitRight {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.8;
+  }
+  25% {
+    transform: translate(10px, -15px) scale(1.2);
+    opacity: 1;
+  }
+  50% {
+    transform: translate(0, -25px) scale(0.9);
+    opacity: 0.7;
+  }
+  75% {
+    transform: translate(-10px, -15px) scale(1.1);
+    opacity: 0.9;
+  }
+}
+
+/* =====================
+   TEXT
+===================== */
+.home-title {
+  font-size: 2.2rem;
+  margin-bottom: 16px;
+  color: #2d4a2d;
+  font-weight: 800;
+  text-shadow: 0 2px 8px rgba(107, 203, 119, 0.3);
+  background: linear-gradient(135deg, #2d5a2d 0%, #6bcb77 50%, #ffd93d 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  background-size: 200% auto;
+  animation: shimmer 3s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.home-subtitle {
+  font-size: 1.1rem;
+  color: #3a5a3a;
+  margin-bottom: 32px;
+  line-height: 1.7;
+  font-weight: 500;
+}
+
+/* =====================
+   RULES
+===================== */
+.home-rules {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 36px;
+}
+
+.rule-item {
+  background: linear-gradient(135deg, rgba(107, 203, 119, 0.2) 0%, rgba(255, 217, 61, 0.15) 100%);
+  padding: 14px 22px;
+  border-radius: 999px;
+  font-size: 1rem;
+  color: #2d4a2d;
+  font-weight: 600;
+  border: 2px solid rgba(107, 203, 119, 0.3);
+  box-shadow: 0 4px 12px rgba(107, 203, 119, 0.15);
+}
+
+/* =====================
+   START BUTTON
+===================== */
+.home-start-btn {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 18px 50px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #6bcb77 0%, #4a9d54 100%);
+  color: white;
+  font-size: 1.15rem;
+  font-weight: 700;
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  box-shadow: 
+    0 15px 35px rgba(107, 203, 119, 0.5),
+    0 0 30px rgba(74, 157, 84, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  animation: buttonPulse 2s ease-in-out infinite;
+}
+
+.home-start-btn::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.5s;
+}
+
+.home-start-btn::after {
+  content: "🌲";
+  position: absolute;
+  right: 20px;
+  font-size: 20px;
+  animation: rocketBounce 1s ease-in-out infinite;
+}
+
+@keyframes buttonPulse {
+  0%, 100% {
+    box-shadow: 
+      0 15px 35px rgba(107, 203, 119, 0.5),
+      0 0 30px rgba(74, 157, 84, 0.4),
+      inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  }
+  50% {
+    box-shadow: 
+      0 18px 42px rgba(107, 203, 119, 0.6),
+      0 0 40px rgba(74, 157, 84, 0.5),
+      inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  }
+}
+
+@keyframes rocketBounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
+.home-start-btn:hover {
+  transform: translateY(-6px) scale(1.08);
+  box-shadow: 
+    0 25px 50px rgba(107, 203, 119, 0.7),
+    0 0 60px rgba(74, 157, 84, 0.6),
+    0 0 100px rgba(255, 217, 61, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  background: linear-gradient(135deg, #7ddc8a 0%, #5bb167 100%);
+  letter-spacing: 2px;
+}
+
+.home-start-btn:hover::before {
+  left: 100%;
+}
+
+.home-start-btn:hover::after {
+  transform: translateY(-3px) scale(1.2);
+}
+
+.home-start-btn:active {
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 
+    0 18px 40px rgba(107, 203, 119, 0.6),
+    0 0 50px rgba(74, 157, 84, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+/* =====================
+   FOOTER TEXT
+===================== */
+.home-hint {
+  margin-top: 28px;
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.85);
+  z-index: 2;
+  font-weight: 500;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  animation: fadeInUp 1.2s ease 0.5s backwards;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 12px 28px;
+  border-radius: 30px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* =====================
+   EMAIL MODAL
+===================== */
+
+.email-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.email-modal {
+  background: linear-gradient(180deg, #ffffff, #f4fff5);
+  padding: 36px 32px;
+  border-radius: 28px;
+  width: 90%;
+  max-width: 420px;
+  text-align: center;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.4);
+  animation: modalPop 0.35s ease;
+}
+
+@keyframes modalPop {
+  from {
+    transform: scale(0.9) translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+}
+
+.email-modal h2 {
+  margin-bottom: 10px;
+  color: #2d4a2d;
+}
+
+.email-modal p {
+  font-size: 0.95rem;
+  color: #3a5a3a;
+  margin-bottom: 20px;
+}
+
+.email-modal input {
+  padding: 14px 18px;
+  border-radius: 999px;
+  border: 2px solid rgba(107, 203, 119, 0.4);
+  font-size: 1rem;
+  outline: none;
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+.email-modal input:focus {
+  border-color: #6bcb77;
+  box-shadow: 0 0 0 4px rgba(107, 203, 119, 0.25);
+}
+
+.email-error {
+  color: #e74c3c;
+  font-size: 0.9rem;
+  margin-bottom: 10px;
+}
+
+.email-continue-btn {
+  width: 100%;
+  padding: 14px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #6bcb77, #4a9d54);
+  color: white;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.email-cancel-btn {
+  margin-top: 12px;
+  background: none;
+  border: none;
+  color: #666;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+/* Container holding the buttons */
+.email-actions {
+  display: flex;
+  gap: 15px;            /* This creates the separation space */
+  width: 400px;
+  max-width: 400px;     /* Match this to your input field width */
+  margin: 20px auto 0;
+}
+
+/* Specific styles for your class names */
+.email-cancel, 
+.email-confirm {
+  flex: 1;              /* This forces them to be the exact same size */
+  padding: 10px 0;
+  border-radius: 12px;  /* Adjust based on your design */
+  cursor: pointer;
+  border: none;
+  font-weight: bold;
+  font-size: 0.8rem;
+  /* Add your brown color here if not inherited */
+  background-color: #6b4e42; 
+  color: white;
+  transition: opacity 0.2s;
+}
+
+/* Optional: Hover effect */
+.email-cancel:hover, 
+.email-confirm:hover {
+  opacity: 0.9;
+}

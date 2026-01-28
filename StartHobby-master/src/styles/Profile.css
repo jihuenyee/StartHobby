@@ -1,0 +1,302 @@
+/* Profile container layout */
+.profile-page {
+  max-width: 1000px;
+  margin: 40px auto;
+  padding: 0 20px;
+}
+
+.title {
+  text-align: center;
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 30px;
+}
+
+/* Card Layout */
+.profile-details {
+  display: flex;
+  flex-direction: row;
+  gap: 30px;
+  background: #F7ECE4;
+  padding: 32px;
+  border-radius: 16px;
+  box-shadow: rgba(0, 0, 0, 0.05) 0px 10px 20px;
+  overflow: hidden; 
+  align-items: center; 
+  justify-content: center;
+}
+
+.profile-left-section {
+  flex: 1; 
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 280px; 
+}
+
+.profile-right-section {
+  flex: 1.2; 
+  min-width: 0; 
+}
+
+.roadmap-section {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid #e2e8f0;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+  /* Ensure margin doesn't push it out of parent */
+  margin-bottom: 0; 
+}
+
+/* Profile Icon */
+.profile-picture {
+  font-size: 80px;
+  align-self: center;
+  margin-bottom: 20px;
+  color: #666;
+}
+
+/* Input & Display fields */
+.detail-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 18px;
+  max-width: fit-content;
+}
+
+.user-info{
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  justify-content: center;
+  align-items: center;
+  max-width: fit-content;
+}
+
+.detail-label {
+  font-size: 14px;
+  color: #777;
+  margin-bottom: 6px;
+}
+
+.detail-value {
+  font-size: 18px;
+  font-weight: 500;
+  color: #222;
+}
+
+.profile-input {
+  padding: 10px 14px;
+  font-size: 16px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  transition: 0.2s;
+}
+
+.profile-input:focus {
+  border-color: #6c63ff;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.2);
+}
+
+/* Buttons Row */
+.profile-actions-buttons {
+  display: flex;
+  justify-content: flex-start;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.logout-btn,
+.edit-btn,
+.cancel-btn,
+.save-btn,
+.small-cancel-btn {
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-size: 15px;
+  cursor: pointer;
+  transition: 0.2s;
+  font-weight: 500;
+}
+
+/* Button styles */
+.logout-btn {
+  background: #f44336;
+  color: white;
+  border: none;
+}
+
+.logout-btn:hover {
+  background: #d32f2f;
+}
+
+.edit-btn {
+  background: #6c63ff;
+  border: none;
+  color: white;
+}
+
+.edit-btn:hover {
+  background: #5a54e6;
+}
+
+.cancel-btn {
+  background: transparent;
+  color: #333;
+  border: 1px solid #ccc;
+}
+
+.cancel-btn:hover {
+  background: #eee;
+}
+
+.save-btn {
+  background: #28a745;
+  color: white;
+  border: none;
+}
+
+.save-btn:hover {
+  background: #218838;
+}
+
+.save-btn:disabled {
+  background: #aab8c2;
+  cursor: not-allowed;
+}
+
+/* Change password link appearance */
+.link-btn {
+  background: none;
+  border: none;
+  color: #6c63ff;
+  cursor: pointer;
+  padding: 0;
+  margin-top: 10px;
+  font-size: 15px;
+  text-decoration: underline;
+}
+
+.link-btn:hover {
+  opacity: 0.7;
+}
+
+/* Password section styling */
+.change-password-block {
+  margin-top: 18px;
+  background: #fafafa;
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px solid #e4e4e4;
+}
+
+.change-password-actions {
+  margin-top: 10px;
+}
+
+.small-cancel-btn {
+  background: transparent;
+  border: none;
+  color: #999;
+  font-size: 14px;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.small-cancel-btn:hover {
+  color: #666;
+}
+
+/* Message styles */
+.profile-status {
+  margin-top: 12px;
+  color: #28a745;
+  font-size: 15px;
+  text-align: center;
+}
+
+.password-status {
+  margin-top: 12px;
+  color: #e80000;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.password-hint {
+  font-size: 14px;
+  color: #888;
+  margin-top: 6px;
+  font-style: italic;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 850px) {
+  .profile-details {
+    flex-direction: column;
+  }
+
+  .profile-left-section,
+  .profile-right-section {
+    width: 100%;
+  }
+}
+
+.password-rules {
+  margin-top: 10px;
+  font-size: 14px;
+  padding-left: 20px;
+}
+
+.password-rules li {
+  margin-bottom: 4px;
+  list-style: none;
+}
+
+.valid {
+  color: #28a745;
+  font-weight: 600;
+}
+
+.invalid {
+  color: #d32f2f;
+  font-weight: 500;
+}
+
+/* Strength meter */
+.password-strength-container {
+  display: flex;
+  align-items: center;
+  margin-top: 6px;
+  gap: 10px;
+}
+
+.strength-bar {
+  width: 110px;
+  height: 8px;
+  border-radius: 6px;
+  background: #ccc;
+  transition: all 0.3s ease;
+}
+
+.strength-bar.weak {
+  background: #d32f2f;
+  width: 40px;
+}
+
+.strength-bar.medium {
+  background: #f6c034;
+  width: 75px;
+}
+
+.strength-bar.strong {
+  background: #28a745;
+  width: 110px;
+}
+
+.strength-label {
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: capitalize;
+}

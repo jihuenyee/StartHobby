@@ -2,6 +2,72 @@ const express = require("express");
 const router = express.Router();
 const { getDB } = require("../db");
 
+// GET /api/results/all - Fetch all game results for admin
+router.get("/all", async (req, res) => {
+  try {
+    const db = await getDB();
+    
+    // Fetch all results with user information
+    const [rows] = await db.query(`
+      SELECT 
+        ugr.id,
+        ugr.email,
+        ugr.claw_data,
+        ugr.snake_data,
+        ugr.castle_data,
+        ugr.created_at,
+        u.username
+      FROM user_game_results ugr
+      LEFT JOIN users u ON ugr.email = u.email
+      ORDER BY ugr.created_at DESC
+    `);
+    
+    console.log('Fetched results count:', rows.length);
+    res.json(rows);
+  } catch (err) {
+    console.error("Error fetching all results:", err.message);
+    res.status(500).json({ 
+      error: err.message,
+      code: err.code 
+    });
+  }
+});
+
+// GET /api/results/ai-profile/:email - Fetch AI profile for a user
+router.get("/ai-profile/:email", async (req, res) => {
+  try {
+    const db = await getDB();
+    const { email } = req.params;
+    
+    const [rows] = await db.query(`
+      SELECT 
+        id,
+        email,
+        personality_summary,
+        traits,
+        hobbies,
+        created_at
+      FROM user_ai_profiles
+      WHERE email = ?
+      ORDER BY created_at DESC
+      LIMIT 1
+    `, [email]);
+    
+    if (rows.length === 0) {
+      return res.status(404).json({ error: "AI profile not found" });
+    }
+    
+    res.json(rows[0]);
+  } catch (err) {
+    console.error("Error fetching AI profile:", err.message);
+    res.status(500).json({ 
+      error: err.message,
+      code: err.code 
+    });
+  }
+});
+
+
 router.post("/finalize", async (req, res) => {
   const { email, clawGame, snakeGame, castleGame } = req.body;
 

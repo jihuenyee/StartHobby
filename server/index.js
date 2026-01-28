@@ -14,6 +14,7 @@ const bookmarkRoutes = require("./routes/bookmarkRoutes");
 const notificationRoutes = require("./routes/notificationRoutes");
 const followRoutes = require("./routes/followRoutes");
 const authRoutes = require("./routes/authRoutes");
+const aiProfileRoutes = require("./routes/aiProfileRoutes");
 
 const app = express();
 
@@ -60,6 +61,7 @@ app.use("/api/bookmarks", bookmarkRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/follows", followRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api/ai-profile", aiProfileRoutes);
 app.use("/api/results", require("./routes/results"));
 
 
@@ -82,10 +84,6 @@ if (require.main === module) {
     console.log(`Server running on port ${PORT}`);
   });
 }
-
-
-console.log("OPENAI KEY LOADED:", process.env.OPENAI_API_KEY);
-
 
 
 // ✅ Export app for Vercel

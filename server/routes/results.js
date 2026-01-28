@@ -75,6 +75,20 @@ router.post("/finalize", async (req, res) => {
   }
 });
 
+// Get all results (must be BEFORE /:email route)
+router.get('/all', async (req, res) => {
+  try {
+    const db = await getDB();
+    const [rows] = await db.query(
+      'SELECT * FROM user_game_results ORDER BY created_at DESC'
+    );
+    res.json(rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to fetch all results' });
+  }
+});
+
 router.get('/email/:email', async (req, res) => {
   const { email } = req.params;
   try {

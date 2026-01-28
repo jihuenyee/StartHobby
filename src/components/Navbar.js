@@ -84,6 +84,7 @@ function Navbar() {
                 <Link to="/admin">Dashboard</Link>
                 <Link to="/admin/users">Manage Users</Link>
                 <Link to="/admin/quiz">Manage Quiz</Link>
+                <Link to="/admin/results">All Results</Link>
               </div>
             </li>
           )}

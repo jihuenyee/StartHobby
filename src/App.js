@@ -18,6 +18,7 @@ import MembershipPage from "./pages/Membership";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminUsers from "./pages/AdminUsers";
 import AdminQuiz from "./pages/AdminQuiz";
+import AdminResults from "./pages/AdminResults";
 import StoryIntro from "./pages/StoryIntro";
 import GameMap from "./pages/GameMap";
 import ClawQuizGame from "./pages/ClawQuizGame";
@@ -76,6 +77,7 @@ const App = () => {
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/admin/users" element={<AdminUsers />} />
           <Route path="/admin/quiz" element={<AdminQuiz />} />
+          <Route path="/admin/results" element={<AdminResults />} />
         </Routes>
       </div>
     </>

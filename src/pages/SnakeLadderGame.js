@@ -100,9 +100,9 @@ const SnakeLadderGame = () => {
     };
   }, []);
 
-  // --- GAME LOGIC (RIGGED FOR DEMO) ---
+  // --- GAME LOGIC (HARDCODED SCRIPT) ---
   const handleRollDice = () => {
-    // 1. Block interactions if busy/done
+    // 1. Safety Checks
     if (isRolling || modalData || miniInsight || loading || isFinished || position === BOARD_SIZE) return;
 
     safePlay(clickSound);
@@ -117,67 +117,49 @@ const SnakeLadderGame = () => {
     setTimeout(() => {
       clearInterval(rollInterval);
 
-      // --- 🧠 RIGGED LOGIC START ---
-      let calculatedRoll = 1; 
+      // --- 📜 THE SCRIPT ---
+      // We decide the roll based on how many questions have been answered.
+      // This guarantees the exact sequence you asked for.
       
-      // === TURN 6 (You have 5 answers) ===
-      // GOAL: FINISH GAME.
-      if (answers.length >= REQUIRED_QUESTIONS) {
-          calculatedRoll = BOARD_SIZE - position;
-      }
+      let calculatedRoll = 1; // Fallback
+      const turnIndex = answers.length;
 
-      // === TURN 5 (You have 4 answers) ===
-      // GOAL: LAND ON TILE 23 (Trigger 5th Question).
-      else if (answers.length === 4) {
-          const targetTile = 23;
-          // FORCE the roll to hit 23, even if it's > 6
-          calculatedRoll = targetTile - position;
-          
-          // Edge case: If somehow past 23 (e.g., ladder to 24), go to 24 so next roll is 1.
-          if (calculatedRoll <= 0) {
-            calculatedRoll = 24 - position;
-            if (calculatedRoll === 0) calculatedRoll = 0; // Already there
-          }
-      }
-
-      // === TURN 3 & 4 (You have 2 or 3 answers) ===
-      // GOAL: MOVE FAST (Catch up distance).
-      else if (answers.length >= 2) {
-          // Force a 6 or 5 to cover ground, ensuring no Snake
-          let possibleRolls = [6, 5, 4]; 
-          let safeRollFound = false;
-          
-          for (let roll of possibleRolls) {
-              let nextPos = position + roll;
-              // Check: Is it a Snake? AND Is it within board limits?
-              if (!SNAKES[nextPos] && nextPos < BOARD_SIZE) {
-                  calculatedRoll = roll;
-                  safeRollFound = true;
-                  break; 
-              }
-          }
-          if (!safeRollFound) calculatedRoll = 1; // Fallback
-      }
-
-      // === TURN 1 & 2 (You have 0 or 1 answer) ===
-      // GOAL: RANDOM (Snakes allowed).
-      else {
-          calculatedRoll = Math.floor(Math.random() * 6) + 1;
-          // Don't finish early
-          if (position + calculatedRoll >= BOARD_SIZE) calculatedRoll = 1;
+      switch(turnIndex) {
+        case 0: // 1st Roll
+          calculatedRoll = 2; // Hits Tile 3 (Ladder -> 11)
+          break;
+        case 1: // 2nd Roll
+          calculatedRoll = 3; // From 11, Hits Tile 14 (Snake -> 4)
+          break;
+        case 2: // 3rd Roll
+          calculatedRoll = 5; // From 4, Hits Tile 9 (Ladder -> 18)
+          break;
+        case 3: // 4th Roll
+          calculatedRoll = 2; // From 18, Hits Tile 20 (Safe)
+          break;
+        case 4: // 5th Roll
+          calculatedRoll = 3; // From 20, Hits Tile 23 (Trigger Final Q)
+          break;
+        case 5: // 6th Roll
+          calculatedRoll = 2; // From 23, Hits Tile 25 (Finish)
+          break;
+        default:
+          // Fallback if game continues past 6 turns for any reason
+          calculatedRoll = 1;
+          if (position + calculatedRoll > BOARD_SIZE) calculatedRoll = 0;
       }
 
       // --- EXECUTE MOVE ---
       setDiceNum(calculatedRoll);
       let nextPos = position + calculatedRoll;
 
-      // Final safety check
+      // Ensure we don't overshoot
       if (nextPos > BOARD_SIZE) nextPos = BOARD_SIZE;
 
       setPosition(nextPos);
       setIsRolling(false);
 
-      // Trigger tile check
+      // Trigger tile logic
       setTimeout(() => checkTile(nextPos), 800);
     }, 800);
   };
@@ -226,7 +208,7 @@ const SnakeLadderGame = () => {
       return;
     }
 
-    // Pick question based on current answer count to ensure unique sequence
+    // Pick unique question based on index
     const nextQuestion = questions[answers.length];
 
     if (nextQuestion) {

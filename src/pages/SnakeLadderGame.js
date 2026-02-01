@@ -100,15 +100,16 @@ const SnakeLadderGame = () => {
     };
   }, []);
 
-  // --- GAME LOGIC ---
+  // --- GAME LOGIC (RIGGED FOR DEMO) ---
   const handleRollDice = () => {
+    // 1. Block interactions if busy/done
     if (isRolling || modalData || miniInsight || loading || isFinished || position === BOARD_SIZE) return;
 
     safePlay(clickSound);
     setIsRolling(true);
     setStatusMsg("Rolling...");
 
-    // Visual roll animation
+    // 2. Visual Animation
     const rollInterval = setInterval(() => {
         setDiceNum(Math.floor(Math.random() * 6) + 1);
     }, 100);
@@ -116,45 +117,77 @@ const SnakeLadderGame = () => {
     setTimeout(() => {
       clearInterval(rollInterval);
 
-      // 1. GENERATE RANDOM ROLL (1 to 6)
-      let calculatedRoll = Math.floor(Math.random() * 6) + 1;
-
-      // 2. LOGIC: IF NOT ENOUGH ANSWERS, PREVENT WINNING
-      if (answers.length < REQUIRED_QUESTIONS) {
-          if (!hasHitLadder) {
-             for(let i=1; i<=6; i++) if(LADDERS[position+i]) { calculatedRoll = i; break; }
-          } else if (!hasHitSnake) {
-             for(let i=1; i<=6; i++) if(SNAKES[position+i]) { calculatedRoll = i; break; }
-          }
-          
-          // If roll takes you to (or past) 25 but you haven't answered enough questions
-          // force a small roll (1) so you stay on the board.
-          if (position + calculatedRoll >= BOARD_SIZE) calculatedRoll = 1; 
-      } 
+      // --- 🧠 RIGGED LOGIC START ---
+      let calculatedRoll = 1; // Default
       
-      // 3. LOGIC: EXACT END POINT RULE (Standard Game)
-      else {
-          // If roll is too high (e.g. at 24, rolled 3 -> 27), STAY PUT
-          if (position + calculatedRoll > BOARD_SIZE) {
-            setDiceNum(calculatedRoll);
-            setStatusMsg(`Too high! You need ${BOARD_SIZE - position} to finish.`);
-            setIsRolling(false);
-            return; // EXIT HERE: Player does not move
-          }
+      // === TURN 6 (You have 5 answers) ===
+      // GOAL: FINISH GAME.
+      if (answers.length >= REQUIRED_QUESTIONS) {
+          calculatedRoll = BOARD_SIZE - position;
+      }
 
-          // If roll lands EXACTLY on 25
-          if (position + calculatedRoll === BOARD_SIZE) {
-              setIsFinished(true); 
+      // === TURN 5 (You have 4 answers) ===
+      // GOAL: LAND ON TILE 23 (Safe spot near Castle).
+      else if (answers.length === 4) {
+          const targetTile = 23;
+          let distance = targetTile - position;
+          
+          // If 23 is within range (1-6), go there exactly.
+          if (distance > 0 && distance <= 6) {
+              calculatedRoll = distance;
+          } else {
+              // If we are somehow too far back, roll 6 to get close.
+              calculatedRoll = 6; 
           }
       }
 
-      // 4. EXECUTE MOVE
+      // === TURN 3 & 4 (You have 2 or 3 answers) ===
+      // GOAL: MOVE FAST & AVOID SNAKES.
+      else if (answers.length >= 2) {
+          // 1. Bias towards high numbers (6, 5, 4, 3) to move up board quickly
+          let possibleRolls = [6, 5, 4, 3]; 
+          let safeRollFound = false;
+          
+          for (let roll of possibleRolls) {
+              let nextPos = position + roll;
+              // Check: Is it a Snake? AND Is it within board limits?
+              // Also ensure we don't accidentally finish the game early (>=25)
+              if (!SNAKES[nextPos] && nextPos < BOARD_SIZE) {
+                  calculatedRoll = roll;
+                  safeRollFound = true;
+                  break; // Found a safe high number, stop looking
+              }
+          }
+
+          // Fallback: If all high numbers were snakes (unlikely), pick any safe move
+          if (!safeRollFound) {
+              calculatedRoll = 1;
+              if (SNAKES[position + 1]) calculatedRoll = 2; // Simple hop
+          }
+      }
+
+      // === TURN 1 & 2 (You have 0 or 1 answer) ===
+      // GOAL: RANDOM (Snakes allowed).
+      else {
+          calculatedRoll = Math.floor(Math.random() * 6) + 1;
+          
+          // Simple check to ensure we don't finish game early by accident
+          if (position + calculatedRoll >= BOARD_SIZE) {
+              calculatedRoll = 1;
+          }
+      }
+
+      // --- EXECUTE MOVE ---
       setDiceNum(calculatedRoll);
       let nextPos = position + calculatedRoll;
+
+      // Final safety check
+      if (nextPos > BOARD_SIZE) nextPos = BOARD_SIZE;
 
       setPosition(nextPos);
       setIsRolling(false);
 
+      // Trigger tile check
       setTimeout(() => checkTile(nextPos), 800);
     }, 800);
   };
@@ -199,6 +232,7 @@ const SnakeLadderGame = () => {
       return;
     }
 
+    // Pick question based on current answer count to ensure unique sequence
     const nextQuestion = questions[answers.length];
 
     if (nextQuestion) {

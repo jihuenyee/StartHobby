@@ -102,13 +102,14 @@ const SnakeLadderGame = () => {
 
   // --- GAME LOGIC ---
   const handleRollDice = () => {
+    // 1. Safety Checks
     if (isRolling || modalData || miniInsight || loading || isFinished || position === BOARD_SIZE) return;
 
     safePlay(clickSound);
     setIsRolling(true);
     setStatusMsg("Rolling...");
 
-    // Visual roll animation
+    // 2. Animation: Flash random numbers
     const rollInterval = setInterval(() => {
         setDiceNum(Math.floor(Math.random() * 6) + 1);
     }, 100);
@@ -116,42 +117,48 @@ const SnakeLadderGame = () => {
     setTimeout(() => {
       clearInterval(rollInterval);
 
-      // 1. GENERATE RANDOM ROLL (1 to 6)
+      // --- 🎲 CALCULATE THE ROLL ---
       let calculatedRoll = Math.floor(Math.random() * 6) + 1;
+      let targetTile = 23; // We want the 5th question to happen here
 
-      // 2. LOGIC: IF NOT ENOUGH ANSWERS, PREVENT WINNING
-      if (answers.length < REQUIRED_QUESTIONS) {
-          if (!hasHitLadder) {
-             for(let i=1; i<=6; i++) if(LADDERS[position+i]) { calculatedRoll = i; break; }
-          } else if (!hasHitSnake) {
-             for(let i=1; i<=6; i++) if(SNAKES[position+i]) { calculatedRoll = i; break; }
-          }
-          
-          // If roll takes you to (or past) 25 but you haven't answered enough questions
-          // force a small roll (1) so you stay on the board.
-          if (position + calculatedRoll >= BOARD_SIZE) calculatedRoll = 1; 
-      } 
-      
-      // 3. LOGIC: EXACT END POINT RULE (Standard Game)
-      else {
-          // If roll is too high (e.g. at 24, rolled 3 -> 27), STAY PUT
-          if (position + calculatedRoll > BOARD_SIZE) {
-            setDiceNum(calculatedRoll);
-            setStatusMsg(`Too high! You need ${BOARD_SIZE - position} to finish.`);
-            setIsRolling(false);
-            return; // EXIT HERE: Player does not move
-          }
+      // SCENARIO A: ALL QUESTIONS DONE -> FORCE WIN
+      if (answers.length >= REQUIRED_QUESTIONS) {
+          // If we are at 23, roll 2. If at 24, roll 1.
+          calculatedRoll = BOARD_SIZE - position;
+      }
 
-          // If roll lands EXACTLY on 25
-          if (position + calculatedRoll === BOARD_SIZE) {
-              setIsFinished(true); 
+      // SCENARIO B: WAITING FOR 5TH QUESTION (Index 4) -> TARGET TILE 23
+      else if (answers.length === REQUIRED_QUESTIONS - 1) {
+          // If we are close enough to Tile 23 (e.g. at 20, need 3), force it.
+          if (position < targetTile && (targetTile - position) <= 6) {
+              calculatedRoll = targetTile - position;
+          }
+          // If we are too far (e.g. at 10), roll 6 to get there faster.
+          else {
+              calculatedRoll = 6; 
           }
       }
 
-      // 4. EXECUTE MOVE
+      // SCENARIO C: EARLY GAME (0-3 Answers)
+      else {
+          // Standard random roll, but prevent jumping to end too early
+          if (position + calculatedRoll >= BOARD_SIZE) {
+             calculatedRoll = 1; // Force a small move if they try to finish early
+          }
+          
+          // Helper: If we haven't hit a ladder yet, try to help them hit one
+          if (!hasHitLadder && position < 10) {
+             for(let i=1; i<=6; i++) if(LADDERS[position+i]) { calculatedRoll = i; break; }
+          }
+      }
+
+      // --- EXECUTE THE MOVE ---
       setDiceNum(calculatedRoll);
       let nextPos = position + calculatedRoll;
 
+      // Double check bounds to prevent error
+      if (nextPos > BOARD_SIZE) nextPos = BOARD_SIZE; 
+      
       setPosition(nextPos);
       setIsRolling(false);
 
@@ -160,6 +167,7 @@ const SnakeLadderGame = () => {
   };
 
   const checkTile = (currentPos) => {
+    // 1. Check Snake
     if (SNAKES[currentPos]) {
       setHasHitSnake(true);
       setStatusMsg("🐍 Oh no! Snake!");
@@ -172,6 +180,7 @@ const SnakeLadderGame = () => {
       return;
     }
 
+    // 2. Check Ladder
     if (LADDERS[currentPos]) {
       setHasHitLadder(true);
       setStatusMsg("🪜 Awesome! Ladder!");
@@ -184,12 +193,14 @@ const SnakeLadderGame = () => {
       return;
     }
 
+    // 3. Check Finish
     if (currentPos === BOARD_SIZE) {
         setStatusMsg("You reached the Castle! 🏰");
         setTimeout(() => calculateMiniInsight(), 1500);
         return;
     }
 
+    // 4. Trigger Question
     triggerQuestion();
   };
 

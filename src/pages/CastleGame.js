@@ -297,7 +297,7 @@ const CastleGame = () => {
 
       {scene === 'baking' && (
         <div className="overlay-baking">
-          <div className="baking-loader">🧁 Baking your cake...</div>
+          <div className="baking-loader">🎂 Baking your cake...</div>
         </div>
       )}
 

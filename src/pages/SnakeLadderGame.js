@@ -106,13 +106,14 @@ const SnakeLadderGame = () => {
             else if (turn === 4) target = 23;
             else if (turn === 5) target = BOARD_SIZE;
 
-            setDiceNum(Math.max(1, target - position));
-            setIsRolling(false); // DICE STOPS COMPLETELY
-            setStatusMsg(`Rolled a ${Math.max(1, target - position)}!`);
+            const movement = Math.max(1, target - position);
+            setDiceNum(movement);
+            setIsRolling(false); 
+            setStatusMsg(`Rolled a ${movement}!`);
 
             setTimeout(() => {
                 setStatusMsg("Moving...");
-                setPosition(target); // SQUIRREL MOVES NOW
+                setPosition(target);
                 setTimeout(() => checkTile(target), 800);
             }, 700); 
         }, 800); 

@@ -102,13 +102,14 @@ const SnakeLadderGame = () => {
 
   // --- GAME LOGIC (TARGET BASED SCRIPT) ---
   const handleRollDice = () => {
+    // 1. Safety Checks
     if (isRolling || modalData || miniInsight || loading || isFinished || position === BOARD_SIZE) return;
 
     safePlay(clickSound);
     setIsRolling(true); // LOCK THE BUTTON
     setStatusMsg("Rolling...");
 
-    // Visual Animation
+    // 2. Animation: Flash random numbers
     const rollInterval = setInterval(() => {
         setDiceNum(Math.floor(Math.random() * 6) + 1);
     }, 100);
@@ -116,34 +117,48 @@ const SnakeLadderGame = () => {
     setTimeout(() => {
       clearInterval(rollInterval);
 
-      // --- 🎯 TARGET LOGIC ---
-      // We calculate the exact roll needed to hit the next story point.
-      
-      let targetTile = 1;
-      const turnIndex = answers.length;
+      // --- 🎲 CALCULATE THE ROLL ---
+      let calculatedRoll = Math.floor(Math.random() * 6) + 1;
+      let targetTile = 23; // We want the 5th question to happen here
 
-      switch(turnIndex) {
-        case 0: targetTile = 3; break;  // 1st Roll -> Tile 3 (Ladder -> 11)
-        case 1: targetTile = 14; break; // 2nd Roll -> Tile 14 (Snake -> 4)
-        case 2: targetTile = 9; break;  // 3rd Roll -> Tile 9 (Ladder -> 18)
-        case 3: targetTile = 20; break; // 4th Roll -> Tile 20 (Safe)
-        case 4: targetTile = 23; break; // 5th Roll -> Tile 23 (Trigger Final Q)
-        case 5: targetTile = 25; break; // 6th Roll -> Tile 25 (Finish)
-        default: targetTile = BOARD_SIZE;
+      // SCENARIO A: ALL QUESTIONS DONE -> FORCE WIN
+      if (answers.length >= REQUIRED_QUESTIONS) {
+          // If we are at 23, roll 2. If at 24, roll 1.
+          calculatedRoll = BOARD_SIZE - position;
       }
 
-      // Calculate roll based on where we ARE vs where we need to BE
-      let calculatedRoll = targetTile - position;
+      // SCENARIO B: WAITING FOR 5TH QUESTION (Index 4) -> TARGET TILE 23
+      else if (answers.length === REQUIRED_QUESTIONS - 1) {
+          // If we are close enough to Tile 23 (e.g. at 20, need 3), force it.
+          if (position < targetTile && (targetTile - position) <= 6) {
+              calculatedRoll = targetTile - position;
+          }
+          // If we are too far (e.g. at 10), roll 6 to get there faster.
+          else {
+              calculatedRoll = 6; 
+          }
+      }
 
-      // Fallback safety (should not happen with this script)
-      if (calculatedRoll <= 0 || calculatedRoll > 6) calculatedRoll = 1;
+      // SCENARIO C: EARLY GAME (0-3 Answers)
+      else {
+          // Standard random roll, but prevent jumping to end too early
+          if (position + calculatedRoll >= BOARD_SIZE) {
+             calculatedRoll = 1; // Force a small move if they try to finish early
+          }
+          
+          // Helper: If we haven't hit a ladder yet, try to help them hit one
+          if (!hasHitLadder && position < 10) {
+             for(let i=1; i<=6; i++) if(LADDERS[position+i]) { calculatedRoll = i; break; }
+          }
+      }
 
-      // --- EXECUTE MOVE ---
+      // --- EXECUTE THE MOVE ---
       setDiceNum(calculatedRoll);
       let nextPos = position + calculatedRoll;
 
-      if (nextPos > BOARD_SIZE) nextPos = BOARD_SIZE;
-
+      // Double check bounds to prevent error
+      if (nextPos > BOARD_SIZE) nextPos = BOARD_SIZE; 
+      
       setPosition(nextPos);
       
       // NOTE: We do NOT set isRolling(false) here. 
@@ -198,8 +213,7 @@ const SnakeLadderGame = () => {
         return;
     }
 
-    // 4. Normal Tile - UNLOCK and Trigger
-    setIsRolling(false);
+    // 4. Trigger Question
     triggerQuestion();
   };
 

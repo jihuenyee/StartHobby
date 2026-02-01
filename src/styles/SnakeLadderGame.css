@@ -3,7 +3,7 @@
 .snake-game-container {
     height: 100vh; width: 100vw;
     /* FIX: Remove '/public' for Vercel/Production builds */
-    background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('/backgrounds/forest-map.png') center/cover;
+    background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('/public/backgrounds/forest-map.png') center/cover;
     display: flex; flex-direction: column; align-items: center; justify-content: center;
     font-family: 'Nunito', sans-serif; overflow: hidden;
 }

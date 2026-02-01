@@ -72,7 +72,7 @@ const SnakeLadderGame = () => {
             ]
           }));
           
-          // FIX: Shuffle questions ONCE at the start
+          // Shuffle questions ONCE at the start
           const shuffled = formatted.sort(() => Math.random() - 0.5);
           setQuestions(shuffled);
         }
@@ -108,6 +108,7 @@ const SnakeLadderGame = () => {
     setIsRolling(true);
     setStatusMsg("Rolling...");
 
+    // Visual roll animation
     const rollInterval = setInterval(() => {
         setDiceNum(Math.floor(Math.random() * 6) + 1);
     }, 100);
@@ -115,23 +116,41 @@ const SnakeLadderGame = () => {
     setTimeout(() => {
       clearInterval(rollInterval);
 
+      // 1. GENERATE RANDOM ROLL (1 to 6)
       let calculatedRoll = Math.floor(Math.random() * 6) + 1;
 
+      // 2. LOGIC: IF NOT ENOUGH ANSWERS, PREVENT WINNING
       if (answers.length < REQUIRED_QUESTIONS) {
           if (!hasHitLadder) {
              for(let i=1; i<=6; i++) if(LADDERS[position+i]) { calculatedRoll = i; break; }
           } else if (!hasHitSnake) {
              for(let i=1; i<=6; i++) if(SNAKES[position+i]) { calculatedRoll = i; break; }
           }
+          
+          // If roll takes you to (or past) 25 but you haven't answered enough questions
+          // force a small roll (1) so you stay on the board.
           if (position + calculatedRoll >= BOARD_SIZE) calculatedRoll = 1; 
-      } else {
-          calculatedRoll = BOARD_SIZE - position;
-          setIsFinished(true); 
+      } 
+      
+      // 3. LOGIC: EXACT END POINT RULE (Standard Game)
+      else {
+          // If roll is too high (e.g. at 24, rolled 3 -> 27), STAY PUT
+          if (position + calculatedRoll > BOARD_SIZE) {
+            setDiceNum(calculatedRoll);
+            setStatusMsg(`Too high! You need ${BOARD_SIZE - position} to finish.`);
+            setIsRolling(false);
+            return; // EXIT HERE: Player does not move
+          }
+
+          // If roll lands EXACTLY on 25
+          if (position + calculatedRoll === BOARD_SIZE) {
+              setIsFinished(true); 
+          }
       }
 
+      // 4. EXECUTE MOVE
       setDiceNum(calculatedRoll);
       let nextPos = position + calculatedRoll;
-      if (nextPos > BOARD_SIZE) nextPos = BOARD_SIZE; 
 
       setPosition(nextPos);
       setIsRolling(false);
@@ -180,9 +199,6 @@ const SnakeLadderGame = () => {
       return;
     }
 
-    // FIX: Instead of random picking, take the question at the index of your progress.
-    // If you have 0 answers, it picks questions[0]. If you have 1, it picks questions[1].
-    // Since we shuffled the array once at the start, this is perfectly random AND unique.
     const nextQuestion = questions[answers.length];
 
     if (nextQuestion) {

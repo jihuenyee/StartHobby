@@ -10,14 +10,14 @@
     justify-content: flex-start; 
     /* Adjust this value if it still feels too high or too low. 
        70px is usually the height of a standard website navbar. */
-    padding-top: 20px; 
+    padding-top: 80px; 
     font-family: 'Nunito', sans-serif;
     overflow: hidden;
 }
 
 .game-header {
     background: rgba(0,0,0,0.8);
-    padding: 10px 20px;
+    padding: 10px 10px;
     border-radius: 18px;
     width: 90%;
     max-width: 380px;
@@ -136,7 +136,6 @@
     font-weight: 700; 
     color: #333 !important;
     cursor: pointer;
-    transition: background 0.2s ease;
 }
 
 .option-btn:hover {

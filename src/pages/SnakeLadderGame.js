@@ -81,29 +81,29 @@ const SnakeLadderGame = () => {
         };
     }, []);
 
-    const triggerQuestion = (currentAnswersLength) => {
+    const triggerQuestion = useCallback((currentAnswersLength) => {
         if (currentAnswersLength < REQUIRED_QUESTIONS) {
             setModalData(questions[currentAnswersLength] || null);
             setStatusMsg("Time for a quick riddle!");
         } else {
             setStatusMsg("Almost there! One last push!");
         }
-    };
+    }, [questions]);
 
-    const calculateInsight = (types) => {
+    const calculateInsight = useCallback((types) => {
         const counts = {};
         types.forEach(t => counts[t] = (counts[t] || 0) + 1);
         const top = Object.keys(counts).reduce((a, b) => counts[a] > counts[b] ? a : b, "Creative");
         const msgs = {
             Creative: "Your imagination is your superpower! 🎨",
-            Active: "You have the heart of an athlete! 🏃",
-            Strategic: "A mastermind in the making! 🧠",
-            Social: "You bring people together! 🤝"
+            Active: "Your energy is inspiring! 🏃",
+            Strategic: "You are a master strategist! 🧠",
+            Social: "You are a natural connector! 🤝"
         };
         setMiniInsight(msgs[top]);
-    };
+    }, []);
 
-    const checkTile = (curr) => {
+    const checkTile = useCallback((curr) => {
         if (SNAKES[curr]) {
             setStatusMsg("🐍 Oh no! A slippery snake!");
             playSound('down');
@@ -133,7 +133,7 @@ const SnakeLadderGame = () => {
             setIsRolling(false);
             triggerQuestion(answers.length);
         }
-    };
+    }, [answers.length, answerTypes, calculateInsight, playSound, triggerQuestion]);
 
     const handleRollDice = () => {
         if (isRolling || modalData || isFinished) return;
@@ -147,7 +147,8 @@ const SnakeLadderGame = () => {
         const rollInt = setInterval(() => setDiceNum(Math.floor(Math.random() * 6) + 1), 80);
 
         setTimeout(() => {
-            clearInterval(rollInt);
+            clearInterval(rollInt); // 1. STOP THE DICE FIRST
+            
             let targetTile = 1;
             const turnIndex = answers.length;
 
@@ -158,10 +159,19 @@ const SnakeLadderGame = () => {
             else if (turnIndex === 4) targetTile = 23;
             else if (turnIndex === 5) targetTile = BOARD_SIZE;
 
-            setDiceNum(Math.max(1, targetTile - position));
-            setPosition(targetTile);
-            
-            setTimeout(() => checkTile(targetTile), 800);
+            // Calculate movement number and display it on the stopped dice
+            const movement = Math.max(1, targetTile - position);
+            setDiceNum(movement);
+
+            // 2. WAIT A MOMENT BEFORE MOVING SQUIRREL
+            setTimeout(() => {
+                setStatusMsg("Moving...");
+                setPosition(targetTile); // SQUIRREL STARTS MOVING
+                
+                // 3. WAIT FOR SQUIRREL TRANSITION TO FINISH
+                setTimeout(() => checkTile(targetTile), 800);
+            }, 600); // 600ms pause to let user see the dice result
+
         }, 800);
     };
 

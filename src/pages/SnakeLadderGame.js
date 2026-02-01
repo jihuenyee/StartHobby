@@ -1,4 +1,107 @@
-const handleRollDice = () => {
+import React, { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import "../styles/SnakeLadderGame.css";
+
+// 🎲 CONFIGURATION
+const BOARD_SIZE = 25;
+const REQUIRED_QUESTIONS = 5; 
+
+// 🐍 SNAKES & LADDERS MAP
+const SNAKES = { 14: 4, 19: 8, 22: 20, 24: 16 };
+const LADDERS = { 3: 11, 6: 17, 9: 18, 10: 12 };
+
+// 🌍 API BASE URL
+const API_BASE =
+  process.env.NODE_ENV === "production"
+    ? "https://starthobbybackend-production.up.railway.app"
+    : "http://localhost:5000";
+
+const SnakeLadderGame = () => {
+  const navigate = useNavigate();
+  
+  // --- STATE ---
+  const [questions, setQuestions] = useState([]); 
+  const [loading, setLoading] = useState(true);
+  
+  const [position, setPosition] = useState(1);
+  const [isRolling, setIsRolling] = useState(false);
+  const [diceNum, setDiceNum] = useState(1);
+  const [statusMsg, setStatusMsg] = useState("Roll to start!");
+  
+  const [modalData, setModalData] = useState(null); 
+  const [answers, setAnswers] = useState([]); 
+  const [answerTypes, setAnswerTypes] = useState([]);
+  const [askedQuestionIds, setAskedQuestionIds] = useState([]); 
+  const [miniInsight, setMiniInsight] = useState(null); 
+  const [isFinished, setIsFinished] = useState(false); 
+
+  const [hasHitSnake, setHasHitSnake] = useState(false);
+  const [hasHitLadder, setHasHitLadder] = useState(false);
+
+  // --- AUDIO REFS ---
+  const bgSound = useRef(null);
+  const clickSound = useRef(null);
+  const slideUpSound = useRef(null);
+  const slideDownSound = useRef(null);
+
+  const safePlay = (audioRef) => {
+    if (audioRef.current) {
+      audioRef.current.currentTime = 0;
+      audioRef.current.play().catch(() => {}); 
+    }
+  };
+
+  // --- INITIALIZATION ---
+  useEffect(() => {
+    fetch(`${API_BASE}/api/quizzes/snake`)
+      .then((res) => {
+        if (!res.ok) throw new Error("Server Error");
+        return res.json();
+      })
+      .then((data) => {
+        const actualData = Array.isArray(data) ? data : (data.questions || data.data || []);
+        if (actualData.length > 0) {
+          const formatted = actualData.map((q) => ({
+            id: q.id,
+            q: q.question,
+            options: [
+              { text: q.option_a, type: "Active" },
+              { text: q.option_b, type: "Strategic" },
+              { text: q.option_c, type: "Creative" },
+              { text: q.option_d, type: "Social" }
+            ]
+          }));
+          
+          // Shuffle questions ONCE at the start
+          const shuffled = formatted.sort(() => Math.random() - 0.5);
+          setQuestions(shuffled);
+        }
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Fetch error:", err);
+        setLoading(false);
+      });
+
+    bgSound.current = new Audio("/sounds/SnakeLadder.mp3");
+    bgSound.current.loop = true;
+    bgSound.current.volume = 0.4;
+    bgSound.current.play().catch(() => {});
+
+    clickSound.current = new Audio("/sounds/click.mp3");
+    slideUpSound.current = new Audio("/sounds/slideUP.mp3");
+    slideDownSound.current = new Audio("/sounds/slideDOWN.mp3");
+
+    return () => {
+      if (bgSound.current) {
+        bgSound.current.pause();
+        bgSound.current = null;
+      }
+    };
+  }, []);
+
+  // --- GAME LOGIC (RIGGED FOR DEMO) ---
+  const handleRollDice = () => {
     // 1. Block interactions if busy/done
     if (isRolling || modalData || miniInsight || loading || isFinished || position === BOARD_SIZE) return;
 
@@ -15,59 +118,62 @@ const handleRollDice = () => {
       clearInterval(rollInterval);
 
       // --- 🧠 RIGGED LOGIC START ---
-      let calculatedRoll = Math.floor(Math.random() * 6) + 1;
-      let projectedPos = position + calculatedRoll;
-
-      // SCENARIO A: FINISH GAME (You have all 5 answers)
-      // Force roll to land exactly on 25.
+      let calculatedRoll = 1; // Default
+      
+      // === TURN 6 (You have 5 answers) ===
+      // GOAL: FINISH GAME.
       if (answers.length >= REQUIRED_QUESTIONS) {
           calculatedRoll = BOARD_SIZE - position;
       }
 
-      // SCENARIO B: SETUP FINAL QUESTION (You have 4 answers)
-      // We want to land on Tile 23 (Safe spot) to trigger the 5th question.
+      // === TURN 5 (You have 4 answers) ===
+      // GOAL: LAND ON TILE 23 (Safe spot near Castle).
       else if (answers.length === 4) {
           const targetTile = 23;
-          // If we are close enough (1-6 tiles away), force the roll.
-          if (position < targetTile && (targetTile - position) <= 6) {
-              calculatedRoll = targetTile - position;
-          } 
-          // If too far, roll max (6) to get closer, but cap at 23.
-          else {
-              calculatedRoll = 6;
-              if (position + calculatedRoll > 23) calculatedRoll = 23 - position;
-          }
-      }
-
-      // SCENARIO C: MID GAME (You have 2 or 3 answers)
-      // "Don't meet snakes anymore" logic.
-      else if (answers.length >= 2) {
-          projectedPos = position + calculatedRoll;
+          let distance = targetTile - position;
           
-          // 1. Prevent finishing too early
-          if (projectedPos >= BOARD_SIZE) {
-              calculatedRoll = 1;
-              projectedPos = position + 1;
-          }
-
-          // 2. ANTI-SNAKE GUARD
-          // If the random roll hits a snake, force a safe move (usually +1 or -1)
-          if (SNAKES[projectedPos]) {
-             // Try adding 1. If that's also a snake or too far, subtract 1.
-             if (!SNAKES[projectedPos + 1] && (projectedPos + 1 < BOARD_SIZE)) {
-                 calculatedRoll += 1;
-             } else {
-                 calculatedRoll = (calculatedRoll > 1) ? calculatedRoll - 1 : 1;
-             }
+          // If 23 is within range (1-6), go there exactly.
+          if (distance > 0 && distance <= 6) {
+              calculatedRoll = distance;
+          } else {
+              // If we are somehow too far back, roll 6 to get close.
+              calculatedRoll = 6; 
           }
       }
 
-      // SCENARIO D: START GAME (0 or 1 Answer)
-      // "First 2 spins can meet snake" -> Normal Random Logic
+      // === TURN 3 & 4 (You have 2 or 3 answers) ===
+      // GOAL: MOVE FAST & AVOID SNAKES.
+      else if (answers.length >= 2) {
+          // 1. Bias towards high numbers (6, 5, 4, 3) to move up board quickly
+          let possibleRolls = [6, 5, 4, 3]; 
+          let safeRollFound = false;
+          
+          for (let roll of possibleRolls) {
+              let nextPos = position + roll;
+              // Check: Is it a Snake? AND Is it within board limits?
+              // Also ensure we don't accidentally finish the game early (>=25)
+              if (!SNAKES[nextPos] && nextPos < BOARD_SIZE) {
+                  calculatedRoll = roll;
+                  safeRollFound = true;
+                  break; // Found a safe high number, stop looking
+              }
+          }
+
+          // Fallback: If all high numbers were snakes (unlikely), pick any safe move
+          if (!safeRollFound) {
+              calculatedRoll = 1;
+              if (SNAKES[position + 1]) calculatedRoll = 2; // Simple hop
+          }
+      }
+
+      // === TURN 1 & 2 (You have 0 or 1 answer) ===
+      // GOAL: RANDOM (Snakes allowed).
       else {
-          // Just prevent hitting the castle early
+          calculatedRoll = Math.floor(Math.random() * 6) + 1;
+          
+          // Simple check to ensure we don't finish game early by accident
           if (position + calculatedRoll >= BOARD_SIZE) {
-             calculatedRoll = 1;
+              calculatedRoll = 1;
           }
       }
 
@@ -75,13 +181,220 @@ const handleRollDice = () => {
       setDiceNum(calculatedRoll);
       let nextPos = position + calculatedRoll;
 
-      // Final safety bounds check
+      // Final safety check
       if (nextPos > BOARD_SIZE) nextPos = BOARD_SIZE;
 
       setPosition(nextPos);
       setIsRolling(false);
 
-      // Trigger tile check (Snake/Ladder/Question)
+      // Trigger tile check
       setTimeout(() => checkTile(nextPos), 800);
     }, 800);
   };
+
+  const checkTile = (currentPos) => {
+    if (SNAKES[currentPos]) {
+      setHasHitSnake(true);
+      setStatusMsg("🐍 Oh no! Snake!");
+      safePlay(slideDownSound);
+      setTimeout(() => {
+        setPosition(SNAKES[currentPos]);
+        setStatusMsg(`Slid down to tile ${SNAKES[currentPos]}...`);
+        setTimeout(triggerQuestion, 1000); 
+      }, 800);
+      return;
+    }
+
+    if (LADDERS[currentPos]) {
+      setHasHitLadder(true);
+      setStatusMsg("🪜 Awesome! Ladder!");
+      safePlay(slideUpSound);
+      setTimeout(() => {
+        setPosition(LADDERS[currentPos]);
+        setStatusMsg(`Climbed up to tile ${LADDERS[currentPos]}!`);
+        setTimeout(triggerQuestion, 1000); 
+      }, 800);
+      return;
+    }
+
+    if (currentPos === BOARD_SIZE) {
+        setStatusMsg("You reached the Castle! 🏰");
+        setTimeout(() => calculateMiniInsight(), 1500);
+        return;
+    }
+
+    triggerQuestion();
+  };
+
+  const triggerQuestion = () => {
+    if (answers.length >= REQUIRED_QUESTIONS) {
+      setStatusMsg("Head to the Castle!");
+      return;
+    }
+
+    // Pick question based on current answer count to ensure unique sequence
+    const nextQuestion = questions[answers.length];
+
+    if (nextQuestion) {
+      setModalData(nextQuestion);
+      setStatusMsg("❓ Quick Question!");
+    }
+  };
+
+  const handleAnswer = (option, questionId) => {
+    safePlay(clickSound);
+    const newAnswers = [...answers, { q: modalData.q, a: option.text }];
+    setAnswers(newAnswers);
+    setAnswerTypes([...answerTypes, option.type]);
+    setAskedQuestionIds([...askedQuestionIds, questionId]);
+    setModalData(null);
+
+    if (newAnswers.length >= REQUIRED_QUESTIONS) {
+      setStatusMsg("All questions done! Race to the Castle! 🏰");
+    } else {
+      setStatusMsg(`Progress: ${newAnswers.length}/${REQUIRED_QUESTIONS} Answers`);
+    }
+  };
+
+  const calculateMiniInsight = () => {
+    const counts = {};
+    let maxType = "Creative";
+    let maxCount = 0;
+
+    answerTypes.forEach(type => {
+      counts[type] = (counts[type] || 0) + 1;
+      if (counts[type] > maxCount) {
+        maxCount = counts[type];
+        maxType = type;
+      }
+    });
+
+    let insightMessage = "";
+    switch(maxType) {
+      case "Creative": insightMessage = "You have a vividly Creative mind! 🎨"; break;
+      case "Active": insightMessage = "You seem like an energetic Doer! 🏃"; break;
+      case "Strategic": insightMessage = "I see a sharp, Strategic thinker! 🧠"; break;
+      case "Social": insightMessage = "You are a true People Person! 🤝"; break;
+      default: insightMessage = "You have a perfectly Balanced vibe! ⚖️";
+    }
+    setMiniInsight(insightMessage);
+  };
+
+  const finalizeGame = () => {
+    const storedData = JSON.parse(localStorage.getItem("gameResults")) || {};
+    const normalizedAnswers = answers.map(item => ({
+      question: item.q,
+      answer: item.a
+    }));
+
+    const finalData = {
+      ...storedData,
+      snakeGame: {
+        completed: true,
+        answers: normalizedAnswers,
+        completedAt: Date.now()
+      },
+    };
+
+    localStorage.setItem("gameResults", JSON.stringify(finalData));
+    navigate("/finalize");
+  };
+
+  const gridCells = [];
+  for (let r = 0; r < 5; r++) { 
+    const logicRow = 4 - r; 
+    const isEven = logicRow % 2 === 0; 
+    const rowNumbers = [];
+    for (let c = 0; c < 5; c++) {
+      let num = isEven ? (logicRow * 5) + 1 + c : (logicRow * 5) + 5 - c;
+      rowNumbers.push(num);
+    }
+    gridCells.push(...rowNumbers);
+  }
+
+  const getPlayerStyle = () => {
+    const getGridIndex = (tileNum) => {
+        const row = Math.floor((tileNum - 1) / 5); 
+        const col = (tileNum - 1) % 5;
+        let actualCol = (row % 2 !== 0) ? 4 - col : col;
+        const visualRow = 4 - row;
+        return visualRow * 5 + actualCol;
+    };
+    const gridIndex = getGridIndex(position);
+    const row = Math.floor(gridIndex / 5);
+    const col = gridIndex % 5;
+    return { top: `${row * 20}%`, left: `${col * 20}%` };
+  };
+
+  if (loading) return <div className="snake-game-container"><h1 style={{color:'white'}}>Loading...</h1></div>;
+
+  return (
+    <div className="snake-game-container">
+      <div className="game-header">
+        <div className="progress-bar">
+          <div className="fill" style={{ width: `${(answers.length / REQUIRED_QUESTIONS) * 100}%` }}></div>
+        </div>
+        <p className="status-text">{statusMsg}</p>
+      </div>
+
+      <div className="board-wrapper">
+        <div className="board-grid">
+            {gridCells.map((num) => {
+                const isSnake = SNAKES[num] !== undefined;
+                const isLadder = LADDERS[num] !== undefined;
+                const isFinish = num === BOARD_SIZE;
+                let classes = `tile ${isSnake ? 'snake-tile' : ''} ${isLadder ? 'ladder-tile' : ''} ${isFinish ? 'finish-tile' : ''}`;
+                return (
+                    <div key={num} className={classes}>
+                        <span className="tile-num">{num}</span>
+                        {isSnake && <span className="marker">🐍</span>}
+                        {isLadder && <span className="marker">🪜</span>}
+                        {isFinish && <span className="castle-icon">🏰</span>}
+                    </div>
+                );
+            })}
+        </div>
+        <div className="player-token" style={getPlayerStyle()}>🐿️</div>
+      </div>
+
+      <div className="controls-area">
+        <div className={`dice-display ${isRolling ? "animate-roll" : ""}`}>{diceNum}</div>
+        <button 
+          className="roll-btn" 
+          onClick={handleRollDice} 
+          disabled={isRolling || modalData || miniInsight || isFinished || position === BOARD_SIZE}
+        >
+          {isFinished ? "WAITING..." : (isRolling ? "..." : "ROLL")}
+        </button>
+      </div>
+
+      {modalData && (
+        <div className="modal-overlay">
+          <div className="sl-question-card">
+            <h3>{modalData.q}</h3>
+            <div className="options-list">
+              {modalData.options.map((opt, idx) => (
+                <button key={idx} className="option-btn" onClick={() => handleAnswer(opt, modalData.id)}>
+                  {opt.text}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {miniInsight && (
+        <div className="modal-overlay">
+          <div className="insight-card">
+            <h1>Adventure Complete!</h1>
+            <div className="insight-icon">✨</div>
+            <h2>{miniInsight}</h2>
+            <button className="final-btn" onClick={finalizeGame}>Reveal My Hobby</button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default SnakeLadderGame;

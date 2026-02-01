@@ -35,6 +35,7 @@ const SnakeLadderGame = () => {
   const [miniInsight, setMiniInsight] = useState(null); 
   const [isFinished, setIsFinished] = useState(false); 
 
+  // Track if we hit special tiles for UI effects
   const [hasHitSnake, setHasHitSnake] = useState(false);
   const [hasHitLadder, setHasHitLadder] = useState(false);
 
@@ -71,7 +72,6 @@ const SnakeLadderGame = () => {
               { text: q.option_d, type: "Social" }
             ]
           }));
-          
           // Shuffle questions ONCE at the start
           const shuffled = formatted.sort(() => Math.random() - 0.5);
           setQuestions(shuffled);
@@ -100,16 +100,15 @@ const SnakeLadderGame = () => {
     };
   }, []);
 
-  // --- GAME LOGIC (HARDCODED SCRIPT) ---
+  // --- GAME LOGIC (TARGET BASED SCRIPT) ---
   const handleRollDice = () => {
-    // 1. Safety Checks
     if (isRolling || modalData || miniInsight || loading || isFinished || position === BOARD_SIZE) return;
 
     safePlay(clickSound);
-    setIsRolling(true);
+    setIsRolling(true); // LOCK THE BUTTON
     setStatusMsg("Rolling...");
 
-    // 2. Visual Animation
+    // Visual Animation
     const rollInterval = setInterval(() => {
         setDiceNum(Math.floor(Math.random() * 6) + 1);
     }, 100);
@@ -117,49 +116,39 @@ const SnakeLadderGame = () => {
     setTimeout(() => {
       clearInterval(rollInterval);
 
-      // --- 📜 THE SCRIPT ---
-      // We decide the roll based on how many questions have been answered.
-      // This guarantees the exact sequence you asked for.
+      // --- 🎯 TARGET LOGIC ---
+      // We calculate the exact roll needed to hit the next story point.
       
-      let calculatedRoll = 1; // Fallback
+      let targetTile = 1;
       const turnIndex = answers.length;
 
       switch(turnIndex) {
-        case 0: // 1st Roll
-          calculatedRoll = 2; // Hits Tile 3 (Ladder -> 11)
-          break;
-        case 1: // 2nd Roll
-          calculatedRoll = 3; // From 11, Hits Tile 14 (Snake -> 4)
-          break;
-        case 2: // 3rd Roll
-          calculatedRoll = 5; // From 4, Hits Tile 9 (Ladder -> 18)
-          break;
-        case 3: // 4th Roll
-          calculatedRoll = 2; // From 18, Hits Tile 20 (Safe)
-          break;
-        case 4: // 5th Roll
-          calculatedRoll = 3; // From 20, Hits Tile 23 (Trigger Final Q)
-          break;
-        case 5: // 6th Roll
-          calculatedRoll = 2; // From 23, Hits Tile 25 (Finish)
-          break;
-        default:
-          // Fallback if game continues past 6 turns for any reason
-          calculatedRoll = 1;
-          if (position + calculatedRoll > BOARD_SIZE) calculatedRoll = 0;
+        case 0: targetTile = 3; break;  // 1st Roll -> Tile 3 (Ladder -> 11)
+        case 1: targetTile = 14; break; // 2nd Roll -> Tile 14 (Snake -> 4)
+        case 2: targetTile = 9; break;  // 3rd Roll -> Tile 9 (Ladder -> 18)
+        case 3: targetTile = 20; break; // 4th Roll -> Tile 20 (Safe)
+        case 4: targetTile = 23; break; // 5th Roll -> Tile 23 (Trigger Final Q)
+        case 5: targetTile = 25; break; // 6th Roll -> Tile 25 (Finish)
+        default: targetTile = BOARD_SIZE;
       }
+
+      // Calculate roll based on where we ARE vs where we need to BE
+      let calculatedRoll = targetTile - position;
+
+      // Fallback safety (should not happen with this script)
+      if (calculatedRoll <= 0 || calculatedRoll > 6) calculatedRoll = 1;
 
       // --- EXECUTE MOVE ---
       setDiceNum(calculatedRoll);
       let nextPos = position + calculatedRoll;
 
-      // Ensure we don't overshoot
       if (nextPos > BOARD_SIZE) nextPos = BOARD_SIZE;
 
       setPosition(nextPos);
-      setIsRolling(false);
+      
+      // NOTE: We do NOT set isRolling(false) here. 
+      // We wait until the slide/snake animation is fully done in checkTile.
 
-      // Trigger tile logic
       setTimeout(() => checkTile(nextPos), 800);
     }, 800);
   };
@@ -173,7 +162,12 @@ const SnakeLadderGame = () => {
       setTimeout(() => {
         setPosition(SNAKES[currentPos]);
         setStatusMsg(`Slid down to tile ${SNAKES[currentPos]}...`);
-        setTimeout(triggerQuestion, 1000); 
+        
+        // UNLOCK and Trigger
+        setTimeout(() => {
+            setIsRolling(false);
+            triggerQuestion();
+        }, 800); 
       }, 800);
       return;
     }
@@ -186,7 +180,12 @@ const SnakeLadderGame = () => {
       setTimeout(() => {
         setPosition(LADDERS[currentPos]);
         setStatusMsg(`Climbed up to tile ${LADDERS[currentPos]}!`);
-        setTimeout(triggerQuestion, 1000); 
+        
+        // UNLOCK and Trigger
+        setTimeout(() => {
+            setIsRolling(false);
+            triggerQuestion();
+        }, 800);
       }, 800);
       return;
     }
@@ -194,11 +193,13 @@ const SnakeLadderGame = () => {
     // 3. Check Finish
     if (currentPos === BOARD_SIZE) {
         setStatusMsg("You reached the Castle! 🏰");
+        setIsRolling(false);
         setTimeout(() => calculateMiniInsight(), 1500);
         return;
     }
 
-    // 4. Trigger Question
+    // 4. Normal Tile - UNLOCK and Trigger
+    setIsRolling(false);
     triggerQuestion();
   };
 
@@ -208,7 +209,6 @@ const SnakeLadderGame = () => {
       return;
     }
 
-    // Pick unique question based on index
     const nextQuestion = questions[answers.length];
 
     if (nextQuestion) {

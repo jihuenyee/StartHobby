@@ -118,7 +118,7 @@ const SnakeLadderGame = () => {
       clearInterval(rollInterval);
 
       // --- 🧠 RIGGED LOGIC START ---
-      let calculatedRoll = 1; // Default
+      let calculatedRoll = 1; 
       
       // === TURN 6 (You have 5 answers) ===
       // GOAL: FINISH GAME.
@@ -127,54 +127,44 @@ const SnakeLadderGame = () => {
       }
 
       // === TURN 5 (You have 4 answers) ===
-      // GOAL: LAND ON TILE 23 (Safe spot near Castle).
+      // GOAL: LAND ON TILE 23 (Trigger 5th Question).
       else if (answers.length === 4) {
           const targetTile = 23;
-          let distance = targetTile - position;
+          // FORCE the roll to hit 23, even if it's > 6
+          calculatedRoll = targetTile - position;
           
-          // If 23 is within range (1-6), go there exactly.
-          if (distance > 0 && distance <= 6) {
-              calculatedRoll = distance;
-          } else {
-              // If we are somehow too far back, roll 6 to get close.
-              calculatedRoll = 6; 
+          // Edge case: If somehow past 23 (e.g., ladder to 24), go to 24 so next roll is 1.
+          if (calculatedRoll <= 0) {
+            calculatedRoll = 24 - position;
+            if (calculatedRoll === 0) calculatedRoll = 0; // Already there
           }
       }
 
       // === TURN 3 & 4 (You have 2 or 3 answers) ===
-      // GOAL: MOVE FAST & AVOID SNAKES.
+      // GOAL: MOVE FAST (Catch up distance).
       else if (answers.length >= 2) {
-          // 1. Bias towards high numbers (6, 5, 4, 3) to move up board quickly
-          let possibleRolls = [6, 5, 4, 3]; 
+          // Force a 6 or 5 to cover ground, ensuring no Snake
+          let possibleRolls = [6, 5, 4]; 
           let safeRollFound = false;
           
           for (let roll of possibleRolls) {
               let nextPos = position + roll;
               // Check: Is it a Snake? AND Is it within board limits?
-              // Also ensure we don't accidentally finish the game early (>=25)
               if (!SNAKES[nextPos] && nextPos < BOARD_SIZE) {
                   calculatedRoll = roll;
                   safeRollFound = true;
-                  break; // Found a safe high number, stop looking
+                  break; 
               }
           }
-
-          // Fallback: If all high numbers were snakes (unlikely), pick any safe move
-          if (!safeRollFound) {
-              calculatedRoll = 1;
-              if (SNAKES[position + 1]) calculatedRoll = 2; // Simple hop
-          }
+          if (!safeRollFound) calculatedRoll = 1; // Fallback
       }
 
       // === TURN 1 & 2 (You have 0 or 1 answer) ===
       // GOAL: RANDOM (Snakes allowed).
       else {
           calculatedRoll = Math.floor(Math.random() * 6) + 1;
-          
-          // Simple check to ensure we don't finish game early by accident
-          if (position + calculatedRoll >= BOARD_SIZE) {
-              calculatedRoll = 1;
-          }
+          // Don't finish early
+          if (position + calculatedRoll >= BOARD_SIZE) calculatedRoll = 1;
       }
 
       // --- EXECUTE MOVE ---
@@ -193,6 +183,7 @@ const SnakeLadderGame = () => {
   };
 
   const checkTile = (currentPos) => {
+    // 1. Check Snake
     if (SNAKES[currentPos]) {
       setHasHitSnake(true);
       setStatusMsg("🐍 Oh no! Snake!");
@@ -205,6 +196,7 @@ const SnakeLadderGame = () => {
       return;
     }
 
+    // 2. Check Ladder
     if (LADDERS[currentPos]) {
       setHasHitLadder(true);
       setStatusMsg("🪜 Awesome! Ladder!");
@@ -217,12 +209,14 @@ const SnakeLadderGame = () => {
       return;
     }
 
+    // 3. Check Finish
     if (currentPos === BOARD_SIZE) {
         setStatusMsg("You reached the Castle! 🏰");
         setTimeout(() => calculateMiniInsight(), 1500);
         return;
     }
 
+    // 4. Trigger Question
     triggerQuestion();
   };
 

@@ -210,40 +210,42 @@ const PersonalityReveal = () => {
           
           <div className="hobbies-grid">
             {profile.hobbies.map((h, i) => (
-              <a
+                <a
                 key={i}
                 href={h.registrationLink || "#"}
-                target="_blank" 
+                target="_blank"
                 rel="noopener noreferrer"
                 className="hobby-card clickable-card"
                 style={{
-                  animationDelay: `${i * 0.1}s`,
-                  textDecoration: 'none',
-                  display: 'block'
+                    animationDelay: `${i * 0.1}s`,
+                    textDecoration: 'none',
+                    display: 'block'
                 }}
-              >
+                >
+                {/* 1. Title */}
                 <h3 className="hobby-title">{h.name}</h3>
-                <p className="hobby-reason">{h.why}</p>
-                <div className="hobby-tags">
-                  <span
-                    className="hobby-tag category-tag"
-                    onMouseEnter={(e) => handleTagHover(e, h.category)}
-                    onMouseLeave={handleTagLeave}
-                  >
-                    {h.category}
-                  </span>
-                  <span
-                    className="hobby-tag social-tag"
-                    onMouseEnter={(e) => handleTagHover(e, h.social ? "Social" : "Solo")}
-                    onMouseLeave={handleTagLeave}
-                  >
-                    {h.social ? "👥 Social" : "🧘 Solo"}
-                  </span>
+
+                {/* 2. Personalized Reason */}
+                <p className="hobby-reason">
+                    <strong>Reason:</strong> {h.reason}
+                </p>
+
+                {/* 3. Footer Row: Tags and View Link */}
+                <div className="hobby-card-footer">
+                    <div className="hobby-tags">
+                    <span className="hobby-tag category-tag">
+                        {h.category}
+                    </span>
+                    <span className="hobby-tag social-tag">
+                        {h.social ? "Social" : "Solo"}
+                    </span>
+                    </div>
+                    
+                    <span className="view-link-text">View Website →</span>
                 </div>
-                <div className="join-hint">View Website →</div>
-              </a>
+                </a>
             ))}
-          </div>
+            </div>
 
           {/* CTA */}
           <button

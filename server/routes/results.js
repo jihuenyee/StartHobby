@@ -67,7 +67,7 @@ router.get("/ai-profile/:email", async (req, res) => {
   }
 });
 
-
+// final user results
 router.post("/finalize", async (req, res) => {
   const { email, clawGame, snakeGame, castleGame } = req.body;
 
@@ -122,7 +122,7 @@ JSON format:
   "hobbies": [
     { 
       "name": string, 
-      "why": string, 
+      "reason": string, 
       "category": string, 
       "social": boolean,
       "registrationLink": string 
@@ -130,9 +130,11 @@ JSON format:
   ]
 }
 
-Instructions for "registrationLink": 
-Provide a REAL, active website URL where a user can actually sign up, join a community, or book this activity. 
-Use well-known platforms like Meetup.com, Eventbrite, Coursera, or specific niche hobby sites (e.g., AllTrails for hiking, Chess.com for puzzles).
+Instructions for Hobbies:
+- "name": A catchy title (e.g., "Fitness Training").
+- "reason": A personalized sentence explaining WHY this matches their specific quiz responses (e.g., "Since you enjoy high-energy tasks and physical challenges, this will help you channel your determination.")
+- "category": A 1-2 word category (e.g., "Physical Wellness", "Creative Arts").
+- "registrationLink": A REAL URL to a platform like Meetup, Eventbrite, or a specific hobby site.
 
 Quiz responses:
 ${JSON.stringify(responses, null, 2)}

@@ -4,7 +4,7 @@ import "../styles/SnakeLadderGame.css";
 
 // 🎲 CONFIGURATION
 const BOARD_SIZE = 25;
-const REQUIRED_QUESTIONS = 5; 
+const REQUIRED_QUESTIONS = 5;
 
 // 🐍 SNAKES & LADDERS MAP
 const SNAKES = { 14: 4, 19: 8, 22: 20, 24: 16 };
@@ -18,22 +18,20 @@ const API_BASE =
 
 const SnakeLadderGame = () => {
   const navigate = useNavigate();
-  
+
   // --- STATE ---
-  const [questions, setQuestions] = useState([]); 
+  const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(true);
-  
   const [position, setPosition] = useState(1);
   const [isRolling, setIsRolling] = useState(false);
   const [diceNum, setDiceNum] = useState(1);
   const [statusMsg, setStatusMsg] = useState("Roll to start!");
-  
-  const [modalData, setModalData] = useState(null); 
-  const [answers, setAnswers] = useState([]); 
+  const [modalData, setModalData] = useState(null);
+  const [answers, setAnswers] = useState([]);
   const [answerTypes, setAnswerTypes] = useState([]);
-  const [askedQuestionIds, setAskedQuestionIds] = useState([]); 
-  const [miniInsight, setMiniInsight] = useState(null); 
-  const [isFinished, setIsFinished] = useState(false); 
+  const [askedQuestionIds, setAskedQuestionIds] = useState([]);
+  const [miniInsight, setMiniInsight] = useState(null);
+  const [isFinished, setIsFinished] = useState(false);
 
   // --- AUDIO REFS ---
   const bgSound = useRef(null);
@@ -44,7 +42,7 @@ const SnakeLadderGame = () => {
   const safePlay = (audioRef) => {
     if (audioRef.current) {
       audioRef.current.currentTime = 0;
-      audioRef.current.play().catch(() => {}); 
+      audioRef.current.play().catch(() => {});
     }
   };
 
@@ -97,59 +95,55 @@ const SnakeLadderGame = () => {
 
   // --- 🎲 THE GUARANTEED SCRIPT LOGIC ---
   const handleRollDice = () => {
-    // 1. Lock if busy
     if (isRolling || modalData || miniInsight || loading || isFinished || position === BOARD_SIZE) return;
 
     safePlay(clickSound);
     setIsRolling(true);
     setStatusMsg("Rolling...");
 
-    // 2. Dice Animation
     const rollInterval = setInterval(() => {
-        setDiceNum(Math.floor(Math.random() * 6) + 1);
+      setDiceNum(Math.floor(Math.random() * 6) + 1);
     }, 100);
 
     setTimeout(() => {
       clearInterval(rollInterval);
 
-      // 3. DETERMINE TARGET TILE BASED ON ANSWER COUNT
-      // This is the "Script" that forces the game to follow your path.
+      // SCRIPTED PATH LOGIC
       let targetTile = 1;
       const turnIndex = answers.length;
 
       if (turnIndex === 0) {
-          targetTile = 3;  // Roll 1: Hits Ladder (3 -> 11)
+        targetTile = 3;  // Roll 1: Hits Ladder (3 -> 11)
       } else if (turnIndex === 1) {
-          targetTile = 14; // Roll 2: Hits Snake (14 -> 4)
+        targetTile = 14; // Roll 2: Hits Snake (14 -> 4)
       } else if (turnIndex === 2) {
-          targetTile = 9;  // Roll 3: Hits Ladder (9 -> 18)
+        targetTile = 9;  // Roll 3: Hits Ladder (9 -> 18)
       } else if (turnIndex === 3) {
-          targetTile = 20; // Roll 4: Lands on 20
+        targetTile = 20; // Roll 4: Lands on 20
       } else if (turnIndex === 4) {
-          targetTile = 23; // Roll 5: Lands on 23 (Trigger Final Q)
+        targetTile = 23; // Roll 5: Lands on 23
+      } else if (turnIndex === 5) {
+        targetTile = 25; // Roll 6: Lands on 25 (Dice will show 2 because 25-23=2)
       } else {
-          targetTile = 25; // Roll 6: Lands on 25 (Finish)
+        targetTile = 25;
       }
 
-      // 4. CALCULATE MOVE
+      // Calculate Dice number based on target
       let movesNeeded = targetTile - position;
-
-      // FAILSAFE: If position is weird (e.g. from a bug), we force the dice 
-      // to look reasonable (1-6) but we will TELEPORT the player to the target anyway.
+      
+      // If movesNeeded isn't standard (1-6) due to teleportation, 
+      // we still set the visual dice to something logical for the script
       if (movesNeeded <= 0 || movesNeeded > 6) {
-          movesNeeded = Math.floor(Math.random() * 6) + 1; // Fake roll number
+          // Fallback visual only
+          setDiceNum(Math.floor(Math.random() * 6) + 1);
+      } else {
+          setDiceNum(movesNeeded);
       }
 
-      setDiceNum(movesNeeded);
-      
-      // 5. UPDATE POSITION
-      // IMPORTANT: We trust 'targetTile' more than 'position + roll' to ensure script holds.
-      const nextPos = targetTile; 
+      // Update position to the target
+      setPosition(targetTile);
 
-      setPosition(nextPos);
-
-      // 6. DELAY CHECK TILE (Wait for token to move)
-      setTimeout(() => checkTile(nextPos), 800);
+      setTimeout(() => checkTile(targetTile), 800);
     }, 800);
   };
 
@@ -158,16 +152,13 @@ const SnakeLadderGame = () => {
     if (SNAKES[currentPos]) {
       setStatusMsg("🐍 Oh no! Snake!");
       safePlay(slideDownSound);
-      
       setTimeout(() => {
         const afterSnakePos = SNAKES[currentPos];
         setPosition(afterSnakePos);
         setStatusMsg(`Slid down to tile ${afterSnakePos}...`);
-        
-        // Unlock & Ask Question
         setTimeout(() => {
-            setIsRolling(false);
-            triggerQuestion();
+          setIsRolling(false);
+          triggerQuestion();
         }, 800);
       }, 800);
       return;
@@ -177,16 +168,13 @@ const SnakeLadderGame = () => {
     if (LADDERS[currentPos]) {
       setStatusMsg("🪜 Awesome! Ladder!");
       safePlay(slideUpSound);
-
       setTimeout(() => {
         const afterLadderPos = LADDERS[currentPos];
         setPosition(afterLadderPos);
         setStatusMsg(`Climbed up to tile ${afterLadderPos}!`);
-
-        // Unlock & Ask Question
         setTimeout(() => {
-            setIsRolling(false);
-            triggerQuestion();
+          setIsRolling(false);
+          triggerQuestion();
         }, 800);
       }, 800);
       return;
@@ -194,10 +182,11 @@ const SnakeLadderGame = () => {
 
     // 3. Check Finish
     if (currentPos === BOARD_SIZE) {
-        setStatusMsg("You reached the Castle! 🏰");
-        setIsRolling(false);
-        setTimeout(() => calculateMiniInsight(), 1500);
-        return;
+      setStatusMsg("You reached the Castle! 🏰");
+      setIsRolling(false);
+      setIsFinished(true);
+      setTimeout(() => calculateMiniInsight(), 1500);
+      return;
     }
 
     // 4. Normal Tile
@@ -207,18 +196,13 @@ const SnakeLadderGame = () => {
 
   const triggerQuestion = () => {
     if (answers.length >= REQUIRED_QUESTIONS) {
-      // If we have 5 answers, we don't ask more, we just wait for the next roll to finish.
-      // But if we just landed on 25, the 'Check Finish' block handles it.
-      // If we are at 23, we should have 4 answers, so this block won't skip.
       if (position !== BOARD_SIZE) {
-         setStatusMsg("Roll to reach the Castle!");
+        setStatusMsg("Roll to reach the Castle!");
       }
       return;
     }
 
-    // Pick unique question based on answer count
     const nextQuestion = questions[answers.length];
-
     if (nextQuestion) {
       setModalData(nextQuestion);
       setStatusMsg("❓ Quick Question!");
@@ -284,11 +268,11 @@ const SnakeLadderGame = () => {
     navigate("/finalize");
   };
 
-  // GRID GENERATION
+  // --- GRID GENERATION ---
   const gridCells = [];
-  for (let r = 0; r < 5; r++) { 
-    const logicRow = 4 - r; 
-    const isEven = logicRow % 2 === 0; 
+  for (let r = 0; r < 5; r++) {
+    const logicRow = 4 - r;
+    const isEven = logicRow % 2 === 0;
     const rowNumbers = [];
     for (let c = 0; c < 5; c++) {
       let num = isEven ? (logicRow * 5) + 1 + c : (logicRow * 5) + 5 - c;
@@ -299,11 +283,11 @@ const SnakeLadderGame = () => {
 
   const getPlayerStyle = () => {
     const getGridIndex = (tileNum) => {
-        const row = Math.floor((tileNum - 1) / 5); 
-        const col = (tileNum - 1) % 5;
-        let actualCol = (row % 2 !== 0) ? 4 - col : col;
-        const visualRow = 4 - row;
-        return visualRow * 5 + actualCol;
+      const row = Math.floor((tileNum - 1) / 5);
+      const col = (tileNum - 1) % 5;
+      let actualCol = (row % 2 !== 0) ? 4 - col : col;
+      const visualRow = 4 - row;
+      return visualRow * 5 + actualCol;
     };
     const gridIndex = getGridIndex(position);
     const row = Math.floor(gridIndex / 5);
@@ -324,20 +308,20 @@ const SnakeLadderGame = () => {
 
       <div className="board-wrapper">
         <div className="board-grid">
-            {gridCells.map((num) => {
-                const isSnake = SNAKES[num] !== undefined;
-                const isLadder = LADDERS[num] !== undefined;
-                const isFinish = num === BOARD_SIZE;
-                let classes = `tile ${isSnake ? 'snake-tile' : ''} ${isLadder ? 'ladder-tile' : ''} ${isFinish ? 'finish-tile' : ''}`;
-                return (
-                    <div key={num} className={classes}>
-                        <span className="tile-num">{num}</span>
-                        {isSnake && <span className="marker">🐍</span>}
-                        {isLadder && <span className="marker">🪜</span>}
-                        {isFinish && <span className="castle-icon">🏰</span>}
-                    </div>
-                );
-            })}
+          {gridCells.map((num) => {
+            const isSnake = SNAKES[num] !== undefined;
+            const isLadder = LADDERS[num] !== undefined;
+            const isFinish = num === BOARD_SIZE;
+            let classes = `tile ${isSnake ? 'snake-tile' : ''} ${isLadder ? 'ladder-tile' : ''} ${isFinish ? 'finish-tile' : ''}`;
+            return (
+              <div key={num} className={classes}>
+                <span className="tile-num">{num}</span>
+                {isSnake && <span className="marker">🐍</span>}
+                {isLadder && <span className="marker">🪜</span>}
+                {isFinish && <span className="castle-icon">🏰</span>}
+              </div>
+            );
+          })}
         </div>
         <div className="player-token" style={getPlayerStyle()}>🐿️</div>
       </div>
@@ -347,9 +331,9 @@ const SnakeLadderGame = () => {
         <button 
           className="roll-btn" 
           onClick={handleRollDice} 
-          disabled={isRolling || modalData || miniInsight || isFinished || position === BOARD_SIZE}
+          disabled={isRolling || modalData || miniInsight || isFinished}
         >
-          {isFinished ? "WAITING..." : (isRolling ? "..." : "ROLL")}
+          {isFinished ? "FINISHED" : (isRolling ? "..." : "ROLL")}
         </button>
       </div>
 

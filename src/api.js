@@ -3,7 +3,6 @@
 // For Vercel deployment, use relative /api path
 // For local development, use localhost:5000
 // For Railway fallback, use the Railway URL
-const isProduction = process.env.NODE_ENV === "production";
 const isDevelopment = process.env.NODE_ENV === "development";
 const isVercelDeployment = typeof window !== "undefined" && 
   (window.location.hostname.includes("vercel.app") || window.location.hostname.includes("start-hobby"));

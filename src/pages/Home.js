@@ -75,10 +75,43 @@ function Home() {
           <div className="rule-item">🌲 Discover hobbies along the way</div>
         </div>
 
-        <Link to="/story" className="home-start-btn">
+        <button onClick={handleBeginClick} className="home-start-btn">
           Begin Adventure
-        </Link>
+        </button>
       </div>
+
+      {/* Email Modal */}
+      {showEmailModal && (
+        <div className="modal-overlay" onClick={() => setShowEmailModal(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>Enter Your Email</h3>
+              <button className="modal-close" onClick={() => setShowEmailModal(false)}>
+                ✕
+              </button>
+            </div>
+            <div className="modal-body">
+              <p>We'll use this to save your progress and send your results!</p>
+              <input
+                type="email"
+                className="form-input"
+                placeholder="your.email@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+              {error && <p className="error-text">{error}</p>}
+            </div>
+            <div className="modal-footer">
+              <button className="btn-cancel" onClick={() => setShowEmailModal(false)}>
+                Cancel
+              </button>
+              <button className="btn-submit" onClick={handleConfirmEmail}>
+                Continue
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* 🌼 Footer hint */}
       <p className="home-hint">

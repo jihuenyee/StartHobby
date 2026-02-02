@@ -38,6 +38,26 @@ function Profile() {
   const [aiProfile, setAiProfile] = useState(null);
   const [loadingAiProfile, setLoadingAiProfile] = useState(false);
 
+  // Load AI profile on mount
+  useEffect(() => {
+    const loadAiProfile = async () => {
+      if (!user) return;
+      
+      setLoadingAiProfile(true);
+      try {
+        const data = await apiRequest(`/ai-profile/${user.id}`);
+        setAiProfile(data);
+      } catch (err) {
+        console.error("Failed to load AI profile:", err);
+        setAiProfile(null);
+      } finally {
+        setLoadingAiProfile(false);
+      }
+    };
+
+    loadAiProfile();
+  }, [user]);
+
   if (!user) {
     return (
       <div className="profile-page">

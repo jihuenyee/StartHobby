@@ -116,4 +116,98 @@ router.delete("/question/:id", async (req, res) => {
   }
 });
 
+// POST /api/quizzes/claw/analyze - Analyze claw quiz answers with AI
+router.post("/claw/analyze", async (req, res) => {
+  const { answers } = req.body;
+
+  if (!answers || !Array.isArray(answers)) {
+    return res.status(400).json({ error: "Answers array is required" });
+  }
+
+  try {
+    const prompt = `
+You are a personality analysis expert. Based on the following quiz answers, provide a detailed personality analysis.
+
+Return ONLY valid JSON. No markdown. No explanation.
+
+JSON format:
+{
+  "personalitySummary": "A 2-3 sentence summary of the person's personality",
+  "personalityType": "A short catchy title like 'Creative Soul', 'Adventure Seeker', etc.",
+  "encouragingMessage": "An enthusiastic, motivating 1-2 sentence message encouraging them to continue their journey to the next game/adventure. Make it fun and energetic!",
+  "traits": [
+    { "trait": "trait name", "score": number between 1-10, "description": "short description" }
+  ],
+  "strengths": ["strength 1", "strength 2", "strength 3"],
+  "recommendedHobbies": [
+    { 
+      "name": "hobby name", 
+      "reason": "why this hobby fits them",
+      "difficulty": "beginner/intermediate/advanced"
+    }
+  ]
+}
+
+Quiz responses:
+${JSON.stringify(answers, null, 2)}
+`;
+
+    // Call OpenAI API
+    const aiRes = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "gpt-4o-mini",
+        messages: [
+          {
+            role: "system",
+            content: "You are a personality analysis expert. Return only valid JSON, no markdown."
+          },
+          {
+            role: "user",
+            content: prompt
+          }
+        ],
+        temperature: 0.8,
+        max_tokens: 1000,
+      }),
+    });
+
+    if (!aiRes.ok) {
+      const errorData = await aiRes.json();
+      throw new Error(`OpenAI API error: ${errorData.error?.message || 'Unknown error'}`);
+    }
+
+    const aiData = await aiRes.json();
+    console.log("RAW OPENAI RESPONSE:", JSON.stringify(aiData, null, 2));
+
+    // Extract text from response
+    let text = aiData.choices?.[0]?.message?.content;
+
+    if (!text) {
+      throw new Error("Empty AI response");
+    }
+
+    // Clean markdown wrappers
+    text = text.replace(/```json|```/g, "").trim();
+
+    const analysis = JSON.parse(text);
+
+    res.json({
+      success: true,
+      analysis,
+    });
+
+  } catch (err) {
+    console.error("AI Analysis error:", err.message);
+    res.status(500).json({
+      success: false,
+      error: err.message,
+    });
+  }
+});
+
 module.exports = router;

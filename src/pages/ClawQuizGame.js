@@ -17,6 +17,9 @@ export default function ClawQuizGame() {
   const [grabbedIndex, setGrabbedIndex] = useState(null);
   const [showEnding, setShowEnding] = useState(false);
   const [miniInsight, setMiniInsight] = useState(null);
+  const [personalityType, setPersonalityType] = useState("");
+  const [aiAnalysis, setAiAnalysis] = useState(null);
+  const [analyzingAI, setAnalyzingAI] = useState(false);
 
   const optionRefs = useRef([]);
   const clawRef = useRef(null);
@@ -130,7 +133,7 @@ export default function ClawQuizGame() {
     }
   };
 
-  const finishQuiz = (finalAnswers) => {
+  const finishQuiz = async (finalAnswers) => {
     const raw = localStorage.getItem("gameResults");
     const gameResults = raw ? JSON.parse(raw) : {};
 
@@ -142,8 +145,41 @@ export default function ClawQuizGame() {
 
     localStorage.setItem("gameResults", JSON.stringify(gameResults));
 
-    safePlay(winSound);
-    setMiniInsight("Claw Machine Cleared!");
+    // Show modal and start AI analysis
+    setAnalyzingAI(true);
+    setMiniInsight(true);
+    
+    try {
+      const response = await fetch(`${API_BASE}/api/quizzes/claw/analyze`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ answers: finalAnswers }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success && data.analysis) {
+          setAiAnalysis(data.analysis);
+          setPersonalityType(data.analysis.personalityType || "Unique Individual");
+        }
+      }
+    } catch (error) {
+      console.error("AI analysis failed:", error);
+      // Fallback to simple personality
+      const personalities = [
+        "You are a true People Person! 🤝",
+        "You are a Creative Soul! 🎨",
+        "You are an Adventurous Spirit! 🌍",
+        "You are a Knowledge Seeker! 📚",
+        "You are a Nature Lover! 🌿"
+      ];
+      setPersonalityType(personalities[Math.floor(Math.random() * personalities.length)]);
+    } finally {
+      setAnalyzingAI(false);
+      safePlay(winSound);
+    }
   };
 
   const handleCloseInsight = () => {
@@ -221,10 +257,63 @@ export default function ClawQuizGame() {
       {miniInsight && (
         <div className="modal-overlay">
           <div className="insight-card">
-            <h1>Claw Machine Cleared!</h1>
-            <button className="start-btn" onClick={handleCloseInsight}>
-              Awesome!
-            </button>
+            {analyzingAI ? (
+              <>
+                <div className="processing-container">
+                  <div className="insight-icon magical-glow">🔮</div>
+                  <h1>Analyzing Your Choices</h1>
+                  <div className="loading-spinner">
+                    <div className="spinner"></div>
+                  </div>
+                  <p className="analyzing-text">Our AI is reading your personality...</p>
+                  <div className="sparkles">
+                    <span>✨</span>
+                    <span>⭐</span>
+                    <span>✨</span>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="success-header">
+                  <div className="celebration-icons">
+                    <span className="float-icon">🎉</span>
+                    <span className="float-icon delay-1">✨</span>
+                    <span className="float-icon delay-2">🎊</span>
+                  </div>
+                  <div className="insight-icon celebration">🏆</div>
+                  <h1 className="success-title">Amazing Work!</h1>
+                </div>
+                
+                <div className="personality-badge">
+                  <div className="badge-decoration">✨</div>
+                  <h2 className="personality-type">{personalityType}</h2>
+                  <div className="badge-decoration">✨</div>
+                </div>
+                
+                {aiAnalysis?.encouragingMessage && (
+                  <div className="encouraging-message">
+                    <div className="message-icon">💫</div>
+                    <p className="encourage-text">{aiAnalysis.encouragingMessage}</p>
+                  </div>
+                )}
+
+                <div className="next-game-hint">
+                  <div className="hint-icon">🎮</div>
+                  <p>
+                    <strong>Keep the momentum going!</strong><br/>
+                    Your complete personality profile and hobby recommendations await at the final stage.
+                  </p>
+                  <div className="hint-arrow">→</div>
+                </div>
+
+                <button className="final-btn" onClick={handleCloseInsight}>
+                  <span className="btn-icon">🚀</span>
+                  <span>Continue to Next Game</span>
+                  <span className="btn-shine"></span>
+                </button>
+              </>
+            )}
           </div>
         </div>
       )}

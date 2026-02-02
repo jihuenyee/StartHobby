@@ -34,6 +34,10 @@ function Profile() {
     symbol: false,
   });
 
+  // AI Profile state
+  const [aiProfile, setAiProfile] = useState(null);
+  const [loadingAiProfile, setLoadingAiProfile] = useState(false);
+
   if (!user) {
     return (
       <div className="profile-page">

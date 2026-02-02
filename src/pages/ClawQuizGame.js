@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { API_BASE_URL } from "../api";
 import "../styles/ClawQuizGame.css";
 
 export default function ClawQuizGame() {
@@ -150,7 +151,7 @@ export default function ClawQuizGame() {
     setMiniInsight(true);
     
     try {
-      const response = await fetch(`${API_BASE}/api/quizzes/claw/analyze`, {
+      const response = await fetch(`${API_BASE_URL}/quizzes/claw/analyze`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

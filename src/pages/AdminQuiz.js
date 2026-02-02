@@ -108,6 +108,24 @@ function AdminQuiz() {
     }
   };
 
+  const closeAddModal = () => {
+    setShowAddModal(false);
+    setNewQuestion({
+      question: "",
+      option_a: "",
+      option_b: "",
+      option_c: "",
+      option_d: "",
+    });
+  };
+
+  const handleNewQuestionChange = (field, value) => {
+    setNewQuestion((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
+
   const addQuestion = async () => {
     if (!selectedGameType) return;
 

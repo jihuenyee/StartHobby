@@ -246,6 +246,23 @@ export default function ClawQuizGame() {
               </div>
             )}
           </div>
+
+          <div className="control-panel">
+            <div className="coin-slot">
+              <div className="coin-label">INSERT COIN</div>
+              <div className="slot" />
+            </div>
+            <div className="joystick-indicator">🕹️</div>
+            <div className="prize-chute">
+              <div className="chute-label">PRIZE</div>
+              <div className="chute-door" />
+            </div>
+          </div>
+
+          <div className="corner-bolt top-left" />
+          <div className="corner-bolt top-right" />
+          <div className="corner-bolt bottom-left" />
+          <div className="corner-bolt bottom-right" />
         </div>
       </div>
 

@@ -25,7 +25,6 @@ const PersonalityReveal = () => {
     const rawProfile = localStorage.getItem("aiProfile");
     const email = localStorage.getItem("userEmail");
 
-    // Redirect if essential data is missing
     if (!rawProfile || !email) {
       navigate("/");
       return;
@@ -35,10 +34,8 @@ const PersonalityReveal = () => {
       const parsedProfile = JSON.parse(rawProfile);
       setProfile(parsedProfile);
 
-      // Trigger stat bar animations after a short delay
       setTimeout(() => setAnimateStats(true), 500);
 
-      // Save to DB only once per session/mount
       if (!hasSavedRef.current) {
         hasSavedRef.current = true;
         saveAIProfile(email, parsedProfile);
@@ -89,6 +86,7 @@ const PersonalityReveal = () => {
       Indoor: "Enjoy comfortable indoor activities",
       Relaxing: "Reduce stress and find calm",
       Challenging: "Grow through overcoming obstacles",
+      "Physical Wellness": "Improve your body and health",
     };
     return descriptions[tag] || "Discover new possibilities";
   };
@@ -129,9 +127,6 @@ const PersonalityReveal = () => {
     return colors[category] || "linear-gradient(135deg, #6366f1, #8b5cf6)";
   };
 
-  /* =========================
-     RENDER LOGIC
-  ========================= */
   if (!profile) {
     return (
       <div className="reveal-container">
@@ -147,7 +142,6 @@ const PersonalityReveal = () => {
     <div className="reveal-container">
       <div className="magic-scroll">
         
-        {/* LEFT PANEL: Personality Stats */}
         <div className="left-panel">
           <div className="profile-icon">
             {getPersonalityIcon(profile.personalitySummary)}
@@ -181,9 +175,7 @@ const PersonalityReveal = () => {
           </div>
         </div>
 
-        {/* RIGHT PANEL: Summary & Recommendations */}
         <div className="right-panel">
-          {/* Summary Section */}
           <div className="summary-section">
             <div className="section-header">
               <span className="section-icon">💫</span>
@@ -199,7 +191,6 @@ const PersonalityReveal = () => {
             )}
           </div>
 
-          {/* Activities Section */}
           <div className="hobbies-section">
             <div className="section-header">
               <span className="section-icon">🎯</span>
@@ -211,32 +202,37 @@ const PersonalityReveal = () => {
           <div className="hobbies-grid">
             {profile.hobbies.map((h, i) => (
                 <a
-                key={i}
-                href={h.registrationLink || "#"}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hobby-card clickable-card"
-                style={{
-                    animationDelay: `${i * 0.1}s`,
-                    textDecoration: 'none',
-                    display: 'block'
-                }}
+                  key={i}
+                  href={h.registrationLink || "#"}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hobby-card clickable-card"
+                  style={{
+                      animationDelay: `${i * 0.1}s`,
+                      textDecoration: 'none',
+                      display: 'block'
+                  }}
                 >
-                {/* 1. Title */}
                 <h3 className="hobby-title">{h.name}</h3>
-
-                {/* 2. Personalized Reason */}
                 <p className="hobby-reason">
                     <strong>Reason:</strong> {h.reason}
                 </p>
 
-                {/* 3. Footer Row: Tags and View Link */}
                 <div className="hobby-card-footer">
                     <div className="hobby-tags">
-                    <span className="hobby-tag category-tag">
+                    {/* ATTACHED FUNCTIONS HERE TO FIX THE BUILD ERROR */}
+                    <span 
+                      className="hobby-tag category-tag"
+                      onMouseEnter={(e) => handleTagHover(e, h.category)}
+                      onMouseLeave={handleTagLeave}
+                    >
                         {h.category}
                     </span>
-                    <span className="hobby-tag social-tag">
+                    <span 
+                      className="hobby-tag social-tag"
+                      onMouseEnter={(e) => handleTagHover(e, h.social ? "Social" : "Solo")}
+                      onMouseLeave={handleTagLeave}
+                    >
                         {h.social ? "Social" : "Solo"}
                     </span>
                     </div>
@@ -247,7 +243,6 @@ const PersonalityReveal = () => {
             ))}
             </div>
 
-          {/* CTA */}
           <button
             className="action-btn"
             onClick={() => navigate(user ? "/profile" : "/signup")}
@@ -258,7 +253,6 @@ const PersonalityReveal = () => {
         </div>
       </div>
 
-      {/* Tooltip Overlay */}
       {tooltip.visible && (
         <div
           className="info-tooltip"

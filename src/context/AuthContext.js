@@ -11,10 +11,15 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      console.log("🔥 Firebase auth state changed:", firebaseUser?.email);
       const storedUser = localStorage.getItem("user");
+      console.log("💾 Stored user from localStorage:", storedUser);
       if (storedUser) {
-        setUser(JSON.parse(storedUser));
+        const parsedUser = JSON.parse(storedUser);
+        console.log("👤 Setting user from localStorage:", parsedUser);
+        setUser(parsedUser);
       } else {
+        console.log("❌ No stored user, setting to null");
         setUser(null);
       }
       setLoading(false);
@@ -40,12 +45,15 @@ export function AuthProvider({ children }) {
       method: "POST",
       body: { username, email, password },
     });
+    console.log("📝 Signup response data:", data);
     const userData = {
       ...data,
       type_id: data.type_id || "normal",
     };
+    console.log("👤 User data to be stored:", userData);
     localStorage.setItem("user", JSON.stringify(userData));
     setUser(userData);
+    console.log("✅ User set in context:", userData);
   };
 
   const updateProfile = async (updates) => {

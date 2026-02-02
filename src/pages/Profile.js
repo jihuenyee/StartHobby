@@ -10,6 +10,10 @@ import "../styles/Profile.css";
 function Profile() {
   const { user, logout, updateProfile, changePassword } = useAuth();
 
+  console.log("🔍 Profile component - user data:", user);
+  console.log("🔍 Profile component - username:", user?.username);
+  console.log("🔍 Profile component - email:", user?.email);
+
   const [editMode, setEditMode] = useState(false);
   const [username, setUsername] = useState(user?.username || "");
   const [email, setEmail] = useState(user?.email || "");

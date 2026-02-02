@@ -1,13 +1,22 @@
 @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap');
 
+.map-wrapper {
+  width: 100%;
+  height: 100dvh;
+  overflow: hidden; /* THIS KILLS THE SCROLLBAR */
+  position: relative;
+  background: #0a1a0a; /* Dark forest background for zoom edges */
+}
+
 .map-scene {
   position: relative;
-  width: 100vw;
+  width: 100%;
   height: 100dvh; 
   background-image: url('/public/backgrounds/forest-map.png');
   background-size: cover;
   background-position: center;
   overflow: hidden;
+  transform-origin: center; 
   font-family: 'Nunito', sans-serif;
 }
 
@@ -86,8 +95,8 @@
    💬 TRANSPARENT STORY CHAT
 ===================== */
 .story-chat {
-  position: fixed; 
-  bottom: 20px; 
+  position: absolute; /* Relative to map-wrapper */
+  bottom: 30px; 
   left: 0;
   width: 100%;
   z-index: 9999; 
@@ -97,6 +106,10 @@
   flex-direction: column;
   align-items: center;
   justify-content: flex-end;
+  pointer-events: none; /* Let clicks pass through empty space */
+}
+.chat-bubble, .start-btn {
+  pointer-events: auto; 
 }
 
 .chat-bubble {

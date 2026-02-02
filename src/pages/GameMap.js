@@ -119,35 +119,37 @@ export default function GameMap() {
   };
 
   return (
-    <div ref={sceneRef} className="map-scene">
-      
-      {/* 🐿️ SQUIRREL */}
-      <div className={getSquirrelClass()}>🐿️</div>
+    <div className="map-wrapper">
+      <div ref={sceneRef} className="map-scene">
+        
+        {/* 🐿️ SQUIRREL */}
+        <div className={getSquirrelClass()}>🐿️</div>
 
-      <div className={`map-building building-1 ${gameResults.clawGame?.completed ? "completed" : "glow"}`}>
-        <div className={`door ${phase === "entering" && entry === "first" ? "open" : ""}`} />
-        🏠
-      </div>
-
-      <div className={`map-building building-2 ${gameResults.clawGame?.completed ? (gameResults.castleGame?.completed ? "completed" : "glow") : "locked"}`}>
-        <div className={`door ${phase === "entering" && entry === "second" ? "open" : ""}`} />
-        🏰
-      </div>
-
-      <div className={`map-building building-3 ${gameResults.castleGame?.completed ? "glow" : "locked"}`}>
-        <div className={`door ${phase === "entering" && entry === "third" ? "open" : ""}`} />
-        🏯
-      </div>
-
-      {phase === "story" && (
-        <div className="story-chat">
-          <div className="chat-bubble">
-            <span className="squirrel-icon">🐿️</span>
-            <p>{typedText}</p>
-          </div>
-          <button className="start-btn" onClick={startGame}>Start Adventure</button>
+        <div className={`map-building building-1 ${gameResults.clawGame?.completed ? "completed" : "glow"}`}>
+          <div className={`door ${phase === "entering" && entry === "first" ? "open" : ""}`} />
+          🏠
         </div>
-      )}
+
+        <div className={`map-building building-2 ${gameResults.clawGame?.completed ? (gameResults.castleGame?.completed ? "completed" : "glow") : "locked"}`}>
+          <div className={`door ${phase === "entering" && entry === "second" ? "open" : ""}`} />
+          🏰
+        </div>
+
+        <div className={`map-building building-3 ${gameResults.castleGame?.completed ? "glow" : "locked"}`}>
+          <div className={`door ${phase === "entering" && entry === "third" ? "open" : ""}`} />
+          🏯
+        </div>
+
+        {phase === "story" && (
+          <div className="story-chat">
+            <div className="chat-bubble">
+              <span className="squirrel-icon">🐿️</span>
+              <p>{typedText}</p>
+            </div>
+            <button className="start-btn" onClick={startGame}>Start Adventure</button>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

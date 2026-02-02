@@ -300,3 +300,276 @@
   font-weight: 600;
   text-transform: capitalize;
 }
+
+/* AI Profile Section */
+.ai-profile-section {
+  margin-top: 40px;
+  background: #F7ECE4;
+  padding: 40px;
+  border-radius: 20px;
+  box-shadow: rgba(0, 0, 0, 0.08) 0px 15px 40px;
+  position: relative;
+  overflow: hidden;
+}
+
+.ai-profile-title {
+  font-size: 32px;
+  font-weight: 800;
+  color: #333;
+  margin-bottom: 32px;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
+
+.ai-profile-loading {
+  text-align: center;
+  color: #555;
+  font-size: 18px;
+  padding: 40px 20px;
+  position: relative;
+  z-index: 1;
+}
+
+.ai-profile-empty {
+  text-align: center;
+  color: #333;
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.ai-profile-empty-card {
+  background: white;
+  padding: 48px 32px;
+  border-radius: 16px;
+  text-align: center;
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 8px 24px;
+  position: relative;
+  z-index: 1;
+}
+
+.empty-icon {
+  font-size: 64px;
+  margin-bottom: 16px;
+  animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.ai-profile-empty-subtitle {
+  text-align: center;
+  color: #666;
+  font-size: 14px;
+  margin-bottom: 24px;
+  line-height: 1.5;
+}
+
+.start-quiz-btn {
+  background: linear-gradient(135deg, #4F46E5, #7C3AED);
+  color: white;
+  border: none;
+  padding: 16px 40px;
+  border-radius: 50px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: rgba(79, 70, 229, 0.4) 0px 8px 20px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.start-quiz-btn:hover {
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: rgba(79, 70, 229, 0.6) 0px 12px 30px;
+}
+
+.start-quiz-btn:active {
+  transform: translateY(-1px) scale(1.02);
+}
+
+.ai-profile-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  padding: 28px;
+  border-radius: 16px;
+  margin-bottom: 24px;
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 8px 24px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  position: relative;
+  z-index: 1;
+  transition: all 0.3s ease;
+}
+
+.ai-profile-card:hover {
+  transform: translateY(-4px);
+  box-shadow: rgba(0, 0, 0, 0.15) 0px 12px 32px;
+}
+
+.ai-card-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #4F46E5;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 3px solid #4F46E5;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ai-card-title::before {
+  content: '✨';
+  font-size: 24px;
+}
+
+.ai-profile-summary {
+  font-size: 16px;
+  line-height: 1.8;
+  color: #444;
+  text-align: justify;
+  background: rgba(79, 70, 229, 0.05);
+  padding: 20px;
+  border-radius: 12px;
+  border-left: 4px solid #4F46E5;
+}
+
+.ai-traits-grid,
+.ai-hobbies-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.ai-trait-item,
+.ai-hobby-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background: rgba(79, 70, 229, 0.08);
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+  position: relative;
+  overflow: hidden;
+}
+
+.ai-trait-item::before,
+.ai-hobby-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(79, 70, 229, 0.15);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.ai-trait-item:hover,
+.ai-hobby-item:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: rgba(79, 70, 229, 0.3) 0px 8px 20px;
+  border-color: #4F46E5;
+}
+
+.ai-trait-item:hover::before,
+.ai-hobby-item:hover::before {
+  opacity: 1;
+}
+
+.ai-trait-icon,
+.ai-hobby-icon {
+  font-size: 28px;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+}
+
+.ai-trait-text,
+.ai-hobby-text {
+  font-size: 15px;
+  font-weight: 600;
+  color: #333;
+  position: relative;
+  z-index: 1;
+}
+
+.ai-trait-score {
+  font-size: 13px;
+  color: #4F46E5;
+  font-weight: 700;
+  background: rgba(79, 70, 229, 0.1);
+  padding: 2px 8px;
+  border-radius: 12px;
+  margin-left: 4px;
+}
+
+.ai-hobby-item {
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.ai-hobby-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  position: relative;
+  z-index: 1;
+  width: 100%;
+}
+
+.ai-hobby-why {
+  font-size: 13px;
+  color: #555;
+  margin: 0;
+  line-height: 1.6;
+  font-style: italic;
+  padding-left: 8px;
+  border-left: 2px solid rgba(79, 70, 229, 0.3);
+}
+
+.ai-profile-date {
+  text-align: center;
+  font-size: 14px;
+  color: #666;
+  margin-top: 24px;
+  font-style: italic;
+  position: relative;
+  z-index: 1;
+  background: rgba(0, 0, 0, 0.03);
+  padding: 12px 24px;
+  border-radius: 50px;
+  display: inline-block;
+  width: auto;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .ai-profile-section {
+    padding: 24px 20px;
+  }
+  
+  .ai-profile-title {
+    font-size: 26px;
+  }
+  
+  .ai-traits-grid,
+  .ai-hobbies-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .ai-profile-card {
+    padding: 20px;
+  }
+}

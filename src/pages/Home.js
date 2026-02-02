@@ -1,15 +1,33 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import "../styles/Home.css";
 
 function Home() {
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const [showEmailModal, setShowEmailModal] = useState(false);
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
 
   const handleBeginClick = () => {
+    // If user is logged in, skip email modal and use their email
+    if (user?.email) {
+      const existing = localStorage.getItem("gameResults");
+      const gameResults = existing ? JSON.parse(existing) : {};
+
+      gameResults.email = user.email;
+      gameResults.startedAt = Date.now();
+
+      localStorage.setItem("gameResults", JSON.stringify(gameResults));
+      localStorage.setItem("userEmail", user.email);
+
+      navigate("/story");
+      return;
+    }
+    
+    // Show email modal for non-logged-in users
     setShowEmailModal(true);
   };
 

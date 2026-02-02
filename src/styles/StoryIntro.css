@@ -2,22 +2,19 @@
 
 /* --- 🌲 SCENE CONTAINER --- */
 .story-scene {
-  /* Locks the screen */
-  height: 100vh;
-  width: 100vw;
+  height: 100dvh; /* dynamic viewport height is better for mobile */
+  width: 100%;    /* Changed from 100vw */
+  max-width: 100%;
   overflow: hidden;
   position: relative;
   
-  /* Layout */
   display: flex;
   flex-direction: column;
-  justify-content: flex-end; /* Pushes text box to bottom */
+  justify-content: flex-end;
   align-items: center;
   padding-bottom: 50px;
   
   font-family: 'Nunito', sans-serif;
-  
-  /* Transition for exit fade out */
   opacity: 1;
   transition: opacity 1s ease;
 }
@@ -29,12 +26,13 @@
 /* --- 🐿️ WALKING SQUIRREL ANIMATION --- */
 .intro-squirrel {
   position: absolute;
-  bottom: 25%; /* Positioned to look like it's walking on the ground */
-  left: -15%; /* Starts off-screen */
+  bottom: 25%;
+  left: -15%; 
   font-size: 90px;
   z-index: 5;
-  transition: all 1.8s ease-in-out; /* Smooth walking movement with depth */
+  transition: all 1.8s ease-in-out;
   filter: drop-shadow(0 10px 10px rgba(0,0,0,0.4));
+  pointer-events: none; /* Stops it from interfering with clicks */
 }
 
 /* Positions based on the 'step' state in JS */

@@ -1,9 +1,10 @@
 // src/pages/Profile.js
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { CgProfile } from "react-icons/cg";
 import ConfirmModal from "../components/ConfirmModal";
 import MembershipSummary from "../components/MembershipSummary";
+import { apiRequest } from "../api";
 import "../styles/Profile.css";
 
 function Profile() {
@@ -32,6 +33,38 @@ function Profile() {
     number: false,
     symbol: false,
   });
+
+  // AI Profile state
+  const [aiProfile, setAiProfile] = useState(null);
+  const [loadingAiProfile, setLoadingAiProfile] = useState(false);
+
+  // Fetch AI Profile on component mount
+  useEffect(() => {
+    const fetchAiProfile = async () => {
+      if (!user?.email) return;
+      
+      setLoadingAiProfile(true);
+      try {
+        const response = await apiRequest(`/results/ai-profile/${user.email}`);
+        if (response) {
+          // Parse traits and hobbies if they're strings
+          const profile = {
+            ...response,
+            traits: typeof response.traits === 'string' ? JSON.parse(response.traits) : response.traits,
+            hobbies: typeof response.hobbies === 'string' ? JSON.parse(response.hobbies) : response.hobbies,
+          };
+          setAiProfile(profile);
+        }
+      } catch (error) {
+        console.error("Failed to fetch AI profile:", error);
+        // Don't show error to user, just don't display the section
+      } finally {
+        setLoadingAiProfile(false);
+      }
+    };
+
+    fetchAiProfile();
+  }, [user?.email]);
 
   if (!user) {
     return (
@@ -353,6 +386,88 @@ function Profile() {
           <MembershipSummary />
         </div>
       </div>
+
+      {/* AI PROFILE SECTION */}
+      {loadingAiProfile && (
+        <div className="ai-profile-section">
+          <h2 className="ai-profile-title">Your AI Personality Profile</h2>
+          <p className="ai-profile-loading">Loading your AI results...</p>
+        </div>
+      )}
+
+      {!loadingAiProfile && aiProfile && (
+        <div className="ai-profile-section">
+          <h2 className="ai-profile-title">Your AI Personality Profile</h2>
+          
+          {aiProfile.personality_summary && (
+            <div className="ai-profile-card">
+              <h3 className="ai-card-title">Personality Summary</h3>
+              <p className="ai-profile-summary">{aiProfile.personality_summary}</p>
+            </div>
+          )}
+
+          {aiProfile.traits && aiProfile.traits.length > 0 && (
+            <div className="ai-profile-card">
+              <h3 className="ai-card-title">Your Traits</h3>
+              <div className="ai-traits-grid">
+                {aiProfile.traits.map((trait, index) => (
+                  <div key={index} className="ai-trait-item">
+                    <span className="ai-trait-icon">✨</span>
+                    <span className="ai-trait-text">
+                      {typeof trait === 'string' ? trait : trait.trait}
+                      {trait.score && <span className="ai-trait-score"> ({trait.score}/10)</span>}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {aiProfile.hobbies && aiProfile.hobbies.length > 0 && (
+            <div className="ai-profile-card">
+              <h3 className="ai-card-title">Recommended Hobbies</h3>
+              <div className="ai-hobbies-grid">
+                {aiProfile.hobbies.map((hobby, index) => (
+                  <div key={index} className="ai-hobby-item">
+                    <span className="ai-hobby-icon">🎯</span>
+                    <div className="ai-hobby-content">
+                      <span className="ai-hobby-text">
+                        {typeof hobby === 'string' ? hobby : hobby.name}
+                      </span>
+                      {hobby.why && <p className="ai-hobby-why">{hobby.why}</p>}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {aiProfile.created_at && (
+            <p className="ai-profile-date">
+              Generated on: {new Date(aiProfile.created_at).toLocaleDateString()}
+            </p>
+          )}
+        </div>
+      )}
+
+      {!loadingAiProfile && !aiProfile && (
+        <div className="ai-profile-section">
+          <h2 className="ai-profile-title">Your AI Personality Profile</h2>
+          <div className="ai-profile-empty-card">
+            <div className="empty-icon">🎮</div>
+            <p className="ai-profile-empty">You haven't completed the personality quiz yet!</p>
+            <p className="ai-profile-empty-subtitle">
+              Discover your unique personality traits and get personalized hobby recommendations.
+            </p>
+            <button 
+              className="start-quiz-btn" 
+              onClick={() => window.location.href = '/'}
+            >
+              Start Personality Quiz
+            </button>
+          </div>
+        </div>
+      )}
 
       {isModalOpen && (
         <ConfirmModal

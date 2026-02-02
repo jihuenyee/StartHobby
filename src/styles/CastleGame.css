@@ -306,3 +306,26 @@ button:hover { background: #795548; }
   animation: bounce 2s infinite;
   filter: drop-shadow(0 4px 4px rgba(0,0,0,0.3));
 }
+
+/* Ensure the chat container doesn't block clicks to the background */
+.story-chat {
+  pointer-events: none; 
+  z-index: 100;
+}
+
+/* BUT make sure the actual buttons CAN be clicked */
+.story-btn, 
+.option-btn, 
+.final-btn {
+  pointer-events: auto !important;
+  cursor: pointer;
+  position: relative;
+  z-index: 101;
+}
+
+/* Also ensure the quiz card and modals are clickable */
+.quiz-card, 
+.modal-overlay,
+.insight-card {
+  pointer-events: auto !important;
+}

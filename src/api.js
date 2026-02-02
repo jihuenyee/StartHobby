@@ -1,23 +1,13 @@
 // src/api.js
 
-// For Vercel deployment, use relative /api path
-// For local development, use localhost:5000
-// For Railway fallback, use the Railway URL
-const isDevelopment = process.env.NODE_ENV === "development";
-const isVercelDeployment = typeof window !== "undefined" && 
-  (window.location.hostname.includes("vercel.app") || window.location.hostname.includes("start-hobby"));
+// Simple detection: if localhost, use port 5000, otherwise use relative /api
+const isDevelopment = 
+  typeof window !== "undefined" && 
+  (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1");
 
-let API_BASE_URL;
-
-if (isDevelopment) {
-  API_BASE_URL = "http://localhost:5000/api";
-} else if (isVercelDeployment || process.env.REACT_APP_API_URL) {
-  // Use relative path for Vercel or if explicitly set
-  API_BASE_URL = process.env.REACT_APP_API_URL || "/api";
-} else {
-  // Fallback to Railway
-  API_BASE_URL = "https://starthobbybackend-production.up.railway.app/api";
-}
+const API_BASE_URL = isDevelopment 
+  ? "http://localhost:5000/api" 
+  : "/api";
 
 export { API_BASE_URL };
 

@@ -1,11 +1,26 @@
 // src/api.js
 
-const PROD_URL = process.env.REACT_APP_API_URL || "https://starthobbybackend-production.up.railway.app/api";
-const LOCAL_URL = "http://localhost:5000/api";
+// For Vercel deployment, use relative /api path
+// For local development, use localhost:5000
+// For Railway fallback, use the Railway URL
+const isProduction = process.env.NODE_ENV === "production";
+const isDevelopment = process.env.NODE_ENV === "development";
+const isVercelDeployment = typeof window !== "undefined" && 
+  (window.location.hostname.includes("vercel.app") || window.location.hostname.includes("start-hobby"));
 
-// Auto-detect environment
-export const API_BASE_URL =
-  process.env.NODE_ENV === "development" ? LOCAL_URL : PROD_URL;
+let API_BASE_URL;
+
+if (isDevelopment) {
+  API_BASE_URL = "http://localhost:5000/api";
+} else if (isVercelDeployment || process.env.REACT_APP_API_URL) {
+  // Use relative path for Vercel or if explicitly set
+  API_BASE_URL = process.env.REACT_APP_API_URL || "/api";
+} else {
+  // Fallback to Railway
+  API_BASE_URL = "https://starthobbybackend-production.up.railway.app/api";
+}
+
+export { API_BASE_URL };
 
 export async function apiRequest(path, options = {}) {
   const token = localStorage.getItem("token");

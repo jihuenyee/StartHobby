@@ -24,9 +24,6 @@ function AdminQuiz() {
       try {
         const data = await apiRequest("/quizzes");
         setQuizzes(data || []);
-        if (data && data.length > 0 && !selectedGameType) {
-          loadQuiz(data[0].game_type);
-        }
       } catch {
         setStatus("Failed to load quizzes");
       } finally {
@@ -103,8 +100,7 @@ function AdminQuiz() {
         method: "DELETE",
       });
 
-      setStatus("Question deleted ✓");
-      loadQuiz(selectedGameType);
+      window.location.reload();
     } catch {
       setStatus("Failed to delete question");
     } finally {
@@ -112,43 +108,16 @@ function AdminQuiz() {
     }
   };
 
-  const openAddModal = () => {
-    console.log("Open add modal called, selectedGameType:", selectedGameType);
-    if (!selectedGameType) {
-      setStatus("Please select a quiz first to add questions");
-      return;
-    }
-    setShowAddModal(true);
-    setNewQuestion({
-      question: "",
-      option_a: "",
-      option_b: "",
-      option_c: "",
-      option_d: "",
-    });
-  };
-
-  const closeAddModal = () => {
-    setShowAddModal(false);
-    setNewQuestion({
-      question: "",
-      option_a: "",
-      option_b: "",
-      option_c: "",
-      option_d: "",
-    });
-  };
-
-  const handleNewQuestionChange = (field, value) => {
-    setNewQuestion((prev) => ({ ...prev, [field]: value }));
-  };
-
   const addQuestion = async () => {
     if (!selectedGameType) return;
-    if (!newQuestion.question.trim()) {
-      setStatus("Please enter a question");
-      return;
-    }
+
+    const question = window.prompt("Enter question text");
+    if (!question) return;
+
+    const option_a = window.prompt("Option A");
+    const option_b = window.prompt("Option B");
+    const option_c = window.prompt("Option C");
+    const option_d = window.prompt("Option D");
 
     setSaving(true);
     setStatus("");
@@ -158,17 +127,15 @@ function AdminQuiz() {
         method: "POST",
         body: {
           game_type: selectedGameType,
-          question: newQuestion.question,
-          option_a: newQuestion.option_a,
-          option_b: newQuestion.option_b,
-          option_c: newQuestion.option_c,
-          option_d: newQuestion.option_d,
+          question,
+          option_a,
+          option_b,
+          option_c,
+          option_d,
         },
       });
 
-      setStatus("Question added successfully ✓");
-      closeAddModal();
-      loadQuiz(selectedGameType);
+      window.location.reload();
     } catch {
       setStatus("Failed to add question");
     } finally {
@@ -187,9 +154,9 @@ function AdminQuiz() {
 
           <button
             className="admin-quiz-add-btn"
-            onClick={openAddModal}
+            onClick={addQuestion}
+            disabled={!selectedGameType || saving}
           >
-            {console.log("Button render, saving:", saving, "selectedGameType:", selectedGameType)}
             + Add Question
           </button>
         </header>
@@ -307,6 +274,7 @@ function AdminQuiz() {
                       <span className="question-label">
                         Question #{index + 1}
                       </span>
+
                       <div className="question-actions">
                         <button
                           className="btn-outline"
@@ -327,7 +295,6 @@ function AdminQuiz() {
 
                     <textarea
                       className="question-textarea"
-                      placeholder="Enter question text..."
                       value={q.question || ""}
                       onChange={(e) =>
                         updateQuestionText(q.question_id, e.target.value)
@@ -335,17 +302,20 @@ function AdminQuiz() {
                     />
 
                     <div className="options-grid">
-                      {["a", "b", "c", "d"].map((opt) => (
-                        <div className="option-row" key={opt}>
+                      {["a", "b", "c", "d"].map((k) => (
+                        <div className="option-row" key={k}>
                           <span className="option-label">
-                            Option {opt.toUpperCase()}
+                            Option {k.toUpperCase()}
                           </span>
                           <input
                             className="option-input"
-                            placeholder={`Enter option ${opt.toUpperCase()}`}
-                            value={q[`option_${opt}`] || ""}
+                            value={q[`option_${k}`] || ""}
                             onChange={(e) =>
-                              updateOption(q.question_id, `option_${opt}`, e.target.value)
+                              updateOption(
+                                q.question_id,
+                                `option_${k}`,
+                                e.target.value
+                              )
                             }
                           />
                         </div>

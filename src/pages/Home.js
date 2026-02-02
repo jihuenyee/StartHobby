@@ -1,6 +1,5 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import React from "react";
+import { Link } from "react-router-dom";
 import "../styles/Home.css";
 
 function Home() {
@@ -66,66 +65,24 @@ function Home() {
 
         <p className="home-subtitle">
           A baby squirrel is lost in a magical forest and needs your help!
-          Guide them home through magical games and discover your hidden hobby.
+          Guide them home through a magical claw-machine adventure.
         </p>
 
         <div className="home-rules">
-          <div className="rule-item">🎮 Play magical quiz games</div>
-          <div className="rule-item">✨ Make choices that shape your personality</div>
-          <div className="rule-item">🌲 Discover hobbies made for you</div>
+          <div className="rule-item">🎮 Play the magical claw quiz game</div>
+          <div className="rule-item">✨ Help squirrel gain confidence</div>
+          <div className="rule-item">🌲 Discover hobbies along the way</div>
         </div>
 
-        <button className="home-start-btn" onClick={handleBeginClick}>
+        <Link to="/story" className="home-start-btn">
           Begin Adventure
-        </button>
+        </Link>
       </div>
 
       {/* 🌼 Footer hint */}
       <p className="home-hint">
         Every choice brings the baby squirrel closer to home 🏡✨
       </p>
-
-      {/* 📧 EMAIL MODAL */}
-      {showEmailModal && (
-        <div className="email-modal-overlay">
-          <div className="email-modal">
-            <h2>Before we begin 🌱</h2>
-            <p>
-              Enter your email so we can save your adventure
-              and match it when you sign up later.
-            </p>
-
-            <input
-              type="email"
-              placeholder="you@example.com"
-              value={email}
-              onChange={(e) => {
-                setEmail(e.target.value);
-                setError("");
-              }}
-              className="email-input"
-            />
-
-            {error && <p className="email-error">{error}</p>}
-
-            <div className="email-actions">
-              <button
-                className="email-cancel"
-                onClick={() => setShowEmailModal(false)}
-              >
-                Cancel
-              </button>
-
-              <button
-                className="email-confirm"
-                onClick={handleConfirmEmail}
-              >
-                Start Adventure 🌲
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

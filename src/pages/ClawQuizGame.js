@@ -2,11 +2,6 @@ import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/ClawQuizGame.css";
 
-const API_BASE =
-  process.env.NODE_ENV === "production"
-    ? "https://starthobbybackend-production.up.railway.app"
-    : "http://localhost:5000";
-
 export default function ClawQuizGame() {
   const navigate = useNavigate();
 
@@ -22,7 +17,6 @@ export default function ClawQuizGame() {
   const [grabbedIndex, setGrabbedIndex] = useState(null);
   const [showEnding, setShowEnding] = useState(false);
   const [miniInsight, setMiniInsight] = useState(null);
-  const [personalityType, setPersonalityType] = useState("");
 
   const optionRefs = useRef([]);
   const clawRef = useRef(null);
@@ -52,18 +46,13 @@ export default function ClawQuizGame() {
   };
 
   useEffect(() => {
-    fetch(`${API_BASE}/api/quizzes/claw`)
+    fetch("http://localhost:5000/api/quizzes/claw")
       .then((res) => res.json())
       .then((data) => {
         const formatted = (data.questions || []).map((q) => ({
           id: q.question_id,
           text: q.question,
-          options: [
-            q.option_a,
-            q.option_b,
-            q.option_c,
-            q.option_d
-          ].filter(Boolean),
+          options: [q.option_a, q.option_b, q.option_c, q.option_d].filter(Boolean),
         }));
 
         setQUESTIONS(formatted);
@@ -74,7 +63,6 @@ export default function ClawQuizGame() {
         setLoading(false);
       });
   }, []);
-
 
   useEffect(() => {
     bgSound.current = createAudio("/sounds/ClawMachineBackground.mp3", true, 0.3);
@@ -146,17 +134,6 @@ export default function ClawQuizGame() {
     const raw = localStorage.getItem("gameResults");
     const gameResults = raw ? JSON.parse(raw) : {};
 
-    // Calculate personality type based on answers
-    const personalities = [
-      "You are a true People Person! 🤝",
-      "You are a Creative Soul! 🎨",
-      "You are an Adventurous Spirit! 🌍",
-      "You are a Knowledge Seeker! 📚",
-      "You are a Nature Lover! 🌿"
-    ];
-    const randomPersonality = personalities[Math.floor(Math.random() * personalities.length)];
-    setPersonalityType(randomPersonality);
-
     gameResults.clawGame = {
       completed: true,
       answers: finalAnswers,
@@ -166,7 +143,7 @@ export default function ClawQuizGame() {
     localStorage.setItem("gameResults", JSON.stringify(gameResults));
 
     safePlay(winSound);
-    setMiniInsight(randomPersonality);
+    setMiniInsight("Claw Machine Cleared!");
   };
 
   const handleCloseInsight = () => {
@@ -232,23 +209,6 @@ export default function ClawQuizGame() {
               </div>
             )}
           </div>
-
-          <div className="control-panel">
-            <div className="coin-slot">
-              <div className="coin-label">INSERT COIN</div>
-              <div className="slot" />
-            </div>
-            <div className="joystick-indicator">🕹️</div>
-            <div className="prize-chute">
-              <div className="chute-label">PRIZE</div>
-              <div className="chute-door" />
-            </div>
-          </div>
-
-          <div className="corner-bolt top-left" />
-          <div className="corner-bolt top-right" />
-          <div className="corner-bolt bottom-left" />
-          <div className="corner-bolt bottom-right" />
         </div>
       </div>
 
@@ -261,11 +221,9 @@ export default function ClawQuizGame() {
       {miniInsight && (
         <div className="modal-overlay">
           <div className="insight-card">
-            <h1>Claw Machine Complete!</h1>
-            <div className="insight-icon">🎮</div>
-            <h2>{personalityType}</h2>
-            <button className="final-btn" onClick={handleCloseInsight}>
-              Continue Adventure
+            <h1>Claw Machine Cleared!</h1>
+            <button className="start-btn" onClick={handleCloseInsight}>
+              Awesome!
             </button>
           </div>
         </div>

@@ -18,9 +18,9 @@ function StoryIntro() {
   };
 
   const storyTexts = [
-    "🌲 Deep in the forest, a baby squirrel, Bibble has wandered away from home...",
+    "🌲 Deep in the forest, a baby squirrel has wandered away from home...",
     "🐿️ The forest is full of fun places, but also tricky challenges.",
-    "💡 Answer hobby questions to help Bibble reach its family."
+    "💡 Answer hobby questions to help the squirrel reach its family."
   ];
 
   // --- 🛡️ SAFE AUDIO HELPERS ---

@@ -10,7 +10,7 @@ const INSPIRATION_TEXTS = [
 ];
 
 const STORY_STEPS = [
-  "🏰 You've reached the Castle, but a giant dragon blocks the way!",
+  "🏰 You've reached the Ancient Castle, but a giant dragon blocks the way!",
   "🐲 We need a distraction... Let's make a custom cake!",
   "🧁 Let's head to the pantry to find ingredients!"
 ];
@@ -20,13 +20,8 @@ const INGREDIENT_VISUALS = [
   { name: 'Eggs', target: { x: '26%', y: '39%' }, bgAfter: '/pantry/egg_gone.jpeg', image: '/pantry/egg.png' },
   { name: 'Frosting', target: { x: '54%', y: '51%' }, bgAfter: '/pantry/frosting_gone.jpeg', image: '/pantry/frosting.png' },
   { name: 'Flour', target: { x: '88%', y: '51%' }, bgAfter: '/pantry/flour_gone.jpeg', image: '/pantry/flour.png' },
-  { name: 'Sugar', target: { x: '61%', y: '26%' }, bgAfter: '/pantry/sugar_gone.jpeg', image: '/pantry/sugar.png' } 
+  { name: 'Sugar', target: { x: '70%', y: '20%' }, bgAfter: '/pantry/sugar_gone.jpg', image: '/pantry/sugar.png' } 
 ];
-
-const API_BASE =
-  process.env.NODE_ENV === "production"
-    ? "https://starthobbybackend-production.up.railway.app"
-    : "http://localhost:5000";
 
 const CastleGame = () => {
   const navigate = useNavigate();
@@ -35,7 +30,7 @@ const CastleGame = () => {
   const [scene, setScene] = useState('narrative'); 
   const [narrativeStep, setNarrativeStep] = useState(0);
   const [itemIndex, setItemIndex] = useState(0);
-  const [currentBg, setCurrentBg] = useState('/backgrounds/castle.jpg'); 
+  const [currentBg, setCurrentBg] = useState('/castle.jpg'); 
   const [squirrelPos, setSquirrelPos] = useState({ x: '50%', y: '70%' });
   const [showQuiz, setShowQuiz] = useState(false);
   const [isMoving, setIsMoving] = useState(false); 
@@ -45,51 +40,11 @@ const CastleGame = () => {
   const [userChoices, setUserChoices] = useState([]);
   const [miniInsight, setMiniInsight] = useState(null);
 
-  const bgSound = useRef(null);
   const clickSound = useRef(null);
   const typingTimeoutRef = useRef(null);
 
-  const PANTRY_DEFAULT = '/pantry/stocked.jpeg';
-
-  const changeBgSafely = (targetPath, fallbackPath = PANTRY_DEFAULT) => {
-    const img = new Image();
-    img.src = process.env.PUBLIC_URL + targetPath;
-    img.onload = () => setCurrentBg(targetPath);
-    img.onerror = () => {
-      console.warn(`Failed to load ${targetPath}, falling back to ${fallbackPath}`);
-      setCurrentBg(fallbackPath);
-    };
-  };
-
-  const createAudio = (path, loop = false, volume = 1.0) => {
-    const audio = new Audio(path);
-    audio.loop = loop;
-    audio.volume = volume;
-    audio.onerror = () => console.warn(`Audio missing: ${path}`);
-    return audio;
-  };
-
-  const safePlay = (audioRef) => {
-    if (audioRef.current) {
-      const playPromise = audioRef.current.play();
-      if (playPromise !== undefined) {
-        playPromise.catch((error) => {
-          console.warn("Audio play blocked (interaction needed) or missing:", error);
-        });
-      }
-    }
-  };
-
-  const safePause = (audioRef) => {
-    if (audioRef.current) {
-      try {
-        audioRef.current.pause();
-      } catch (e) {}
-    }
-  };
-
   useEffect(() => {
-    fetch(`${API_BASE}/api/quizzes/castle`)
+    fetch("http://localhost:5000/api/quizzes/castle")
       .then((res) => res.json())
       .then((data) => {
         const actualData = Array.isArray(data) ? data : (data.questions || data.data || []);
@@ -108,61 +63,47 @@ const CastleGame = () => {
         setLoading(false);
       });
 
-    bgSound.current = createAudio("/sounds/castle.mp3", true, 0.4);
-    clickSound.current = createAudio("/sounds/click.mp3", false, 0.5);
-    
-    safePlay(bgSound);
-
     return () => {
       if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
-      safePause(bgSound);
     };
   }, []);
 
   useEffect(() => {
-    if (!bgSound.current) return;
-    const targetTrack = scene === 'pantry' ? "/sounds/pantry.mp3" : "/sounds/castle.mp3";
-    if (!bgSound.current.src.includes(targetTrack)) {
-        bgSound.current.src = targetTrack;
-        bgSound.current.load();
-        safePlay(bgSound);
-    }
-  }, [scene]);
+    clickSound.current = new Audio("/sounds/click.mp3");
+  }, []);
+
+  const playSound = (filename) => {
+    try {
+      const audio = new Audio(`/sounds/${filename}`);
+      audio.play().catch(() => {});
+    } catch (e) {}
+  };
 
   const handleNextNarrative = () => {
-    safePlay(clickSound);
+    playSound('click.mp3');
     if (narrativeStep < 2) {
       setNarrativeStep(prev => prev + 1);
     } else {
       if (questions.length > 0) {
         setScene('pantry');
-        changeBgSafely(PANTRY_DEFAULT, '/backgrounds/castle.jpg');
+        setCurrentBg('/pantry/stocked.jpeg'); 
         setSquirrelPos({ x: '50%', y: '73%' });
       }
     }
   };
 
   const handleIngredientCollection = (optionIdx) => {
-    safePlay(clickSound);
+    playSound('click.mp3');
     const currentItem = questions[itemIndex];
     if (!currentItem) return;
 
-    setUserChoices(prev => [
-      ...prev,
-      {
-        question: currentItem.question,
-        answer: currentItem.options[optionIdx]
-      }
-    ]);
-
+    setUserChoices(prev => [...prev, optionIdx]);
     setShowQuiz(false);
     setIsMoving(true); 
     setSquirrelPos(currentItem.target);
     
     setTimeout(() => {
-      if (currentItem.bgAfter) {
-          changeBgSafely(currentItem.bgAfter, PANTRY_DEFAULT);
-      }
+      if (currentItem.bgAfter) setCurrentBg(currentItem.bgAfter);
       
       setTimeout(() => {
         if (itemIndex < questions.length - 1) {
@@ -174,7 +115,7 @@ const CastleGame = () => {
           setTimeout(() => {
             setHasCake(true);
             setScene('finale');
-            setCurrentBg('/backgrounds/castle.jpg');
+            setCurrentBg('/castle.jpg');
             setSquirrelPos({ x: '10%', y: '75%' });
             setIsMoving(false);
           }, 3000);
@@ -184,11 +125,21 @@ const CastleGame = () => {
   };
 
   const calculateMiniInsight = () => {
-    setMiniInsight("You have a vividly Creative mind! 🎨"); 
+    const counts = [0, 0, 0, 0];
+    userChoices.forEach(idx => counts[idx]++);
+    const maxIdx = counts.indexOf(Math.max(...counts));
+
+    const messages = [
+      "You have a vividly Creative mind! 🎨",
+      "You seem like an energetic Doer! 🏃",
+      "I see a sharp, Strategic thinker! 🧠",
+      "You are a true People Person! 🤝"
+    ];
+    setMiniInsight(messages[maxIdx]);
   };
 
   const handleSneakPast = () => {
-    safePlay(clickSound);
+    playSound('click.mp3');
     setIsMoving(true);
     setSquirrelPos({ x: '115%', y: '75%' });
     setTimeout(() => {
@@ -201,12 +152,7 @@ const CastleGame = () => {
     setScene('end');
     const raw = localStorage.getItem("gameResults");
     const gameResults = raw ? JSON.parse(raw) : {};
-    gameResults.castleGame = {
-      completed: true,
-      answers: userChoices,
-      completedAt: Date.now()
-    };
-
+    gameResults.castleGame = { completed: true, choices: userChoices, completedAt: Date.now() };
     localStorage.setItem("gameResults", JSON.stringify(gameResults));
     
     const message = INSPIRATION_TEXTS[Math.floor(Math.random() * INSPIRATION_TEXTS.length)];
@@ -235,11 +181,7 @@ const CastleGame = () => {
   if (loading) return <div className="castle-scene">Loading...</div>;
 
   return (
-    <div 
-      className={`castle-scene ${isExiting ? "exit" : ""}`} 
-      style={{ backgroundImage: `url(${process.env.PUBLIC_URL + currentBg})` }}
-      onClick={() => safePlay(bgSound)}
-    >
+    <div className={`castle-scene ${isExiting ? "exit" : ""}`} style={{ backgroundImage: `url(${process.env.PUBLIC_URL + currentBg})` }}>
       
       {scene !== 'end' && (
         <div 
@@ -247,7 +189,7 @@ const CastleGame = () => {
           style={(scene === 'pantry' || scene === 'finale' || scene === 'baking') ? 
             { left: squirrelPos.x, top: squirrelPos.y, transform: 'none' } : {}}
         >
-          🐿️
+          {hasCake ? '🐿️' : '🐿️'}
         </div>
       )}
 
@@ -258,10 +200,11 @@ const CastleGame = () => {
         </div>
       )}
 
-      {/* FIXED: Added !miniInsight to this condition to hide narration when modal is visible */}
-      {(scene === 'narrative' || (scene === 'pantry' && !showQuiz && !isMoving) || scene === 'finale') && !miniInsight && (
+      {(scene === 'narrative' || (scene === 'pantry' && !showQuiz && !isMoving) || scene === 'finale') && (
         <div className="story-chat">
           <div className="chat-bubble">
+            
+            {/* Conditional Icon Rendering */}
             {scene === 'pantry' && (
               <div className="icon-container">
                 {questions[itemIndex]?.image ? (
@@ -297,13 +240,14 @@ const CastleGame = () => {
 
       {scene === 'baking' && (
         <div className="overlay-baking">
-          <div className="baking-loader">🎂 Baking your cake...</div>
+          <div className="baking-loader">🧁 Baking your cake...</div>
         </div>
       )}
 
       {scene === 'end' && (
         <div className="story-chat">
           <div className="chat-bubble">
+            {/* Removed squirrel span here too for a clean ending */}
             <p>{typedText}</p>
           </div>
         </div>

@@ -14,7 +14,6 @@ const bookmarkRoutes = require("./routes/bookmarkRoutes");
 const notificationRoutes = require("./routes/notificationRoutes");
 const followRoutes = require("./routes/followRoutes");
 const authRoutes = require("./routes/authRoutes");
-const aiProfileRoutes = require("./routes/aiProfileRoutes");
 
 const app = express();
 
@@ -28,7 +27,6 @@ const allowedOrigins = [
 app.use(
   cors({
     origin: (origin, callback) => {
-      console.log('CORS request from:', origin);
       if (!origin) return callback(null, true); // allow Postman/curl
       if (allowedOrigins.includes(origin)) {
         callback(null, true);
@@ -65,7 +63,6 @@ app.use("/api/ai-profile", aiProfileRoutes);
 app.use("/api/results", require("./routes/results"));
 
 
-
 // ✅ Test database connection
 app.get("/test-db", async (req, res) => {
   try {
@@ -84,7 +81,6 @@ if (require.main === module) {
     console.log(`Server running on port ${PORT}`);
   });
 }
-
 
 // ✅ Export app for Vercel
 module.exports = app;

@@ -7,13 +7,10 @@ router.get("/", async (req, res) => {
   try {
     console.log("[userRoutes] Attempting to fetch all users...");
     const db = await getDB();
-    console.log("[userRoutes] Database connection obtained");
     const [rows] = await db.query("SELECT user_id, username, email, type_id FROM users");
-    console.log(`[userRoutes] Successfully fetched ${rows.length} users`);
     res.json(rows);
   } catch (err) {
-    console.error("[userRoutes] Error fetching users:", err);
-    res.status(500).json({ error: "DB error: " + err.message, details: err.stack });
+    res.status(500).json({ error: "DB error: " + err.message });
   }
 });
 

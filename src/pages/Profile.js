@@ -34,38 +34,6 @@ function Profile() {
     symbol: false,
   });
 
-  // AI Profile state
-  const [aiProfile, setAiProfile] = useState(null);
-  const [loadingAiProfile, setLoadingAiProfile] = useState(false);
-
-  // Fetch AI Profile on component mount
-  useEffect(() => {
-    const fetchAiProfile = async () => {
-      if (!user?.email) return;
-      
-      setLoadingAiProfile(true);
-      try {
-        const response = await apiRequest(`/results/ai-profile/${user.email}`);
-        if (response) {
-          // Parse traits and hobbies if they're strings
-          const profile = {
-            ...response,
-            traits: typeof response.traits === 'string' ? JSON.parse(response.traits) : response.traits,
-            hobbies: typeof response.hobbies === 'string' ? JSON.parse(response.hobbies) : response.hobbies,
-          };
-          setAiProfile(profile);
-        }
-      } catch (error) {
-        console.error("Failed to fetch AI profile:", error);
-        // Don't show error to user, just don't display the section
-      } finally {
-        setLoadingAiProfile(false);
-      }
-    };
-
-    fetchAiProfile();
-  }, [user?.email]);
-
   if (!user) {
     return (
       <div className="profile-page">

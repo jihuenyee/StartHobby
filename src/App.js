@@ -18,7 +18,6 @@ import MembershipPage from "./pages/Membership";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminUsers from "./pages/AdminUsers";
 import AdminQuiz from "./pages/AdminQuiz";
-import AdminResults from "./pages/AdminResults";
 import StoryIntro from "./pages/StoryIntro";
 import GameMap from "./pages/GameMap";
 import ClawQuizGame from "./pages/ClawQuizGame";
@@ -27,7 +26,6 @@ import SnakeLadderGame from "./pages/SnakeLadderGame";
 import { initGameResults } from "./utils/initGameResults";
 import ResultScreen from "./pages/ResultScreen";
 import PersonalityReveal from "./pages/PersonalityReveal";
-import FinalizeResults from "./pages/FinalizeResults";
 import "./App.css";
 
 const App = () => {
@@ -61,9 +59,6 @@ const App = () => {
           <Route path="/profile" element={<Profile />} />
           <Route path="/membership" element={<MembershipPage />} />
 
-          <Route path="/finalize" element={<FinalizeResults />} />
-
-
           {/* GAME FLOW */}
           <Route path="/story" element={<StoryIntro />} />
           <Route path="/game-map" element={<GameMap />} />
@@ -77,7 +72,6 @@ const App = () => {
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/admin/users" element={<AdminUsers />} />
           <Route path="/admin/quiz" element={<AdminQuiz />} />
-          <Route path="/admin/results" element={<AdminResults />} />
         </Routes>
       </div>
     </>

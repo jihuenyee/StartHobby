@@ -14,6 +14,7 @@ const bookmarkRoutes = require("./routes/bookmarkRoutes");
 const notificationRoutes = require("./routes/notificationRoutes");
 const followRoutes = require("./routes/followRoutes");
 const authRoutes = require("./routes/authRoutes");
+const aiProfileRoutes = require("./routes/aiProfileRoutes");
 
 const app = express();
 

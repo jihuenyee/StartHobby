@@ -115,36 +115,41 @@ function AdminDashboard() {
               {!quiz ? (
                 <p>Select a quiz</p>
               ) : (
-                <>
-                  <h3>Quiz: {selectedGame}</h3>
-
-                  {quiz.questions.map((q, index) => (
-                    <div key={q.question_id} className="question-card">
-                      <div className="question-header">
-                        <span className="question-label">
-                          Question #{index + 1}
-                        </span>
-                      </div>
-
-                      <div className="question-textarea" style={{border: 'none', background: 'transparent', padding: '0'}}>
-                        {q.question}
-                      </div>
-
-                      <div className="options-grid">
-                        {["a", "b", "c", "d"].map((opt) => (
-                          <div className="option-row" key={opt}>
-                            <span className="option-label">
-                              Option {opt.toUpperCase()}
-                            </span>
-                            <div className="option-input" style={{border: 'none', background: 'transparent', padding: '0'}}>
-                              {q[`option_${opt}`]}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
+                <div className="quiz-display-container">
+                  <div className="quiz-header-section">
+                    <h3 className="quiz-type-title">📚 {selectedGame}</h3>
+                    <div className="quiz-meta">
+                      <span className="quiz-count">{quiz.questions.length} Questions</span>
                     </div>
-                  ))}
-                </>
+                  </div>
+
+                  <div className="questions-container">
+                    {quiz.questions.map((q, index) => (
+                      <div key={q.question_id} className="quiz-question-card">
+                        <div className="question-number-badge">
+                          Question {index + 1}
+                        </div>
+                        
+                        <div className="question-text-display">
+                          {q.question}
+                        </div>
+
+                        <div className="options-display-grid">
+                          {["a", "b", "c", "d"].map((opt) => (
+                            <div className="option-display-item" key={opt}>
+                              <div className="option-letter-badge">
+                                {opt.toUpperCase()}
+                              </div>
+                              <div className="option-text-content">
+                                {q[`option_${opt}`]}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               )}
             </div>
           </section>

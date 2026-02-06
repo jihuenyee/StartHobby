@@ -11,10 +11,15 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      console.log("🔥 Firebase auth state changed:", firebaseUser?.email);
       const storedUser = localStorage.getItem("user");
+      console.log("💾 Stored user from localStorage:", storedUser);
       if (storedUser) {
-        setUser(JSON.parse(storedUser));
+        const parsedUser = JSON.parse(storedUser);
+        console.log("👤 Setting user from localStorage:", parsedUser);
+        setUser(parsedUser);
       } else {
+        console.log("❌ No stored user, setting to null");
         setUser(null);
       }
       setLoading(false);
@@ -33,6 +38,36 @@ export function AuthProvider({ children }) {
     };
     localStorage.setItem("user", JSON.stringify(userData));
     setUser(userData);
+  };
+
+  const signup = async (username, email, password) => {
+    const data = await apiRequest("/auth/signup", {
+      method: "POST",
+      body: { username, email, password },
+    });
+    const userData = {
+      ...data,
+      type_id: data.type_id || "normal",
+    };
+    localStorage.setItem("user", JSON.stringify(userData));
+    setUser(userData);
+  };
+
+  const updateProfile = async (updates) => {
+    const data = await apiRequest(`/users/${user.user_id}`, {
+      method: "PUT",
+      body: updates,
+    });
+    const updatedUser = { ...user, ...data.user };
+    localStorage.setItem("user", JSON.stringify(updatedUser));
+    setUser(updatedUser);
+  };
+
+  const changePassword = async (currentPassword, newPassword) => {
+    await apiRequest("/auth/change-password", {
+      method: "POST",
+      body: { user_id: user.user_id, currentPassword, newPassword },
+    });
   };
 
   const logout = () => {
